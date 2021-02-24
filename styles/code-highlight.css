@@ -1,0 +1,24 @@
+pre[class*=language-] {
+  padding: 40px 2em 2em !important;
+  margin: .5em 0 !important;
+  border-radius: 12px !important;
+}
+
+pre {
+  position: relative;
+  font-size: 0.9em !important;
+}
+
+pre::before {
+  content: " ";
+  overflow: auto;
+  overflow: hidden;
+  background-image: url(window-buttons.png);
+  background-repeat: no-repeat;
+  background-size: 44px 10px;
+  background-position: 16px 14px;
+  width: 100%;
+  position: absolute;
+  left: 0;
+  top: 0px;
+}
