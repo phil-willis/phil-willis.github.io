@@ -5,7 +5,8 @@
     "dev": "next",
     "build": "next build",
     "build:export": "next build && next export",
-    "start": "next start"
+    "start": "next start",
+    "lint": "prettier --config .prettierrc 'components/**/*.js' 'lib/**/*.js' 'pages/**/*.js' --write"
   },
   "dependencies": {
     "classnames": "2.2.6",
@@ -21,7 +22,11 @@
   },
   "devDependencies": {
     "autoprefixer": "^10.2.1",
+    "eslint": "^7.20.0",
+    "eslint-config-prettier": "^8.0.0",
+    "eslint-plugin-prettier": "^3.3.1",
     "postcss": "^8.2.4",
+    "prettier": "^2.2.1",
     "tailwindcss": "^2.0.2"
   },
   "license": "MIT"

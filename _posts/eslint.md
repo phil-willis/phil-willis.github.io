@@ -36,15 +36,8 @@ ogImage:
   - `eslint-config-prettier` => turns off all ESLint rules that could conflict with Prettier
   - `eslint-plugin-prettier` => integrates the Prettier rules into ESLint rules.
 
-3. Update the package.json file
-  - Add a scripts entry to your package.json
-  ```json
-  "scripts": {
-    "lint": "prettier --config .prettierrc 'src/**/*.js' --write"
-  },
-  ```
 
-4. Add `.eslintrc` file
+3. Add `.eslintrc` file
   ```json
   {
     "extends": [ "react-app", "prettier"],
@@ -55,8 +48,7 @@ ogImage:
   }
   ```
 
-
-5. Add `.prettierrc` file
+4. Add `.prettierrc` file
   ```json
   {
     "semi": false,
@@ -66,7 +58,7 @@ ogImage:
   }
   ```
 
-6. Add vscode settings file
+5. Add vscode settings file
   - Create `.vscode/settings.json`
     ```json
     {
@@ -89,8 +81,18 @@ ogImage:
     }
     ```
 
+6. Update the package.json file
+  - Add a scripts entry to your package.json
+  ```json
+  "scripts": {
+    "lint": "prettier --config .prettierrc 'src/**/*.js' --write"
+  },
+  ```
 
-
+7. Run the linter
+  ```sh
+  $ npm run lint
+  ```
 
 
 

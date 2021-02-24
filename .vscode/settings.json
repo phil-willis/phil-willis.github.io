@@ -1,0 +1,18 @@
+{
+  // Set prettier to be the default formatter
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+
+  // Don't format any files by default
+  "editor.formatOnSave": false,
+  
+  // Define the file types to do the autoformatting
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  
+}
