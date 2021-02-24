@@ -1,12 +1,9 @@
-// import Avatar from '../components/avatar'
-import DateFormatter from '../components/date-formatter'
 import CoverImage from '../components/cover-image'
 import Link from 'next/link'
 
 export default function HeroPost({
   title,
   coverImage,
-  date,
   excerpt,
   slug,
 }) {
@@ -28,9 +25,6 @@ export default function HeroPost({
               <a className="hover:underline">{title}</a>
             </Link>
           </h3>
-          <div className="mb-4 md:mb-0 text-lg">
-            <DateFormatter dateString={date} />
-          </div>
         </div>
       </div>
     </section>

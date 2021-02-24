@@ -22,7 +22,6 @@ export default function Index({ allPosts }) {
             <HeroPost
               title={heroPost.title}
               coverImage={heroPost.coverImage}
-              date={heroPost.date}
               slug={heroPost.slug}
               excerpt={heroPost.excerpt}
             />
@@ -37,7 +36,6 @@ export default function Index({ allPosts }) {
 export async function getStaticProps() {
   const allPosts = getAllPosts([
     'title',
-    'date',
     'slug',
     'coverImage',
     'excerpt',
