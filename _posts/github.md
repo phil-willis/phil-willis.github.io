@@ -7,7 +7,7 @@ ogImage:
 ---
 
 # Github
-- 
+- ... add notes on what it is
 
 
 
