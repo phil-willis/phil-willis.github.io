@@ -6,6 +6,7 @@ import 'prismjs/components/prism-jsx.min'
 import 'prismjs/components/prism-hcl.min'
 import 'prismjs/components/prism-json'
 import 'prismjs/components/prism-bash'
+import 'prismjs/components/prism-yaml'
 
 import '../styles/code-highlight.css'
 
