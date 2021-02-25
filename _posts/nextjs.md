@@ -6,7 +6,7 @@ ogImage:
   url: '/assets/blog/hello-world/cover.jpg'
 ---
 
-
+## Nextjs - why?
 1. Lambda (serverless) functions
   - These are functions that reside under the /api route of a Next.js app
   - server-side rendered React applications
@@ -20,8 +20,7 @@ ogImage:
   - It combines the benefits of server-side rendered pages and SSG by generating static HTML files on runtime. 
 
 
-# Creating and Deploying a Static Site to GitHub Pages
-
+## Creating and Deploying a Static Site to GitHub Pages
 1. Create a static build
   - Add the build script to your package.json file
     ```json
@@ -98,25 +97,7 @@ ogImage:
   - GitHub Pages uses Jekyll under the hood to host and render static sites. However, Jekyll ignores every directory that starts with an underscore character. 
   - This will be a problem because Next.js generates the static assets (CSS and JavaScript) inside of a directory called _next and there's no way to changes
   - To get around this issue, you need to create an empty file called `.nojekyll` inside of your `gh-pages` branch. 
-6. Update/create a `next.config.js`
-  - If you don't have a custom domain attached to your GitHub Pages site, it will be served under username.github.io/repo.
-  - By default, Next.js assumes that your site is located at the root level of your domain, but in this case, it's actually located under the repo path. 
-    ```js
-    const basePath = process.env.NODE_ENV === 'production' ? '/repo' : '';
+  
+6. Make a commit and push to github!
 
-    module.exports = {
-      basePath,
-      assetPrefix: `${basePath}/`
-    };
-    ```
-
-
-
-
-
-
-## Publish with Github Actions
-1. create 
-2. In your repo settings paste the `ACCESS_TOKEN`
-  - 
 
