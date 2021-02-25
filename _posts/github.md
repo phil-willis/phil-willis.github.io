@@ -11,7 +11,7 @@ ogImage:
 
 
 
-# Setting up multiple SSH keys
+## Setting up multiple SSH keys
 - If you have 2+ Github accounts you will have to create a new SSH key for each account
 1. Create an SSH Key
   ```shell
@@ -74,3 +74,57 @@ ogImage:
   ```
 
   
+
+## Github Pages
+- You can build a static site and have it hosted on GitHub Pages with a few configurations to the codebase and the github repository’s settings. 
+- This example expects that you are using npm for your development/deployment
+
+1. Create a new repo in Github
+  - Make sure that it's a `Public` repo
+
+2. Install the [gh-pages](https://www.npmjs.com/package/gh-pages) npm package
+  - Install gh-pages:
+    ```sh
+    $ npm install gh-pages --save-dev
+    ```
+  - Add a build/deploy script to your `package.json`
+    ```js
+    "scripts": {
+      "build": "some-build-script",
+      "predeploy": "rm -rf ./public",
+      "deploy": "npm run build && gh-pages -d public"
+    }
+    ```
+  - The `-d public` you're telling `gh-pages` where the build source code lives
+  - When you run npm run deploy all contents of the `public` folder will be moved to your repository’s gh-pages branch. 
+  - **note**: *With npm scripts if you prefix the scripts key name with `pre` it will run before the command and `post` it will run after*
+
+3. Update setting for GithubPages 
+  - You must select which branch will be deployed from your repository settings in GitHub for GitHub Pages to function. 
+  - The nice thing about the `gh-pages` npm package is that it will create a `gh-pages` branch and wire it up for you
+  - Navigate to your repo then click [`Settings` > Scroll down to the `GitHub Pages` Section]
+  ![](/assets/blog/gh-pages-screenshot.png)
+  - It's ok to keep the path as `/ (root)` because the when you run `gh-pages -d public` it take the contents of the `public` folder and saves it to the root of the `gh-pages` branch
+
+
+## Publishing to GitHub Pages
+- All you need to do to publish to githubpages is to run the npm `deploy` script
+  ```sh
+  $ npm run deploy
+  ```
+- Your static page should live: https://`<GITHUB_USERNAME>`.github.io/`<REPO_NAME>`/.
+- *You might have to clear your cache to see the new changes*
+
+
+
+
+## Publish with Github Actions
+1. create a personal access token
+  - click the avatar > profile > `Developer setttings` > `Personal access token` or https://github.com/settings/tokens
+  - note: `<repo_name> for github actions`
+  - check the `repo` section
+  - **DON'T FORGET TO COPY THE TOKEN**
+2. In your repo settings paste the `ACCESS_TOKEN`
+  - 
+
+
