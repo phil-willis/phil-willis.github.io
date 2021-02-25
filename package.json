@@ -3,8 +3,9 @@
   "version": "1.0.0",
   "scripts": {
     "dev": "next",
-    "build": "next build",
-    "build:export": "next build && next export",
+    "build:local": "next build && next export",
+    "build:prod": "NODE_ENV=production next build && next export",
+    "serve": "npm run build:local && serve out",
     "start": "next start",
     "lint": "prettier --config .prettierrc 'components/**/*.js' 'lib/**/*.js' 'pages/**/*.js' --write"
   },

@@ -21,7 +21,7 @@ ogImage:
 
 1. Create a react app
   ```sh
-  $ npx create-react-app <APP_NAME>
+  $ npx create-react-app APP_NAME
   ```
 
 2. Install additional packages
