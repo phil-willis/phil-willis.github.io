@@ -17,8 +17,6 @@ jobs:
           npm ci
           npm run build
           npm run export
-        env:
-            CI: true
 
       - name: No jekyll 🚮
         run: touch out/.nojekyll
