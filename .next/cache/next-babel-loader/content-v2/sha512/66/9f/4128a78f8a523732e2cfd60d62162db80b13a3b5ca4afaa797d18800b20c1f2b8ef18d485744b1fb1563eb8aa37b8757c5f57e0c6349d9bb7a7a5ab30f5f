@@ -1,1 +1,0 @@
-{"ast":null,"code":"export { default as Hello } from \"../components/hello.js\";\nexport { default as Test } from \"../components/test.js\";","map":null,"metadata":{},"sourceType":"module"}
