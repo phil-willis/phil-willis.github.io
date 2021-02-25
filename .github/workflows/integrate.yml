@@ -27,3 +27,4 @@ jobs:
           branch: gh-pages
           folder: out
           token: ${{ secrets.ACCESS_TOKEN }}
+          clean: true

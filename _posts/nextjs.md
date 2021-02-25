@@ -36,6 +36,8 @@ ogImage:
   - This will create a directory called out which contains a fully static version of your website.
 
 2. Create a new repo and push your code up
+  - **Create a Github repo that contains your Github username and .github.io.**
+  - For example my GitHub username is `phil-willis` and my repo name is `phil-willis.github.io`
 
 3. Create a personal access token
   - Click the avatar > profile > `Developer setttings` > `Personal access token` or [click here](https://github.com/settings/tokens)
