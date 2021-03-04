@@ -9,7 +9,14 @@ ogImage:
 
 # Cypress.io
 
+
+
+
+# Setup and installation
 1. Create an application with CRA
+  - Install Cypress with one command
+  - It will install a binary in your `node_modules/bin` folder
+  - You will now have a Desktop App & CLI tool
   ```shell
   $ npx create-react-app cypress-unit-test
   $ npm i -D cypress @cypress/react
@@ -26,14 +33,15 @@ ogImage:
   ```
 
 3. Run cypress once and it will scafold some test
-  - the first time that you run the `$ npm run cypress:open` cypress will add in all the default files
+  - The first time that you run the `$ npm run cypress:open` cypress will add in all the default files
+  - 
 
 4. Create a `./cypress.json`
   - Create a `./cypress.json`
     ```json
     {
       "experimentalComponentTesting": true,
-      "componentFolder": "cypress/component",
+      "componentFolder": "cypress/components",
       "integrationFolder": "cypress/integration",
       "supportFile": "cypress/support/index.js",
       "pluginFile": "cypress/plugin/index.js",
@@ -60,7 +68,7 @@ ogImage:
   ```
 
 7. Create a hello world test
-- `cypress/component/hello-world.spec.js` 
+- `cypress/components/hello-world.spec.js` 
   ```js
   import React from "react";
   import { mount } from "@cypress/react";
@@ -83,5 +91,66 @@ ogImage:
   `$ npm run cypress:open` 
   ```
   ![cypress-unit-test](/assets/blog/cypress/cypress-unit-test-helloworld.png)
+
+
+
+# Overview
+- You test visually unlike `@testing-library/react` you test with the DOM output only
+- You can time travel all your test and pause
+- Cypress is a chaining API
+- Cypress will automatically wait for assertions (4 seconds by default)
+
+- e.g. Complete test
+  ```js
+  it('send email with contact form', ()=>{
+    cy.visit('http://localhost:3003/signup')
+    
+    cy.get('#name-input').type('Phil')    
+    cy.get('#email-input').type('phil@user.com')
+    cy.get('form').submit()
+    cy.get('#success-message').should('be.visible')
+  })
+  ```
+
+- e.g. Checking if a element has a class name
+  ```js
+  // cy.<command>
+  cy.get('button')
+    .click()
+    .should('have.class', 'active')
+  ```
+
+- e.g. Testing the reques API
+  ```js
+  cy.request('/user/1')
+    its('body')
+    .should('deep.eql', {name:'phil'})
+  ```
+
+# You can also do Unit Testing!
+- Start by adding a simple test to test the `./src/App.js` file
+- Create `cypress/components/hello-world.spec.js` 
+  ```js
+  import React from "react";
+  import { mount } from "@cypress/react";
+
+  import App from "../../src/App.js"
+
+  describe("HelloWorld component", () => {
+    it("works", () => {
+      mount(<App />);
+      cy.contains("Learn React").should("be.visible");
+    });
+  });
+  ```
+
+
+
+
+
+
+
+
+
 
 
