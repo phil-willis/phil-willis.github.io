@@ -128,3 +128,43 @@ ogImage:
   - 
 
 
+
+## PR Templates
+
+- All you have to do is create a file `.github/pull_request_template.md`
+  ```
+  # <SOME TITLE>
+
+  ## Summary
+
+
+  ## Notes
+
+
+  ## Figma Design
+  [Figma Design](<FIGMA_URL>)
+
+
+  ## Screenshot
+
+
+  ## Jira Issue
+  [CX-###](<JIRA-TICKET-URL>)
+
+
+  ## Tested
+
+
+  ```
+- Push it up to github
+
+
+
+
+
+
+
+
+
+
+
