@@ -8,7 +8,8 @@
     "build:local": "next build && next export",
     "serve": "npm run build:local && serve out",
     "start": "next start",
-    "lint": "prettier --config .prettierrc 'components/**/*.js' 'lib/**/*.js' 'pages/**/*.js' --write"
+    "lint": "prettier --config .prettierrc 'components/**/*.js' 'lib/**/*.js' 'pages/**/*.js' --write",
+    "new:post": "node ./tools/new-post"
   },
   "dependencies": {
     "classnames": "2.2.6",
@@ -25,10 +26,12 @@
   },
   "devDependencies": {
     "autoprefixer": "^10.2.1",
+    "chalk": "^4.1.0",
     "eslint": "^7.20.0",
     "eslint-config-prettier": "^8.0.0",
     "eslint-plugin-prettier": "^3.3.1",
     "gh-pages": "^3.1.0",
+    "inquirer": "^8.0.0",
     "postcss": "^8.2.4",
     "prettier": "^2.2.1",
     "tailwindcss": "^2.0.2"
