@@ -34,6 +34,7 @@ ogImage:
 
 
 3. Add `.eslintrc` file
+  - [eslint rules](https://eslint.org/docs/rules/)
   ```json
   {
     "extends": [ "react-app", "prettier"],
@@ -45,6 +46,7 @@ ogImage:
   ```
 
 4. Add `.prettierrc` file
+  - [Prettier Options](https://prettier.io/docs/en/options.html)
   ```json
   {
     "semi": false,
@@ -89,12 +91,3 @@ ogImage:
   ```sh
   $ npm run lint
   ```
-
-
-
-
-
-
-# Links
-- https://www.robinwieruch.de/prettier-eslint
-- https://khalilstemmler.com/blogs/tooling/prettier/

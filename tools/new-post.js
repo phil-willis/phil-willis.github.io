@@ -16,13 +16,11 @@ ogImage:
 
 const createNewPost = (title, excerpt) => {
   const titleFormatted = title.replace(/\s+/g, '_')
-  const DIR_PATH_PREFIX = '_posts'
-  const DIR_PATH = `${DIR_PATH_PREFIX}/${titleFormatted}`
+  const FILE_PATH_PREFIX = '_posts'
+  const FILE_PATH = `${FILE_PATH_PREFIX}/${titleFormatted}`
 
   if (!fs.existsSync()) {
-    fs.mkdirSync(DIR_PATH)
-
-    const fileName = `${DIR_PATH}.md`
+    const fileName = `${FILE_PATH}.md`
     const fileContent = mdTemplate({ title, excerpt })
     fs.writeFileSync(fileName, fileContent, (err) => {
       if (err) throw err
