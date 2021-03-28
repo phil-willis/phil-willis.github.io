@@ -1,9 +1,9 @@
 ---
 title: 'node.js'
 excerpt: ''
-coverImage: '/assets/blog/hello-world/cover.jpg'
+coverImage: '/assets/covers/nodejs.jpg'
 ogImage:
-  url: '/assets/blog/hello-world/cover.jpg'
+  url: '/assets/covers/nodejs.jpg'
 ---
 
 

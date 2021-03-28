@@ -1,9 +1,9 @@
 ---
 title: 'JavaScript'
 excerpt: ''
-coverImage: '/assets/blog/hello-world/cover.jpg'
+coverImage: '/assets/covers/js.jpg'
 ogImage:
-  url: '/assets/blog/hello-world/cover.jpg'
+  url: '/assets/covers/js.jpg'
 ---
 
 

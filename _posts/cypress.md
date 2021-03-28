@@ -1,9 +1,9 @@
 ---
 title: 'Cypress'
 excerpt: 'How to configure Cypress.'
-coverImage: '/assets/blog/hello-world/cover.jpg'
+coverImage: '/assets/covers/cypress.jpg'
 ogImage:
-  url: '/assets/blog/hello-world/cover.jpg'
+  url: '/assets/covers/cypress.jpg'
 ---
 
 

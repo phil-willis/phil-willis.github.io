@@ -1,9 +1,9 @@
 ---
 title: 'Nextjs'
 excerpt: 'Nextjs'
-coverImage: '/assets/blog/hello-world/cover.jpg'
+coverImage: '/assets/covers/nextjs.jpg'
 ogImage:
-  url: '/assets/blog/hello-world/cover.jpg'
+  url: '/assets/covers/nextjs.jpg'
 ---
 
 ## Nextjs - why?

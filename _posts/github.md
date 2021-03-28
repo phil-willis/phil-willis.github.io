@@ -1,9 +1,9 @@
 ---
 title: 'Github'
 excerpt: 'Github'
-coverImage: '/assets/blog/hello-world/cover.jpg'
+coverImage: '/assets/covers/github.jpg'
 ogImage:
-  url: '/assets/blog/hello-world/cover.jpg'
+  url: '/assets/covers/github.jpg'
 ---
 
 # Github

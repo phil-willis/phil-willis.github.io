@@ -1,9 +1,9 @@
 ---
 title: 'Testing in JavaScript'
 excerpt: '...'
-coverImage: '/assets/blog/hello-world/cover.jpg'
+coverImage: '/assets/covers/js-testing.jpg'
 ogImage:
-  url: '/assets/blog/hello-world/cover.jpg'
+  url: '/assets/covers/js-testing.jpg'
 ---
 
 

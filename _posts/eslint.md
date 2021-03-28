@@ -1,9 +1,9 @@
 ---
 title: 'ESLint'
 excerpt: 'How to configure ESLint.'
-coverImage: '/assets/blog/hello-world/cover.jpg'
+coverImage: '/assets/covers/eslint.jpg'
 ogImage:
-  url: '/assets/blog/hello-world/cover.jpg'
+  url: '/assets/covers/eslint.jpg'
 ---
 
 
