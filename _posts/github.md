@@ -160,8 +160,9 @@ ogImage:
 
 
 
-
-
+# Github code owners
+- GitHub codeowners is implemented as a single file `.github/CODEOWNERS` in your repository
+- Whenever a pull request is opened, GitHub will automatically check all changed files and check each codeowners rule, the owners are added as reviewers.
 
 
 
