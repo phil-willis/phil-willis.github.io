@@ -160,6 +160,33 @@ ogImage:
 
 
 
+# Github code owners
+- GitHub codeowners is implemented as a single file `.github/CODEOWNERS` in your repository
+- Whenever a pull request is opened, GitHub will automatically check all changed files and check each codeowners rule, the owners are added as reviewers.
+
+
+# Updating a git commit message after it's been pushed
+- When you commit somthing to git it's accompanied with a commit message that explains what changes were made
+- If you need to update a message after it's been commited you can fix it with an `--amend` flag
+  ```shell
+  # Changing the latest git commit message
+  $ git commit --amend -m "New message"
+
+  # Update the remote
+  $ git push --force <repository-name> <branch-name>
+  
+  # 
+  $ git push --force-with-lease <repository-name> <branch-name>
+  ```
+- *Note that the `--force` is not recommended unless you are absolutely sure that no one else has cloned your repository after the latest commit. It's probably best to use `--force-with-lease` flag because it will abort if there was an upstream change to the repository.*
+
+- If you want to update a commit in a past commit you need the sha value
+
+```shell
+# list the last three 
+```
+
+
 
 
 
