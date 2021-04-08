@@ -9,11 +9,9 @@ ogImage:
 
 
 # Shortcuts
----
-Collapse File Explorer: [cmd/ctl]+[Shift]+[up-arrow]
-
----
-
+| What                   |      commands                  |
+|------------------------|:------------------------------:|
+| Collapse File Explorer |  [cmd/ctl]+[Shift]+[up-arrow]  |
 
 
 
