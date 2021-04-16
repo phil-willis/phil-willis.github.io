@@ -82,12 +82,32 @@ ogImage:
 
 
 
-# node update 
+# Node tools 
 
   ```shell
+  # Find out-of-day packages
   $ npx npm-upgrade
 
   $ npx depcheck
-
+  
+  # Find and delete `node_modules` on your machine
+  $ npx npkill
   ```
+  
+# Killing your local server that is going rogue
+
+```shell
+# Find:
+$ sudo lsof -i :3000
+
+# Kill:
+$ kill -9 <PID>
+```
+
+  
+  
+  
+  
+  
+  
 
