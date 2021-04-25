@@ -9,7 +9,7 @@
     "serve": "npm run build:local && serve out",
     "start": "next start",
     "lint": "prettier --config .prettierrc 'components/**/*.js' 'lib/**/*.js' 'pages/**/*.js' --write",
-    "new:post": "node ./tools/new-post"
+    "new": "node ./tools/new-post"
   },
   "dependencies": {
     "classnames": "2.2.6",
