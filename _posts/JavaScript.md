@@ -122,3 +122,35 @@ ogImage:
 
 
 
+
+
+
+
+
+
+
+# Loop over a number of times 
+```js
+const opt = [...Array(4)].map((_, num) => ({ value: num, label: num }))
+console.log(JSON.stringify(opt)) // [{"value":0,"label":0},{"value":1,"label":1},{"value":2,"label":2},{"value":3,"label":3}]
+```
+
+
+
+# Shorthand of if
+- [stackoverflow](https://stackoverflow.com/questions/39488458/javascript-one-line-if-only-state-true)
+- In default 'if' one line statement are two block, for true, and false:
+  ```js
+  variable ? true block : false block;
+  ```
+- How declare 'if' with one block? I expect something like this: `variable ? true-block;`
+
+- You can do:
+  ```
+  variable && js-block
+  ```
+- For example:
+  ```js
+  let variable = true;
+  let o = variable && 3;
+  ```
