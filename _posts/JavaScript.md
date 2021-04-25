@@ -24,7 +24,7 @@ ogImage:
     1. Parse Code
     2. Compile to Machine code
     3. execute Machine code
-  - All on an Single Thread on your operating system
+- All on an Single Thread on your operating system
 - JS runs on a Host Environments
   - Browserside
     - can't acces local file system
@@ -42,6 +42,83 @@ ogImage:
 # Brief History
 - 1995 Netscape release "LiveScript", then renamed to JavaScript
 - 1996 Microsoft release it's own version for IE
-- 1996 ECMA to start standardization
+- 1996 ECMA to start standardization (European Computer Manufacturers Association)
+- In 2015 JS had a huge upgrade and we now use transpiling to convert to the older JS so that it can be used in older browsers
+- 6th Edition – ECMAScript 2015
+- 7th Edition – ECMAScript 2016
+- 8th Edition – ECMAScript 2017
+- 9th Edition – ECMAScript 2018
+- 10th Edition – ECMAScript 2019
+- 11th Edition – ECMAScript 2020
+- Each browser comes with its own JS engine that also defines wich features are actually supported
+- [caniuse](https://caniuse.com/) is a great resource to see if a feature is supported or not
+- ECMA-Script is in active development
+
+
+# Topics
+- var, let, Const
+- Prototype
+- Arrow Functions
+- Primitive vs Reference types
+- Array & Array methods
+- Object & Object Method
+- Aync & Promises
+- Destructuring
+- Template literals
+- How the web works
+- npm scripts & package.json
+- husky & nvm versions
+- sessions, cookies, & jwt
+- OAuth
+- Security
+  - CSRF attack
+  - SQL injection
+  - CORS
+- Testing
+  - mocks
+  - stubs
+  - spies
+- Closures
+- Hoisting
+- Immutability
+- Data types
+- DOM
+- Global & Local Scope
+- Operators
+- Undefined, null, & NaN
+- logical operations
+- Try/Catch block
+- How to throw errors
+- Error handling
+- strict mode
+- parameter vs arguments
+- Functions vs Methods
+- anonymous functions
+- "this"
+- bind
+- Class
+- Class inheritance
+- recursion
+- closures
+- pure function
+- side effects
+- traverse the DOM
+- sets
+- symbols
+- spread operator
+- object.asign
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
