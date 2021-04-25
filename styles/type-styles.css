@@ -1,0 +1,54 @@
+
+
+div[class^="markdown-styles"] h1{
+  font-size: 1.7rem;
+  background-color: #2b2c2f;
+  color:white;
+  padding: 6px;
+  display:inline-block; 
+  line-height: 1;
+}
+
+div[class^="markdown-styles"] h2{
+  font-size: 1.5rem;
+  background-color: #2b2c2f;
+  color:#f15bb5;
+  padding: 6px;
+  display:inline-block; 
+  line-height: 0.8;
+}
+
+
+
+div[class^="markdown-styles"] h3{
+  font-size: 1rem;
+  background-color: #2b2c2f;
+  color:#fee440;
+  padding: 6px;
+  display:inline-block; 
+  line-height: 0.75;
+}
+
+
+div[class^="markdown-styles"] ul{
+  margin: 1rem auto;
+}
+
+div[class^="markdown-styles"] p{
+  margin: 1rem auto;
+}
+
+div[class^="markdown-styles"] ul{
+  margin-top: 4px;
+  margin-left: 14px;
+  list-style: square outside;
+  margin-left: 26px;
+  padding: 0;
+}
+
+div[class^="markdown-styles"] ul ol{
+  margin-top: 0px;
+  margin-left: 14px;
+  padding: 0px 10px; 
+  list-style-type: decimal;
+}

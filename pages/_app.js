@@ -9,6 +9,7 @@ import 'prismjs/components/prism-bash'
 import 'prismjs/components/prism-yaml'
 
 import '../styles/code-highlight.css'
+import '../styles/type-styles.css'
 
 export default function MyApp({ Component, pageProps }) {
   return <Component {...pageProps} />
