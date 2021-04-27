@@ -189,6 +189,14 @@ ogImage:
 
 
 
+# Squash and merge
+
+```shell
+$ git checkout master
+$ git merge --squash bugfix
+$ git commit
+```
+
 
 
 
