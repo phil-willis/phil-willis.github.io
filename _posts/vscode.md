@@ -162,7 +162,7 @@ ogImage:
       "editor.formatOnSave": true
     },
   }
-```
+  ```
 
 
 # Extensions
@@ -187,6 +187,9 @@ ogImage:
     }
     ```
     - *NOTE* You can also open the keybindings.json file from the Command Palette (Ctrl+Shift+P) with the `Preferences: Open Keyboard Shortcuts (JSON)` command.
+- File Utils
+  - [File Utils](https://marketplace.visualstudio.com/items?itemName=sleistner.vscode-fileutils
+  - [cmd]+[shift]+[P], then >reaname
 - Prettier
   - [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
 - ESLint
