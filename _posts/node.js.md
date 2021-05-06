@@ -107,7 +107,34 @@ $ kill -9 <PID>
   
   
   
-  
+# Git hooks
+- Automation is always good, especially when it reduces congnitive load and optimization
+- We can automate things before we create commits or push changes to a repo
+- The `.git` ditectory allows you to do native hooks if you want to or you can use something like husky to do all the heavy lifting for you and you can stay in JS land :)
+- Check out the [Husky docs here](https://typicode.github.io/husky/#/)
+- Intall husky with:
+  ```shell
+  $ npx husky-init && npm install 
+  ```
+- This will automatically wireup all the git hooks and add a script `.husky/pre-commit` where you can add whatever command run before a commit
+  ```bash
+  #!/bin/sh
+  . "$(dirname "$0")/_/husky.sh"
+
+  npm run lint
+  ```
+- It will setup husky, modify `package.json` and create a sample `pre-commit` hook that you can edit. - By default, it will run npm test when you commit.
+- To add another hook use husky add.
+  ```shell
+  $ npx husky add .husky/pre-push 'npm run lint && npm run test:ci'
+  ```
+- This will create `.husky/pre-push`
+  ```bash
+  #!/bin/sh
+  . "$(dirname "$0")/_/husky.sh"
+
+  npm run lint && npm run test:ci
+  ```
   
   
 
