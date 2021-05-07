@@ -196,6 +196,7 @@ ogImage:
   - [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint
 - SQLTools
   - [SQLTools](https://marketplace.visualstudio.com/items?itemName=mtxr.sqltools
-
+- Git Graph
+  - [Git Graph](https://marketplace.visualstudio.com/items?itemName=mhutchie.git-graph)
 
 
