@@ -198,5 +198,6 @@ ogImage:
   - [SQLTools](https://marketplace.visualstudio.com/items?itemName=mtxr.sqltools
 - Git Graph
   - [Git Graph](https://marketplace.visualstudio.com/items?itemName=mhutchie.git-graph)
-
+- Document This
+  - [Document This](https://marketplace.visualstudio.com/items?itemName=oouo-diogo-perdigao.docthis)
 
