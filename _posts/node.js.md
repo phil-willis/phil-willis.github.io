@@ -153,3 +153,109 @@ https://dev.to/joshaguilar/fully-automating-npm-package-releases-3k7ez
 4. Push the package to Github
 5. Push the package to npm
 6. Create release notes for every update
+
+
+
+# JS Doc
+- There are alot of ways to document your code; README, tutorials, documentation file, etc
+- The problem with the one above is they get out of date quickly, it's best to put your documentaion as close to the code so that you can update it as you up update the functionality.
+- JSDoc is perfect for this kinda documentation layer, plus if you are using vscode it will give you intellesence!
+
+1. Start with a code block
+  ```js
+  /**
+   * Takes in to numbers and will add them
+   */
+  function addItems(item1, item2) {
+    return item1 + item2
+  }
+  export default addItems
+  ```
+2. Add a description of what it does 
+  - The function name should give it away but it gives you a chance to descript it with words)
+    ```js
+    /**
+     * Takes in to numbers and will add them
+     */
+    function addItems(item1, item2) {
+      return item1 + item2
+    }
+    export default addItems
+    ```
+  - ![jsdoc-description-only](plublic/assets/blog/jsdoc-description-only.jpg)
+
+2. Now describe the params and the return
+  - Here is what the format looks like
+    ```js
+    /**
+    *
+    * @param {param type} param name - description
+    *
+    */
+    ```
+  - Now let's add those
+    ```js
+    /**
+     * Takes in to numbers and will add them
+     *
+     * @param {number} item1 - First number
+     * @param {number} item2 - Second number
+     * @returns {number} Sum of the 2 numbers
+     */
+    function addItems(item1, item2) {
+      return item1 + item2
+    }
+    export default addItems
+    ```
+  - ![jsdoc-complete](plublic/assets/blog/jsdoc-complete.jpg)
+
+3. Use the function
+  - As you start to type in the parameter it will tell you the data type
+  - ![jsdoc-using](plublic/assets/blog/jsdoc-using.jpg)
+
+- Example of JSDoc
+  ```js
+  /**
+   * Raises a number to exponent
+   * @param {number} value - The base to raise
+   * @param {number} exponent - The exponent
+   * @return {number} - The exponent power
+   */
+
+   /**
+   * A silly logger function
+   * @param {string} message
+   * @return {void} Nothing
+   */
+
+
+   /**
+   * Generates a table head
+   * @author Valentino Gagliardi <valentinoDOTvalentinog.com>
+   * @param {HTMLTableElement} table - The target HTML table
+   * @param {Array} data - The array of cell header names
+   */
+  ```
+- Generate docs
+  - You can use the `jsdoc` to generate documentation for all your functions
+  - *Note* if you use `export default function yourFunctionName()` it won't create it you have to define it with just `function yourFunctionName()` then export it on another line `export default yourFunctionName`
+  - Add the `jsdoc` package to your repo
+    ```shell
+    $ mkdir docs
+    $ npm i -D jsdoc
+    ```
+  - update your `package.json` file
+    ```js
+     "scripts": {
+      "make:docs":"jsdoc -d documentation src/*.js "
+    },
+    ```
+  - now run the doc generator
+    ```shell
+    $ npm run make:docs
+    $ cd documentation
+    $ npx live-server
+    ```
+
+
+
