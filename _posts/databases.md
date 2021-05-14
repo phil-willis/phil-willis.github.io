@@ -17,8 +17,6 @@ ogImage:
 - [ ] CouchDB
 
 
-x
-
 # MySQL
 - Basic Docker stuff
   ```shell
