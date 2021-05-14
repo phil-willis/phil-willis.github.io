@@ -196,6 +196,8 @@ ogImage:
   - [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint
 - SQLTools
   - [SQLTools](https://marketplace.visualstudio.com/items?itemName=mtxr.sqltools
-
-
-
+- Serverless Console
+  - [Serverless Console](https://marketplace.visualstudio.com/items?itemName=devAdvice.serverlessconsole)
+- Thunder Client
+  - [Thunder Client](https://marketplace.visualstudio.com/items?itemName=rangav.vscode-thunder-client)
+  - Doing `Postman` link request to servers within vscode
