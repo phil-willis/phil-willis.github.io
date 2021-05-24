@@ -92,6 +92,18 @@ ogImage:
   $ npm run lint
   ```
 
+8. (optional) Extend prettier with import sort order
+  - A prettier plugin to sort import declarations by provided RegEx order.
+    ```
+    $ npm i -D @trivago/prettier-plugin-sort-imports
+    ```
+  - Add this to your `.prettierrc` file
+    ```json
+    {
+      "importOrder": ["^@core/(.*)$", "^@server/(.*)$", "^@ui/(.*)$", "^[./]"],
+      "importOrderSeparation": true,
+    }
+    ```
 
 
 # Setup TypeScript React
