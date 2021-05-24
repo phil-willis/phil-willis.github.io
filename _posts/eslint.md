@@ -193,7 +193,7 @@ ogImage:
   ```json
   {
      "scripts": {
-      "list": "prettier --write src/**/*.ts{,x}"
+      "lint": "prettier --write src/**/*.ts{,x}"
     }
   }
   ```
