@@ -229,16 +229,64 @@ ogImage:
 
 ## useContext
 - This hook allows you to work with React's context API, which is a mechanism to share data without passing props down the entire component tree
-- 
+- Steps
+  1. Create a context with `createContext()`
+  2. Wrap the highest most parent you want with a `.Provider`
+  3. Access the context with `useContext()`
 
+- Example
+  ```js
+  import React, { createContext, useContext } from "react";
 
+  // Create a context with default value
+  const ThemeContext = createContext();
+
+  export default function App() {
+    // Wrap your application with a `Provider` set a value for your context
+    // Any component can read it, no matter how deep it is.
+    return (
+      <ThemeContext.Provider value="dark">
+        <SomeComponent />
+        <OldWay />
+      </ThemeContext.Provider>
+    );
+  }
+
+  function SomeComponent() {
+    const theme = useContext(ThemeContext);
+    return <div>{theme}</div>;
+  }
+
+  function OldWay() {
+    return (
+      <ThemeContext.Consumer>
+        {(theme) => <div>...{theme}</div>}
+      </ThemeContext.Consumer>
+    );
+  }
+
+  ```
+- Before hooks you had to use the `Consumer` component
 
 
 ## useReducer
 ## useCallback
+
+
+
+
+
+
 ## useMemo
 ## useRef
 - Useful is you want to grab HTML values from the DOM
+- Allows you to create a mutable object that will keep the same reference between renders
+- mutable value does not re-rende the UI
+- can grab native HTML elements from JSX
+
+
+
+
 ## useImperativeHandle
 ## useLayoutEffect
 
