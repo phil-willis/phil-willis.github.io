@@ -435,6 +435,144 @@ export default function MyParent({ items }) {
 
 
 
+# State Management
+- State management creates a concrete & predictable data structure for sharing data across components
+- In JS, data from the interactions form state
+- State can also be seen as data over time of a item
+- You can also view `state` as current `status` of something (app, component, element)
+- Theres several was to manage state for an application let's check out a few of them
+
+
+## `useState` & `useReduer`
+- The `useState` hook is perfect for small amounts of local component state. 
+- Each `useState` call should hold a single value, and while you can make that one value an object that contains a bunch of other values, it’s a better idea to split them up.
+- In larger applications there will be alot of `useState` hooks and could start to get a little more difficult to manange
+- Once you get ~5 `useState` calls in a single component you might want to think of a better stategy like `useReducer` which is basically the redux pattern but baked into the React library (dispatch an action -> reducer -> store -> UI)
+
+  ```js
+  import React, { useReducer } from "react";
+
+  function reducer(state, action) {
+    switch (action.type) {
+      case "incrementValue1":
+        return { ...state, value1: state.value1 + 1 };
+      case "incrementValue2":
+        return { ...state, value2: state.value2 + 1 };
+      default:
+        throw new Error();
+    }
+  }
+
+  const ComponentA = ({ value, dispatch }) => {
+    const handleClick = () => dispatch({ type: "incrementValue1" });
+    return (
+      <>
+        <h1>The value is: {value}</h1>
+        <button onClick={handleClick}>Increment value 1</button>
+      </>
+    );
+  };
+
+  const ComponentB = ({ value, dispatch }) => {
+    const handleClick = () => dispatch({ type: "incrementValue2" });
+    return (
+      <>
+        <h1>The value is: {value}</h1>
+        <button onClick={handleClick}>Increment value 1</button>
+      </>
+    );
+  };
+
+  const initialState = { value1: 0, value2: 0 };
+  export default function App() {
+    const [state, dispatch] = useReducer(reducer, initialState);
+    return (
+      <>
+        <ComponentA value={state.value1} dispatch={dispatch} />
+        <ComponentB value={state.value2} dispatch={dispatch} />
+      </>
+    );
+  }
+
+  ```
+
+
+## React Context API
+- A step above `useState` & `useReducer` is `useContext`
+- You probably want to use this hook if you find yourself `prop drilling`, aka passing props down several child levels manually
+- Context provides a way to pass data through the component tree without having to pass props down manually at every level.
+- Despite its simplicity, Context has one important downside though, and that’s performance, unless you’re very careful about how you use it.
+- The reason is that every component that calls useContext will re-render when the Provider’s value prop changes. 
+- The downside of the Context API is that every time one of those values changes, every component that uses any of them would re-render.
+- To avoid that pitfall, store small chunks of related data in each Context, and split up data across multiple Contexts (you can have as many as you want). 
+  ```js
+  import { createContext, useContext, useState } from "react";
+
+  const MyContext = createContext();
+
+  const MyProvider = (props) => {
+    const [value1, setValue1] = useState(0);
+    const [value2, setValue2] = useState(0);
+    const store = { value1: [value1, setValue1], value2: [value2, setValue2] };
+    return (
+      <MyContext.Provider value={store}>{props.children}</MyContext.Provider>
+    );
+  };
+
+  const ComponentA = () => {
+    const { value1 } = useContext(MyContext);
+    const [stateValue1, setStateValue1] = value1;
+
+    const handleSetValue1 = () => setStateValue1(stateValue1 + 1);
+
+    return (
+      <>
+        <h1>The value is: {stateValue1}</h1>
+        <button onClick={handleSetValue1}>Increment value 1</button>
+      </>
+    );
+  };
+
+  const ComponentB = () => {
+    const { value2 } = useContext(MyContext);
+    const [stateValue2, setStateValue2] = value2;
+
+    const handleSetValue2 = () => setStateValue2(stateValue2 + 1);
+
+    return (
+      <>
+        <h1>The value2 is: {stateValue2}</h1>
+        <button onClick={handleSetValue2}>Increment value 2</button>
+      </>
+    );
+  };
+
+  export default function App() {
+    return (
+      <MyProvider>
+        <ComponentA />
+        <ComponentB />
+      </MyProvider>
+    );
+  }
+
+  ```
+
+
+
+
+## Redux
+
+
+## @reduxjs/toolkit
+
+
+
+
+
+## Zustand
+
+
 
 
 
