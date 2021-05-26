@@ -75,8 +75,7 @@ ogImage:
 
 
 
-
-# Before Hooks
+## Before Hooks
 - Functional Component
   - props in, JSX out
   - Great for presentation
@@ -122,9 +121,6 @@ ogImage:
   ```
 
 
-
-
-
 ## useState
 - Probably the most used hook
 - To deal with reactive data
@@ -146,9 +142,7 @@ ogImage:
 
 ## useEffect
 
-
-
-- Class based lifecycle methods
+- Class based lifecycle methods (componentWillMount, componentDidMount, componentWillUnMount)
   ```js
   import React, { Component } from "react";
 
@@ -182,9 +176,6 @@ ogImage:
     }
   }
   ```
-
-
-
 
 - Example:
   ```js
@@ -229,6 +220,7 @@ ogImage:
 
 ## useContext
 - This hook allows you to work with React's context API, which is a mechanism to share data without passing props down the entire component tree
+- Any component can read it, no matter how deep it is.
 - Steps
   1. Create a context with `createContext()`
   2. Wrap the highest most parent you want with a `.Provider`
@@ -270,7 +262,37 @@ ogImage:
 
 
 ## useReducer
-## useCallback
+- different way of managing state, the redux pattern can help with large apps
+- Very similar to redux, instead or changing the state, you dispatch actions that then hits a reducer function that updates the store
+- action -> reducer -> store -> UI
+- Action is just an object that has the shape of `{type:'', payload:''}`
+- `useReducer(<reducer_switch_statement>, <initial_state>);`
+- example:
+  ```js
+  import React, { useReducer } from "react";
+
+  function reducer(state, action) {
+    switch (action.type) {
+      case "increment":
+        return state + 1;
+      default:
+        throw new Error();
+    }
+  }
+
+  export default function App() {
+    const [state, dispatch] = useReducer(reducer, 0);
+
+    const handleClick = () => dispatch({ type: "increment" });
+    return (
+      <>
+        <p>Count: {state}</p>
+        <button onClick={handleClick}>update</button>
+      </>
+    );
+  }
+  ```
+
 
 
 
@@ -278,16 +300,125 @@ ogImage:
 
 
 ## useMemo
+- Help you optimize computation cost for improved performance
+- memoization *cache results* of function call
+- `useMemo` for memoizing return values
+- Use this hook as an *opt-in* tool for expensive calculations you don't want to happen on every render
+- `useMemo(<Expensive_Computation_Function>, <Array_of_Dependencies>);`
+- Example:
+  ```js
+  import React, { useMemo, useState } from "react";
+
+  export default function App() {
+    const [count] = useState(99);
+
+    const expensiveCount = useMemo(() => count ** 2, [count]);
+
+    return (
+      <>
+        <p>count: {count}</p>
+        <p>expensiveCount: {expensiveCount}</p>
+      </>
+    );
+  }
+  ```
+
+
+
+
+## useCallback
+- The `useCallback()` hook returns (aka memoizes) the function instance between renderings
+- `useCallback()` solves the problem of *functions equality check*
+- A function definition share the same code source but when used they are different function objects. 
+- Comparing them one implementation to the second evaluates to false.
+- When you have a function inside of component every rendering of the component will result in a different *function object*. 
+- A few inline functions per component are acceptable, cause it's cheap to re-create small functions
+- But in some cases you need to maintain one function instance between renderings
+- A few inline functions per component are acceptable. The optimization costs more than not having the optimization. As well as increase the code complexity
+- When to use `useCallback()`
+  - If your component renders big list of items, you don't want to have to re create all the items everytime the parent changes and the list remains the same. `useCallback()` returns the same function object.
+
+- Example:
+```js
+import React, { useCallback } from 'react';
+
+export default function MyParent({ items }) {
+  const onItemClick = useCallback(event => {
+    console.log('You clicked ', event.currentTarget);
+  }, [items]);
+
+  return (
+    <>
+      <SomeLargeList items={items} onItemClick={onItemClick} />
+    </>
+  );
+}
+```
+
+
+
+
 ## useRef
-- Useful is you want to grab HTML values from the DOM
+- `useRef` hook allows you to create persisted mutable values (also known as references or refs), as well as access DOM elements.
+- Useful is you want to grab HTML values from the JSX
 - Allows you to create a mutable object that will keep the same reference between renders
-- mutable value does not re-rende the UI
+- **mutable value does not re-render the UI**
 - can grab native HTML elements from JSX
+- One important note is that changing the ref value will *not re-render the component*
+- `useRef(initialValue)` is a built-in React hook that accepts one argument as the initial value and returns a reference (aka ref).
+- A reference is an object having a special property current.
+  ```js
+  import React, { useRef } from "react";
+
+  export default function App() {
+    const countRef = useRef(0);
+
+    const handle = () => {
+      countRef.current++;
+      console.log(`Clicked ${countRef.current} times, BUT DIDN'T RE-RENDER like useState would`);
+    };
+
+    console.log("I rendered once!");
+
+    return (
+      <>
+        <button onClick={handle}>Click me</button>
+      </>
+    );
+  }
+  ```
+- More common way to use `useRef` is to grab HTML elements from the JSX
+- There are 2 rules to remember about references:
+  1. The value of the reference is persisted (stays the same) between component re-renderings;
+  2. Updating a reference doesn’t trigger a component re-rendering.
+- Referencing a DOM element
+  ```js
+  import React, { useRef, useEffect } from 'react';
+
+  function AccessingElement() {
+    const elementRef = useRef();
+
+    useEffect(() => {
+      const divElement = elementRef.current;
+    }, []);
+
+    return (
+      <div ref={elementRef}>
+        I'm an element
+      </div>
+    );
+  }
+  ```
+
+
 
 
 
 
 ## useImperativeHandle
+
+
+
 ## useLayoutEffect
 
 
@@ -296,7 +427,9 @@ ogImage:
 
 
 
-
+## Custom Hook
+- Building your own custom Hook is essentially extracting code that uses one or more built in hooks to make it reuseable
+- 
 
 
 
