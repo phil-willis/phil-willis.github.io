@@ -478,7 +478,7 @@ export default function MyParent({ items }) {
     return (
       <>
         <h1>The value is: {value}</h1>
-        <button onClick={handleClick}>Increment value 1</button>
+        <button onClick={handleClick}>Increment value 2</button>
       </>
     );
   };
@@ -497,7 +497,7 @@ export default function MyParent({ items }) {
   ```
 
 
-## React Context API
+## React Context API as State Management
 - A step above `useState` & `useReducer` is `useContext`
 - You probably want to use this hook if you find yourself `prop drilling`, aka passing props down several child levels manually
 - Context provides a way to pass data through the component tree without having to pass props down manually at every level.
@@ -561,16 +561,113 @@ export default function MyParent({ items }) {
 
 
 
-## Redux
+## Third-Party State Management Library - Redux
 
 
-## @reduxjs/toolkit
+## Third-Party State Management Library -  @reduxjs/toolkit
 
 
 
 
 
-## Zustand
+## Third-Party State Management Library -  Zustand
+- [Zustand](https://zustand.surge.sh/) A small, fast and scaleable bearbones state-management solution.
+  ```js
+  import create from "zustand";
+
+  const useStore = create((set) => ({
+    value1: 0,
+    value2: 0,
+    setValue1: () => set((state) => ({ value1: state.value1 + 1 })),
+    setValue2: () => set((state) => ({ value2: state.value2 + 1 })),
+    removeAllBears: () => set({ bears: 0 })
+  }));
+
+  const ComponentA = ({ value, setValue }) => {
+    const handleClick = () => setValue(value + 1);
+    return (
+      <>
+        <h1>The value is: {value}</h1>
+        <button onClick={handleClick}>Increment value 1</button>
+      </>
+    );
+  };
+
+  const ComponentB = ({ value, setValue }) => {
+    const handleClick = () => setValue(value + 1);
+    return (
+      <>
+        <h1>The value is: {value}</h1>
+        <button onClick={handleClick}>Increment value 2</button>
+      </>
+    );
+  };
+
+  export default function App() {
+    const { value1, value2, setValue1, setValue2 } = useStore((state) => state);
+
+    return (
+      <>
+        <ComponentA value={value1} setValue={setValue1} />
+        <ComponentB value={value2} setValue={setValue2} />
+      </>
+    );
+  }
+  ```
+- Fetching data
+  ```js
+  const useStore = create(set => ({
+    fishies: {},
+    fetch: async pond => {
+      const response = await fetch(pond)
+      set({ fishies: await response.json() })
+    }
+  }))
+  ```
+- Read from state in actions
+  ```js
+  const useStore = create((set, get) => ({
+    sound: "grunt",
+    action: () => {
+      const sound = get().sound
+      // ...
+    }
+  })
+  ```
+- Redux Devtools
+  ```js
+  import { devtools } from 'zustand/middleware'
+
+  // Usage with a plain action store, it will log actions as "setState"
+  const useStore = create(devtools(store))
+  // Usage with a redux store, it will log full action types
+  const useStore = create(devtools(redux(reducer, initialState)))
+  ```
+- Zustand with `simple-zustand-devtools`
+  ``js
+  import createStore from 'zustand';
+  import { mountStoreDevtool } from 'simple-zustand-devtools';
+
+  export const [useStore, store] = createStore(set => {
+    // create your zustand store here
+  });
+
+  if (process.env.NODE_ENV === 'development') {
+    mountStoreDevtool('Store', store);
+  }
+  ```
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
