@@ -644,7 +644,7 @@ export default function MyParent({ items }) {
   const useStore = create(devtools(redux(reducer, initialState)))
   ```
 - Zustand with `simple-zustand-devtools`
-  ``js
+  ```js
   import createStore from 'zustand';
   import { mountStoreDevtool } from 'simple-zustand-devtools';
 
