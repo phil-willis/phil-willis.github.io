@@ -656,8 +656,52 @@ export default function MyParent({ items }) {
     mountStoreDevtool('Store', store);
   }
   ```
+- Zustand with `simple-zustand-devtools`
+  ```js
+  import createStore from "zustand"; // `createStore` instead of `create`
+  import { mountStoreDevtool } from "simple-zustand-devtools";
 
+  export const [useStore, store] = createStore((set) => ({
+    value1: 0,
+    value2: 0,
+    setValue1: () => set((state) => ({ value1: state.value1 + 1 })),
+    setValue2: () => set((state) => ({ value2: state.value2 + 1 })),
+    removeAllBears: () => set({ bears: 0 })
+  }));
+  mountStoreDevtool("Store", store);
 
+  const ComponentA = ({ value, setValue }) => {
+    const handleClick = () => setValue(value + 1);
+    return (
+      <>
+        <h1>The value is: {value}</h1>
+        <button onClick={handleClick}>Increment value 1</button>
+      </>
+    );
+  };
+
+  const ComponentB = ({ value, setValue }) => {
+    const handleClick = () => setValue(value + 1);
+    return (
+      <>
+        <h1>The value is: {value}</h1>
+        <button onClick={handleClick}>Increment value 2</button>
+      </>
+    );
+  };
+
+  export default function App() {
+    const { value1, value2, setValue1, setValue2 } = useStore((state) => state);
+
+    return (
+      <>
+        <ComponentA value={value1} setValue={setValue1} />
+        <ComponentB value={value2} setValue={setValue2} />
+      </>
+    );
+  }
+  ```
+  - Open the `Components` Chrome dev tools panel and you should see a `devtool` tree item on the left 
 
 
 
