@@ -6,6 +6,115 @@ ogImage:
   url: '/assets/covers/github.jpg'
 ---
 
+# Github CLI Commands
+- Install Github CLI `$ brew install gh`
+- [Github CLI Docs](https://cli.github.com/manual/)
+  ```shell
+  $ gh auth login
+
+  # Gist
+  $ gh gist create --public hello.js
+
+  # Repo
+  $ git init my-project
+  $ cd my-project
+  $ gh repo create
+
+  # Create a repository with a specific name
+  $ gh repo create my-project
+
+  # Create a repository in an organization
+  $ gh repo create cli/my-project
+  ```
+
+# Git Commands
+
+- Create
+  ```shell
+  # Clone a repo
+  $ git clone git@github.com:mapbox/mapbox-gl-js.git
+  
+  # Create a new repo
+  $ git init
+  
+  # Create remote repo
+  $ gh repo create cli/my-project
+  ```
+
+- Local changes
+  ```shell
+  $ git status
+  $ git diff
+  $ git add .
+  $ git add -p <file>
+  $ git commit -m 'some message'
+  
+  # Change the last commit (don't amend published commits)
+  $ git commit -amend -m 'replace last commit message'
+  
+  # Change the last commit with stage items
+  $ git commit -amend -m 'staged files will be added to the last commit'
+  ```
+
+- Commit history
+  ```shell
+  $ git log
+  $ git log -p <file>
+  # *use `:q` to close the log*
+  ```
+- Branches
+  ```shell
+  # List all existing branches
+  $ git branch -av
+  
+  $ git checkout <branch_name>
+  $ git checkout -b <new_branch_name>
+  $ git checkout --track <remote/branch>
+  
+  # Delete branch
+  $ git branch -d <branch_to_delete>
+  ```
+- Tags
+  ```shell
+  $ git tag <tag_name>
+  $ git push --tags
+  ```
+- Update & publish
+  ```shell
+  $ git remote show origin
+  $ git fetch origin
+  $ git pull origin <remote_branch_name>
+  $ git push origin <branch_name>
+  $ git checkout --track origin/this-rocks
+  
+  # Delete remote branch
+  $ git branch -dr <remote/branch>
+  ```
+- Merge & Rebase
+  ```shell
+  # Merge <branch> into your current HEAD
+  $ git merge <branch>
+  
+  # Rebase (don't rebase published commits
+  $ git rebase <branch>
+  
+  
+  $ git rebase --abort
+  $ git rebase --continue
+  $ git merge
+  ```
+- Undo
+  ```shell
+
+  ```
+
+
+
+# Merging vs. Rebase
+
+
+
+
 # Github
 - ... add notes on what it is
 
