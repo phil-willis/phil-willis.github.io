@@ -301,6 +301,7 @@ ogImage:
 
 ## useMemo
 - Help you optimize computation cost for improved performance
+- Think of Memo`iz`ation  as Memo`riz`ation... If you had a calculation that happens frequently like `666666*123` instead of having to compute it in your brain you can just `memorize` the output. Kinda similar with computers when using React, there is no need to re-compute something that hasn't changed. Because React will re-render when props change we can avoid unnecessary re-rendering of a component.
 - memoization *cache results* of function call
 - `useMemo` for memoizing return values
 - Use this hook as an *opt-in* tool for expensive calculations you don't want to happen on every render
@@ -327,6 +328,7 @@ ogImage:
 
 
 ## useCallback
+- This hook is useful when you have a component with a child frequently re-rendering, and you pass a callback to it
 - The `useCallback()` hook returns (aka memoizes) the function instance between renderings
 - `useCallback()` solves the problem of *functions equality check*
 - A function definition share the same code source but when used they are different function objects. 
