@@ -205,4 +205,5 @@ ogImage:
   - [Git Graph](https://marketplace.visualstudio.com/items?itemName=mhutchie.git-graph)
 - Document This
   - [Document This](https://marketplace.visualstudio.com/items?itemName=oouo-diogo-perdigao.docthis)
-
+- Styled-Components Syntax
+  - [vscode-styled-components](https://marketplace.visualstudio.com/items?itemName=jpoissonnier.vscode-styled-components)

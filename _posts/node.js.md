@@ -112,6 +112,7 @@ $ kill -9 <PID>
 - We can automate things before we create commits or push changes to a repo
 - The `.git` ditectory allows you to do native hooks if you want to or you can use something like husky to do all the heavy lifting for you and you can stay in JS land :)
 - Check out the [Husky docs here](https://typicode.github.io/husky/#/)
+- Husky works with all [githooks](https://git-scm.com/docs/githooks)
 - Intall husky with:
   ```shell
   $ npx husky-init && npm install 
@@ -135,7 +136,11 @@ $ kill -9 <PID>
 
   npm run lint && npm run test:ci
   ```
-  
+
+
+
+
+
   
 
 # Creating a npm package
@@ -155,6 +160,25 @@ https://dev.to/joshaguilar/fully-automating-npm-package-releases-3k7ez
 6. Create release notes for every update
 
 
+# import/export files
+- If you have a folder structure of and your `MyComponent` has a `default export`
+  ├── MyComponent.stories.jsx
+  ├── MyComponent.jsx
+  ├── MyComponent.module.css
+  └── index.js
+- Your `index.js` content
+  ```js
+  // import MyComponent from './MyComponent'
+  // export default MyComponent
+
+  export { default } from './MyComponent'
+  ```
+- If you have a folder structure of and your `MyComponent` has a `named export` 
+  ```js
+  // export { default as ComponentOne } from './MyComponent'
+  // export { default as ComponentTwo } from './MyComponent'
+  // export { default as ComponentThree } from './MyComponent'
+  ```
 
 
 

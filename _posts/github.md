@@ -107,7 +107,17 @@ ogImage:
   ```shell
 
   ```
+- Stash
+  ```shell
+  $ git stash list
+  $ git stash save <message>
 
+  $ git stash -u <message>
+
+  $ git stash list
+  $ git stash apply stash@{1}
+  $ git stash drop stash@{1}
+  ```
 
 
 # Merging vs. Rebase

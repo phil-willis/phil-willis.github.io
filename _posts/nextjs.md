@@ -6,7 +6,7 @@ ogImage:
   url: '/assets/covers/nextjs.jpg'
 ---
 
-## Nextjs - why?
+# Nextjs - why?
 1. Lambda (serverless) functions
   - These are functions that reside under the /api route of a Next.js app
   - server-side rendered React applications
@@ -20,21 +20,15 @@ ogImage:
   - It combines the benefits of server-side rendered pages and SSG by generating static HTML files on runtime. 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+# Nextjs Tips
+- Change the port dev works by updating the `dev` script in your package.json
+  ```json
+  "scripts": {
+    "dev": "next dev -p 8080",
+    "build": "next build",
+    "start": "next start"
+  },
+  ```
 
 
 
