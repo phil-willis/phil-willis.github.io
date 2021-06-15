@@ -8,7 +8,252 @@ ogImage:
 
 
 # What is Nodejs
+- Node.js is an open-source and cross-platform JavaScript runtime environment. 
+- Node.js runs the V8 JavaScript engine, the core of Google Chrome, outside of the browser. This allows Node.js to be very performant.
+- Both the browser and Node.js use JavaScript as their programming language.
+- Node.js you don't have the `document`, `window` and all the other objects that are provided by the browser.
+- The Browser we don't have all the nice APIs that allow for filesystem access functionality
+- An additional feature that Nodejs provides is control over teh environment
 
+- common npm commands
+  ```shell
+  $ npm init
+  $ npm init -y
+  $ npm install <PACKAGE_NAME> |  npm i <PACKAGE_NAME>
+  $ npm install -g <SOME_GLOBAL_PACKAGE>
+  $ npm uninstall <PACKAGE_NAME> | npm un <PACKAGE_NAME>
+  $ npm update <PACKAGE_NAME> | npm up <PACKAGE_NAME>
+  $ npm update
+  $ npm audit
+  
+  # Run a npm script
+  $ npm run <NPM_SCRIPT_NAME>
+  
+  # list globally installed packages
+  $ npm list -g --depth=0
+  
+  # Update npm
+  $ npm install -g npm@latest
+  
+  # list installed packages and versions
+  $ npm list | npm ls
+  
+  # Install clean slate of the packages
+  $ npm ci
+  
+  # Symlink a package folder, to used it locally without publishing it 
+  $ npm link
+  ```
+
+
+# The `package.json` file
+- The package.json file is a manifest for your project.
+- It also defines alot of other things like, list all the dependencies you application needs & versions
+- The easiest way to create one is `$ npm init -y`
+- The file structure might have these properties inside
+  - `version` indicates the current version
+  - `name` sets the application/package name
+  - `description` is a brief description of the app/package
+  - `main` set the entry point for the application
+  - `private` if set to true prevents the app/package to be accidentally published on npm
+  - `scripts` defines a set of node scripts you can run
+  - `dependencies` sets a list of npm packages installed as dependencies
+  - `devDependencies` sets a list of npm packages installed as development dependencies
+  - `engines` sets which versions of Node.js this package/app works on
+  - `browserslist` is used to tell which browsers (and their versions) you want to support
+-  In package.json you can set which versions you want to upgrade to (patch or minor), using the semver notation, for example:
+  ```
+  exact package version               1.13.0 => 1.13.0
+  update patch and minor releases     ~1.13.0 => 1.13.*
+  exact version                       ^1.13.0 => 1.*.*
+  ```
+- Don't commit your `node_modules` files because the `package.json` is used to fetch and manage the packaged used for the nodejs project
+
+
+# The `package-lock.json` file 
+- In version 5, npm introduced the package-lock.json file.
+- The goal of package-lock.json file is to keep track of the exact version of every package that is installed so that a product is 100% reproducible in the same way even if packages are updated by their maintainers.
+- The package-lock.json sets your currently installed version of each package in stone, and npm will use those exact versions when running npm install.
+- The `package-lock.json` file needs to be committed to your Git repository, so it can be fetched by other people, if the project is public or you have collaborators, or if you use Git as a source for deployments.
+
+
+
+# Creating a npm package
+https://dev.to/joshaguilar/fully-automating-npm-package-releases-3k7ez
+
+- sematic versioning
+  <BREAKING>.<FEATURE>.<FIX>
+  <MAJOR>.<MINOR>.<PATCH>
+## For Every release
+1. Run tests (if there are any)
+2. Update version in package.json according to Semver
+3. Create a git tag according to Semver
+  MAJOR.MINOR.PATCH
+  `$ git tag -a v#.#.# -m #.#.#`
+4. Push the package to Github
+5. Push the package to npm
+6. Create release notes for every update
+
+
+# import/export files
+- If you have a folder structure of and your `MyComponent` has a `default export`
+  ├── MyComponent.stories.jsx
+  ├── MyComponent.jsx
+  ├── MyComponent.module.css
+  └── index.js
+- Your `index.js` content
+  ```js
+  // import MyComponent from './MyComponent'
+  // export default MyComponent
+
+  export { default } from './MyComponent'
+  ```
+- If you have a folder structure of and your `MyComponent` has a `named export` 
+  ```js
+  // export { default as ComponentOne } from './MyComponent'
+  // export { default as ComponentTwo } from './MyComponent'
+  // export { default as ComponentThree } from './MyComponent'
+  ```
+
+    
+    
+    
+# Using Docker to local development
+- Initialize a nodejs 
+  ```shell
+  $ npm init -y
+  $ npm i express
+  $ npm i -D nodemon
+  $ mkdir src
+  ```
+- Update the `package.json`
+  ```json
+  {
+    "name": "docker",
+    "version": "1.0.0",
+    "description": "Example of working with Docker and Expressjs",
+    "main": "index.js",
+    "scripts": {
+      "start": "node ./src",
+      "dev": "nodemon ./src"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+      "express": "^4.17.1"
+    },
+    "devDependencies": {
+      "nodemon": "^2.0.7"
+    },
+    "engines": {
+      "node": ">= 14.0.0",
+      "npm": ">= 7.0.0"
+    }
+  }
+  ```
+
+- Create the `src/index.js` file
+  ```js
+  const express = require('express');
+
+  // Constants
+  const PORT = process.env.PORT || 8080;
+  const HOST = process.env.HOST || '0.0.0.0';
+
+  // App
+  const app = express();
+  app.get('/', (req, res) => {
+    res.send('Hello World!!!');
+  });
+
+  app.listen(PORT, HOST);
+  console.log(`The magic is running on http://${HOST}:${PORT}`);
+  ```
+- Create a `.gitignore`
+  ```
+  node_modules
+  ```
+
+- Create a `Dockerfile`
+  ```docker
+  FROM node:14
+  WORKDIR /usr/src/app
+  COPY package*.json ./
+  RUN npm install
+
+  COPY . .
+
+  EXPOSE 8080
+
+  CMD [ "npm", "start" ]
+  ```
+- Create a `.dockerignore`
+  ```
+  node_modules
+  npm-debug.log
+  ```
+- Create a docker image for your application to develop with
+  ```shell
+  $ docker build . -t <DOCKER_USERNAME>/node-web-app
+  $ docker run -it -p 8080:8080 -v $(pwd):/usr/src/app --name my_awesome_app -d <DOCKER_USERNAME>/node-web-app  sh -c 'npm run dev' 
+  ```
+- The above allows you to develop inside the docker container via a volume
+- When you are ready to publish you can create an image with a version 
+  ```shell
+  $ docker build . -t <DOCKER_USERNAME>/node-web-app:v0.1
+  $ docker run -p 8080:8080 --name my_awesome_app_prod -d <DOCKER_USERNAME>/node-web-app:v0.1
+  ```
+- Add TypeScript
+  - Install typescript
+    ```shell
+    $ npm install -D typescript ts-node @types/node @types/express
+    ```
+  - Update your `package.json` file
+  ```json
+  {
+    "scripts": {
+      "start": "node ./dist/src",
+      "dev": "nodemon ./src/index.ts",
+      "build": "tsc"
+    }
+  }
+  ```
+  - Create a `tsconfig.json` file
+    ```json
+    {
+      "compilerOptions": {
+        "module": "commonjs",
+        "target": "es6",
+        "rootDir": "./",
+        "outDir": "dist",
+        "esModuleInterop": true
+      }
+    }
+    ```
+  - Rename `src/index.js` to `src/index.ts`
+  - Now you can use `import` instead of commonjs `require(<package_name>)`
+    ```ts
+    import express, { Request, Response, NextFunction } from 'express';
+
+    // Constants
+    const PORT = process.env.PORT || 3000;
+
+    // Types
+    type RootMessage = {
+      message: string
+    }
+
+    // App
+    const app = express();
+    app.get('/', (req:Request, res: Response) => {
+      const message: RootMessage = {message:'Hello World!!'}
+      res.status(200).send(message);
+    });
+
+    app.listen(PORT);
+    console.log(`The magic is running on PORT:${PORT}`);
+    ```
 
 
 
@@ -26,13 +271,19 @@ ogImage:
 
 
 ## Installing nodejs via Homepage
+- Install the latest binaries [here](https://nodejs.org/en/download/)
 
 ## Installing nodejs via HomeBrew
-
+  ```shell
+  $ brew update
+  $ brew upgrade node
+  ```
+  
 ## Install nodejs with nvm
 - Install via homebrew
     - [tut](http://dev.topheman.com/install-nvm-with-homebrew-to-use-multiple-versions-of-node-and-iojs-easily/)
     ```shell
+    $ brew update
     $ brew install nvm
     ```
 
@@ -79,6 +330,19 @@ ogImage:
   # List latest available versions
   $ nvm ls-remote | grep -i 'latest'
   ```
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -142,43 +406,6 @@ $ kill -9 <PID>
 
 
   
-
-# Creating a npm package
-https://dev.to/joshaguilar/fully-automating-npm-package-releases-3k7ez
-
-- sematic versioning
-  <BREAKING>.<FEATURE>.<FIX>
-  <MAJOR>.<MINOR>.<PATCH>
-## For Every release
-1. Run tests (if there are any)
-2. Update version in package.json according to Semver
-3. Create a git tag according to Semver
-  MAJOR.MINOR.PATCH
-  `$ git tag -a v#.#.# -m #.#.#`
-4. Push the package to Github
-5. Push the package to npm
-6. Create release notes for every update
-
-
-# import/export files
-- If you have a folder structure of and your `MyComponent` has a `default export`
-  ├── MyComponent.stories.jsx
-  ├── MyComponent.jsx
-  ├── MyComponent.module.css
-  └── index.js
-- Your `index.js` content
-  ```js
-  // import MyComponent from './MyComponent'
-  // export default MyComponent
-
-  export { default } from './MyComponent'
-  ```
-- If you have a folder structure of and your `MyComponent` has a `named export` 
-  ```js
-  // export { default as ComponentOne } from './MyComponent'
-  // export { default as ComponentTwo } from './MyComponent'
-  // export { default as ComponentThree } from './MyComponent'
-  ```
 
 
 
