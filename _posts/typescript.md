@@ -281,11 +281,17 @@ ogImage:
 
 
 
+# Start an app with TS
 
 
+## Boiler plate app
+- The easiest way to scaffold a react application is using a npm tool
+  ```shell
+  $ npx create-react-app <APP_NAME> --template typescript
+  $ npx create-next-app --typescript <APP_NAME>
+  ```
 
-
-# Add TS to a Non-Browser App
+## Non-Browser with TS
 - Init a npm package and install TS
   ```shell
   $ npm init -y

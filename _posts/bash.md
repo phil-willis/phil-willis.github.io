@@ -9,8 +9,7 @@ ogImage:
 
 # Overview of bash
 
-
-
+## Bash tips
 - Create a new directory or folder
   ```shell
   $ mkdir <directory_name> && cd $_
@@ -19,6 +18,18 @@ ogImage:
   $ take <directory_name>
   ```
  
+ 
+
+
+
+
+
+
+
+
+
+
+
  
 # ZX to create JS script
 - The `ZX` package provides useful wrappers around `child_process`, escapes arguments and gives sensible defaults.

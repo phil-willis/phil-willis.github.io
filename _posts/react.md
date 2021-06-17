@@ -55,6 +55,11 @@ ogImage:
 
 
 
+# Setting up a React application
+- boilerplates (CRA, NEXT, Manually)
+
+
+
 # Hooks
 - Changes the way you write your components
 - Functional and Class-based components, Hooks allow us to 
@@ -718,11 +723,417 @@ export default function MyParent({ items }) {
 
 
 
+# Testing React Applications
+
+- Unit testing (@testing/library)
+- Integrations/End-to-end (cypress)
+
+# Testing with React with @testing-library/react)
+- A light-weight solution for testing React components
+- It provides light utility functions on top of react-dom and react-dom/test-utils in a way that encourages better testing practices
+- rendering the component with props (developer user)
+- querying and interacting with the rendered results (end user)
+- DON'T TEST Implementation details
+  - State
+  - Component names
+  - CSS classes/selectors
+  - anything that the user doesn't see
+- Should deal with DOM nodes rather than component instances
+
+- Allows you ways query the DOM:
+  - getByLabelText
+  - getByPlaceholderText
+  - getByText
+  - getByAltText
+  - getByTitle
+  - getByDisplayValue
+  - getByRole
+  - getByTestId
+  - container.querySelector() 
+  - container.querySelectorAll()
+  - debug()
+- It's a replacement for Enzyme
+- You want to test the result
+- Assertion options
+  ```js
+  expect.toBe(value)
+        .not
+        .resolves
+        .rejects
+        .toBe(value)
+        .toHaveBeenCalled()
+        .toHaveBeenCalledTimes(number)
+        .toHaveBeenCalledWith(arg1, arg2, ...)
+        .toHaveBeenLastCalledWith(arg1, arg2, ...)
+        .toHaveBeenNthCalledWith(nthCall, arg1, arg2, ....)
+        .toHaveReturned()
+        .toHaveReturnedTimes(number)
+        .toHaveReturnedWith(value)
+        .toHaveLastReturnedWith(value)
+        .toHaveNthReturnedWith(nthCall, value)
+        .toHaveLength(number)
+        .toHaveProperty(keyPath, value?)
+        .toBeCloseTo(number, numDigits?)
+        .toBeDefined()
+        .toBeFalsy()
+        .toBeGreaterThan(number)
+        .toBeGreaterThanOrEqual(number)
+        .toBeLessThan(number)
+        .toBeLessThanOrEqual(number)
+        .toBeInstanceOf(Class)
+        .toBeNull()
+        .toBeTruthy()
+        .toBeUndefined()
+        .toBeNaN()
+        .toContain(item)
+        .toContainEqual(item)
+        .toEqual(value)
+        .toMatch(regexpOrString)
+        .toMatchObject(object)
+        .toMatchSnapshot(propertyMatchers?, hint?)
+        .toMatchInlineSnapshot(propertyMatchers?, inlineSnapshot)
+        .toStrictEqual(value)
+        .toThrow(error?)
+        .toThrowErrorMatchingSnapshot(hint?)
+        .toThrowErrorMatchingInlineSnapshot(inlineSnapshot)
+  ```
+
+
+# General Testing
+- Common things to test
+  ```js
+  const { 
+    debug,
+    container,
+    getByText,
+    queryByText,
+    getByTestId 
+  } = render(<MyComponent {...props} />)
+
+  // container
+  expect(container.querySelector('.title').textContent).toBe('some title')
+  expect(container.querySelectorAll('.title').length).toBe(1)
+  expect(container.innerHTML).toContain('password123')
+  expect(container.querySelector('h1').innerHTML).toBe('radness')
+
+  // getBy<*>
+  expect(getByText('some title').textContent).toBe("some title")
+  expect(getByText('Copy').outerHTML).toContain('copy-selected-items')
+  expect(getByTestId('custom').innerHTML).toBe('radness')
+  expect(queryByText('awesome')).toBeNull()
+
+
+  // fire a click
+  fireEvent.click(container.querySelector('button'))
+
+  // input change val
+  fireEvent.change(container.querySelector('input'), {target: { value: 'ahhhh' }})
+  ```
+
+
+
+
+
+# Cypress.io
+
+
+
+
+# Setup and installation
+1. Create an application with CRA
+  - Install Cypress with one command
+  - It will install a binary in your `node_modules/bin` folder
+  - You will now have a Desktop App & CLI tool
+  ```shell
+  $ npx create-react-app cypress-unit-test
+  $ npm i -D cypress @cypress/react
+  ```
+
+2. Add Some cypress scripts to your package.json file
+  ```json
+  {
+    "scripts": {
+      "cypress:open": "cypress open",
+      "cypress:run": "cypress run"
+    }
+  }
+  ```
+
+3. Run cypress once and it will scafold some test
+  - The first time that you run the `$ npm run cypress:open` cypress will add in all the default files
+  - 
+
+4. Create a `./cypress.json`
+  - Create a `./cypress.json`
+    ```json
+    {
+      "experimentalComponentTesting": true,
+      "componentFolder": "cypress/components",
+      "integrationFolder": "cypress/integration",
+      "supportFile": "cypress/support/index.js",
+      "pluginFile": "cypress/plugin/index.js",
+      "fixtureFolder": false
+    }
+    ```
+
+5. update the `cypress/support/index.js`
+  ```js
+  require('@cypress/react/support')
+  ```
+
+6. Update the `cypress/plugins/index.js` file
+- Tell Cypress how your React application is transpiled or bundled (using Webpack), so Cypress can load your components. 
+- For example, if you use react-scripts (even after ejecting) do:
+  ```js
+  // cypress/plugins/index.js
+  module.exports = (on, config) => {
+    require('@cypress/react/plugins/react-scripts')(on, config)
+    // IMPORTANT to return the config object
+    // with the any changed environment variables
+    return config
+  }
+  ```
+
+7. Create a hello world test
+- `cypress/components/hello-world.spec.js` 
+  ```js
+  import React from "react";
+  import { mount } from "@cypress/react";
+
+  function HelloWorld() {
+    return <div>Hello World!</div>;
+  }
+
+  describe("HelloWorld component", () => {
+    it("works", () => {
+      mount(<HelloWorld />);
+      // now use standard Cypress commands
+      cy.contains("Hello World!").should("be.visible");
+    });
+  });
+  ```
+
+8. Run cypress again
+  ```shell
+  `$ npm run cypress:open` 
+  ```
+  ![cypress-unit-test](/assets/blog/cypress/cypress-unit-test-helloworld.png)
+
+
+
+# Overview
+- You test visually unlike `@testing-library/react` you test with the DOM output only
+- You can time travel all your test and pause
+- Cypress is a chaining API
+- Cypress will automatically wait for assertions (4 seconds by default)
+
+- e.g. Complete test
+  ```js
+  it('send email with contact form', ()=>{
+    cy.visit('http://localhost:3003/signup')
+    
+    cy.get('#name-input').type('Phil')    
+    cy.get('#email-input').type('phil@user.com')
+    cy.get('form').submit()
+    cy.get('#success-message').should('be.visible')
+  })
+  ```
+
+- e.g. Checking if a element has a class name
+  ```js
+  // cy.<command>
+  cy.get('button')
+    .click()
+    .should('have.class', 'active')
+  ```
+
+- e.g. Testing the reques API
+  ```js
+  cy.request('/user/1')
+    its('body')
+    .should('deep.eql', {name:'phil'})
+  ```
+
+# You can also do Unit Testing!
+- Start by adding a simple test to test the `./src/App.js` file
+- Create `cypress/components/hello-world.spec.js` 
+  ```js
+  import React from "react";
+  import { mount } from "@cypress/react";
+
+  import App from "../../src/App.js"
+
+  describe("HelloWorld component", () => {
+    it("works", () => {
+      mount(<App />);
+      cy.contains("Learn React").should("be.visible");
+    });
+  });
+  ```
 
 
 
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Nextjs - why?
+1. Lambda (serverless) functions
+  - These are functions that reside under the /api route of a Next.js app
+  - server-side rendered React applications
+  - These are routes that require fetching initial props from somewhere (using `getInitialProps` or `getServerSideProps`)
+2. Static HTML
+  - no dynamic content and the data is always the same
+3. Static Site Generation (SSG)
+  - Allow static site generation as one of the build options
+  - These pages use the `getStaticProps` method to fetch the data that will be used to generate static HTML files, as well as `getStaticPaths` to get a list of all the subroutes that need to be generated as HTML files 
+4. Incremental Static Regeneration (ISR)
+  - It combines the benefits of server-side rendered pages and SSG by generating static HTML files on runtime. 
+
+
+## Nextjs Tips
+- Change the port dev works by updating the `dev` script in your package.json
+  ```json
+  "scripts": {
+    "dev": "next dev -p 8080",
+    "build": "next build",
+    "start": "next start"
+  },
+  ```
+
+
+## Creating and Deploying a Static Site to GitHub Pages
+1. Create a static build
+  - Add the build script to your package.json file
+    ```json
+    "scripts": {
+      "build": "next build && next export"
+    }
+    ```
+  - Build the static site:
+    ```shell
+    $ npm run build
+    ```
+  - This will create a directory called out which contains a fully static version of your website.
+
+2. Create a new repo and push your code up
+  - **Create a Github repo that contains your Github username and .github.io.**
+  - For example my GitHub username is `phil-willis` and my repo name is `phil-willis.github.io`
+
+3. Create a personal access token
+  - Click the avatar > profile > `Developer setttings` > `Personal access token` or [click here](https://github.com/settings/tokens)
+  ![gh-profile-settings](/assets/blog/github/gh-profile-settings.png)
+  ![gh-personal-access-token](/assets/blog/github/gh-personal-access-token.png)
+  ![gh-personal-access-token-scopes](/assets/blog/github/gh-personal-access-token-scopes.png)
+  - note: `<repo_name> for github actions`
+  - check the `repo` section
+  - **DON'T FORGET TO COPY THE TOKEN**
+
+4. In your repo's settings paste the `ACCESS_TOKEN`
+   ![gh-secrets](/assets/blog/github/gh-secrets.png)
+
+5. Create a Github workflow file
+  - Create a directory called .github/workflows and inside that directory, create a YAML file with the following contents:
+
+  ```yaml
+  name: Build and Deploy
+  on: 
+    push:
+      branches:
+        - main
+  jobs:
+    build-and-deploy:
+      runs-on: ubuntu-latest
+
+      steps:
+        - name: Checkout 🛎️
+          uses: actions/checkout@v2.3.1
+          with:
+            persist-credentials: false
+
+        - name: Cache 💾
+          uses: actions/cache@v2
+          with:
+            path: ${{ github.workspace }}/.next/cache
+            key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}
+
+        - name: Install and Build
+          uses: actions/setup-node@v1
+        - run: npm ci
+        - run: npm run build
+        - run: npm run export
+          env:
+              CI: true
+        - run: touch out/.nojekyll
+
+        - name: Deploy 🚀
+          uses: JamesIves/github-pages-deploy-action@3.7.1
+          with:
+            ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+            BRANCH: gh-pages 
+            FOLDER: out
+            CLEAN: true
+  ```
+  - Now every push to the `main` branch will build a static version of our site using the `$ npm run build` script.
+  - Using an action called Deploy to GitHub Actions, it will use your token to create and push a clean commit to the `gh-pages` repo from the `./out` directory that got generated. If the branch doesn't exist, it will create it.
+  - GitHub Pages uses Jekyll under the hood to host and render static sites. However, Jekyll ignores every directory that starts with an underscore character. 
+  - This will be a problem because Next.js generates the static assets (CSS and JavaScript) inside of a directory called _next and there's no way to changes
+  - To get around this issue, you need to create an empty file called `.nojekyll` inside of your `gh-pages` branch. 
+  
+6. Make a commit and push to github!
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Storybook
+- Nextjs + typescript + storybook
+  ```
+  $ npx create-next-app -e with-typescript
+  $ npx sb init
+  ```
+
+- CRA + typescript + storybook
+  ```
+  $ npx create-react-app my-app --template typescript
+  $ npx sb init
+  ```
 
 

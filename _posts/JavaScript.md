@@ -106,7 +106,34 @@ ogImage:
 - sets
 - symbols
 - spread operator
-- object.asign
+- object.assign
+- virtual DOM (how does react work with it)
+- package managers
+
+
+- How does React's Virtual DOM work
+- How does Redux work
+- When to use a stateful or stateless component in react
+- When to use React's internal state versus Redux
+- Variable hoisting
+- What are promises (3 states of a promise fullified/rejected/pending)
+- async/await
+- HTTP methods
+- Http status code
+- CORS
+- JSONP
+- how to handle caching, ETAG (It lets caches be more efficient and save bandwidth, as a web server does not need to resend a full response if the content has not changed.)
+- debounch 
+- closure (What is the difference between lexical scoping and closures)
+- web sockets
+- Server Sent Events
+- What is the benefits of using async/await to promises (cleaner, try/catch blocks catch exception, callback is cleaner, debugging)
+
+- testing frameworks
+- 
+
+
+- folder structure for server/client/package
 
 
 
