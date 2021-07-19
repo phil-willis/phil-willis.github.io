@@ -321,15 +321,161 @@ $ git commit
 
 
 ## Github Actions
-- On PR
+- Workflow files use YAML syntax, and must have either a .yml or .yaml file extension.
+- You must store workflow files in the `.github/workflows` directory of your repository.
+- `Github Actions` works off of [triggers](https://docs.github.com/en/actions/reference/events-that-trigger-workflows)
+- Common webhook events: push, release, pull_request, create, delete, issues
+- There is also `schedule`, `workflow_dispatch`, & `repository_dispatch`
+- There are 3 main pieces to the actions yaml file:
+  1. `name` (whatever name you want to call this workflow, this will show up in the GUI)
+  2. `on` (The trigger, it can be a string or an array of strings)
+  3. `jobs`
 
-- On 
+- Defining the trigger `on`
+  ```yaml
+  # Triggered when code is pushed to any branch in a repository
+  on: push
+  
+  # Triggers the workflow on push or pull request events
+  on: [push, pull_request]
+  
+  # Ignore a branch
+  on:
+    push:
+      branches-ignore:
+        - main
+  ```
+
+
+- (Job Example) One Job depending on the outcome of the other
+  ```yml
+  name: <Title>
+
+  # Trigger (webhook, scheduled event, manual event)
+  # Common webhook events: push, release, pull_request, create, delete, issues (https://docs.github.com/en/actions/reference/events-that-trigger-workflows)
+  on: 
+    push: 
+      branches: [ main ]  # what branch you want to watch 
+      branches-ignore:
+        - main
+
+  jobs:
+    first-job-name:
+      runs-on: self-hosted
+      steps:
+        - uses: actions/checkout@v1
+        - name: Install Dependencies
+          run: npm ci
+        - name: Run npm Script
+          run: npm run build
+        - name: Save Build
+          uses: actions/upload-artifact@v2
+          with:
+            name: build
+            path: |
+              build
+              pipeline
+              package.json
+              scripts
+
+    second-job-name:
+      runs-on: self-hosted
+      needs: first-job-name
+      env:
+        TEST_USER_USR: ${{ secrets.TEST_USER_USR }}
+        TEST_USER_PSW: ${{ secrets.TEST_USER_PSW }}
+      steps:
+        - name: Fetch `first-job-name`'s build
+          uses: actions/download-artifact@v2
+          with:
+            name: build
+        - name: Run npm Script
+          run: npm run hello
+  ```
+
+
+- (Job example) One workflow to build once and deploy in parallel
+  ```yml
+  name: Build one and deploy in parallel
+
+  on: 
+    push: 
+      branches: main
+
+  jobs:
+    build:
+
+    publish-npm:
+      needs: build
+
+    publish-gpr:
+      needs: build
+  ```
+
+
+- Manually run Actions with `workflow_dispatch`
+  - You can manually trigger workflow runs. To trigger specific workflows in a repository, use the workflow_dispatch event. 
+  - To trigger more than one workflow in a repository and create custom events and event types, use the repository_dispatch event.
+  ```yml
+  name: Manually triggered workflow
+  on:
+    workflow_dispatch:
+      inputs:
+        name:
+          description: 'Person to greet'
+          required: true
+          default: 'Mona the Octocat'
+        home:
+          description: 'location'
+          required: false
+          default: 'The Octoverse'
+
+  jobs:
+    say_hello:
+      runs-on: ubuntu-latest
+      steps:
+        - run: |
+            echo "Hello ${{ github.event.inputs.name }}!"
+            echo "- in ${{ github.event.inputs.home }}!"
+  ```
 
 
 - Conjob 
   - [docs Scheduled events](https://docs.github.com/en/actions/reference/events-that-trigger-workflows#scheduled-events)
+  - If you are running a shell script you have to add change the owner of the script 
+    ```shell
+    $ git add --chmod=+x -- ./scripts/moveFile.sh
+    ```
+  - GitHub automatically creates a `GITHUB_TOKEN` secret to use in your workflow, so you don’t have to worry about creating this. The `GITHUB_TOKEN` secret allows us to authenticate ourselves (in this example is needed to push the changes).
+    ```yml
+    name: Run a scheduler
 
+    on:
+      schedule:
+        - cron:  '0 0 * * 0'  # At 00:00 on Sunday. (https://crontab.guru/)
+      workflow_dispatch:
 
+    jobs:
+      scheduler:
+        runs-on: self-hosted
+        steps:
+          - uses: actions/checkout@v1
+          - name: Install Dependencies
+            run: npm ci
+          - name: Run the npm Script
+            run: npm run generate:report
+          - name: Commit generated report
+            run: |
+              git config --local user.email "action@github.com"
+              git config --local user.name "GitHub Action"
+              git add -A
+              git commit -m "Auto-generated report" -a
+          - name: Push changes
+            uses: ad-m/github-push-action@v0.6.0
+            with:
+              github_token: ${{ secrets.GITHUB_TOKEN }}.  # Github automatically takes care of this you don't have to create one
+              branch: main  
+    ```
 
 
 
