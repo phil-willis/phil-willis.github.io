@@ -122,15 +122,31 @@ ogImage:
 - Http status code
 - CORS
 - JSONP
-- how to handle caching, ETAG (It lets caches be more efficient and save bandwidth, as a web server does not need to resend a full response if the content has not changed.)
+- HTTP caching
+  - Web caches reduce latency and network traffic and thus lessen the time needed to display a representation of a resource
+  - It is important to cache a resource only until it changes, not longer.
+  - There are different types of caching: browser, proxy, gateway caches, CDN, reverse proxy caches
+  - Private caches are dedicated to a single user while publish caches are meant to be shared
+  - You can controll the caching with `cache-control` headers and max-age
+  - ETAG (It lets caches be more efficient and save bandwidth, as a web server does not need to resend a full response if the content has not changed.)
 - debounch 
 - closure (What is the difference between lexical scoping and closures)
 - web sockets
 - Server Sent Events
 - What is the benefits of using async/await to promises (cleaner, try/catch blocks catch exception, callback is cleaner, debugging)
-
 - testing frameworks
-- 
+- recursive functions
+  - A function that calls itself.
+    ```js
+    function recurse() {
+        if(condition) {
+            // stop calling itself
+            //...
+        } else {
+            recurse();
+        }
+    }
+    ```
 
 
 - folder structure for server/client/package
