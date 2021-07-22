@@ -54,6 +54,7 @@ ogImage:
   # Delete branch
   $ git branch -d <branch_to_delete>
   ```
+  - It's sometimes good to prefix a branch with `feat/`, `fix/`
 - Tags
   ```shell
   $ git tag <tag_name>
@@ -114,7 +115,7 @@ ogImage:
   $ git clean -nfd
   $ git clean -fd
   ```
-
+- 
 - Merging vs. Rebase
   - For integrating changes from another branch
   - Both `Merging` & `Rebase` is a process of integrating changes from one branch to another
@@ -133,6 +134,8 @@ ogImage:
     $ git checkout main
     ```
 - fast-forward merge
+
+
 
 
 ## Updating a git commit message after it's been pushed
