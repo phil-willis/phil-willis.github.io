@@ -153,6 +153,33 @@ ogImage:
 
 
 
+==============================
+
+
+
+
+# JSDoc
+- `JSDoc` is a documentation layer you can add to your source code to make it easier for others to use
+- Why does it rock?
+  - Documentation right next to the source code you are writing
+  - VSCode will use it to show you intellisence whenever you are using the functions/classes
+  - Easy to keep synced as functions/classes get updates
+- How to add JSDoc comments:
+  ```js
+  /**
+   * <Add_a_title_here>
+   * 
+   * @param {string} <parameter_name_1> - description
+   * @param {number=} <parameter_name_2> - description
+   * @param {number=} <parameter_name_3>  `<parameter_3>=<default_value>` - description
+   * @returns {array} array of items
+  ```
+- Now when you use this function/class in your code we should have VSCode intellisense with the description/params/return value
+- JavaScript With JSDoc: generating the docs
+  ```shell
+  $ npm i jsdoc --save-dev
+  $ ./node_modules/.bin/jsdoc src/somefile.js 
+  ```
 
 
 
@@ -164,23 +191,17 @@ ogImage:
 
 
 
+# JS Neat stuff
 
 
+## Loop over a number of times 
+- Sometimes you need to loop over an array a number of time to make some data
+  ```js
+  const opt = [...Array(4)].map((_, num) => ({ value: num, label: num }))
+  console.log(JSON.stringify(opt)) // [{"value":0,"label":0},{"value":1,"label":1},{"value":2,"label":2},{"value":3,"label":3}]
+  ```
 
-
-
-
-
-
-# Loop over a number of times 
-```js
-const opt = [...Array(4)].map((_, num) => ({ value: num, label: num }))
-console.log(JSON.stringify(opt)) // [{"value":0,"label":0},{"value":1,"label":1},{"value":2,"label":2},{"value":3,"label":3}]
-```
-
-
-
-# Shorthand of if
+## Shorthand of if
 - [stackoverflow](https://stackoverflow.com/questions/39488458/javascript-one-line-if-only-state-true)
 - In default 'if' one line statement are two block, for true, and false:
   ```js
@@ -197,3 +218,27 @@ console.log(JSON.stringify(opt)) // [{"value":0,"label":0},{"value":1,"label":1}
   let variable = true;
   let o = variable && 3;
   ```
+  
+  
+  ## Recursive function
+  - 
+  
+  ```js
+  import axios from 'axios'
+
+  const baseUrl: string = 'https://api.worldbank.org/v2/country/'
+
+  const getIndicatorByCountry = async (country, indicator, page=1) => {  
+    const query = `${baseUrl}/${country}/indicator/${indicator}?page=${page}&format=json`
+    const response = await axios.get(query)  
+    const data = response.data
+
+    if (data[0].pages > page) {
+      return data.concat(await getIndicatorByCountry(country, indicator, page+1)) 
+    } else {
+      return data
+    }
+  }
+  ```
+  
+  
