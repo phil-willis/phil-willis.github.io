@@ -335,16 +335,50 @@ https://dev.to/joshaguilar/fully-automating-npm-package-releases-3k7ez
 
 
 
+# Creating a CLI
+- There are 2 types of packages you can create: `global` & `local`
+- The `global` package can be installed an run like a bash command
+- Start by creating a new package
+  ```shell
+  $ npm init -y
+  ```
+- Create a `bin/index.js` file 
+  ```js
+  #!/usr/bin/env node
+
+  console.log('hello')
+  ```
+- In your `package.json` file add
+  ```json
+  {
+    "name": "your-module-name",
+    "bin": {
+      "your-module-name": "./bin/index.js"
+    }
+  }
+  ```
+- Link this application on your machine so you can test it out
+  ```shell
+  $ npm link
+  ```
+- Now you can run your CLI 
+  ```shell
+  $ your-module-name
+  ```
+- You can publish it too
 
 
-
-
-
-
-
-
-
-
+# Spawn
+- Node.js runs in a single-thread mode, but it uses an event-driven paradigm to handle concurrency.
+- It also facilitates creation of child processes to leverage parallel processing on multi-core CPU based systems.
+- Node provides child_process module which has the following three major ways to create a child process.
+  - *exec* − `child_process.exec` method runs a command in a shell/console and buffers the output.
+  - *spawn* − `child_process.spawn` launches a new process with a given command.
+  - *fork* − The `child_process.fork` method is a special case of the spawn() to create child processes. 
+    
+    
+    
+    
 
 # Node tools 
 
