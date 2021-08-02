@@ -109,6 +109,7 @@ ogImage:
 - object.assign
 - virtual DOM (how does react work with it)
 - package managers
+- [AbortController](https://developer.mozilla.org/en-US/docs/Web/API/AbortController)
 
 
 - How does React's Virtual DOM work
