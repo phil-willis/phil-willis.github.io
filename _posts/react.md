@@ -830,6 +830,136 @@ export default function MyParent({ items }) {
   fireEvent.change(container.querySelector('input'), {target: { value: 'ahhhh' }})
   ```
 
+- Testing code that request data from `msw`
+  ```js
+  
+  function responseHandler(request) {
+    return request
+      .then(async (response) => {
+        const data = await response.json().catch((error) => {
+          return { data: false, error }
+        })
+        return response.ok ? { data, error: false } : { data: false, error: errorHandler(data) }
+      })
+      .catch((error) => {
+        console.log('[ERROR]', error)
+        let errorMessage = error.message || ''
+
+        if (error.name === 'AbortError') {
+          errorMessage = 'The Request has Timed Out'
+        }
+
+        return { data: false, error: errorMessage }
+      })
+  }  
+  
+  
+  import { rest } from 'msw'
+  import server from '@/src/mocks/server'
+
+  const URL = `${config.apiUrl}/sample`
+
+  function requestData(method) {
+    const headers = { 'Content-Type': 'application/json' }
+    const controller = new AbortController()
+    const signal = controller.signal
+    const token = '123456789'
+    headers.authorization = token ? `Bearer ${token}` : null
+
+    return { headers, signal, method }
+  }
+  describe('responseHandler', () => {
+    it('should return data', async () => {
+      server.use(
+        rest.get(URLS, (req, res, ctx) => {
+          return res(ctx.status(200), ctx.json({ hell: 'o' }))
+        })
+      )
+
+      const response = await responseHandler(fetch(URL, requestData('GET')))
+      expect(response.error).toBeFalsy()
+      const expectedData = { "hell": "o" } /* prettier-ignore */
+      expect(response.data).toMatchObject(expectedData)
+    })
+  })
+  ```
+
+- 
+  - The Page Component (Connected to Redux)
+    ```js
+    import React from 'react'
+    import { useDispatch, useSelector } from 'react-redux'
+
+    import { selectSampleData, getSampleData } from '__state/slices/sample'
+
+    export default function LandingPage() {
+      const dispatch = useDispatch()
+      React.useEffect(() => {
+        dispatch(getSampleData())
+      }, [dispatch])
+
+      const sampleData = useSelector(selectSampleData)
+
+      return (
+        <div>
+          <ul>
+            {sampleData?.map(({ id, items }) => (
+              <li key={id}>{items}</li>
+            ))}
+          </ul>
+        </div>
+      )
+    }
+    ```
+  - The test code
+    ```js
+    import { waitFor } from '@testing-library/react'
+    import { rest } from 'msw'
+    import React from 'react'
+
+    import sampleData from '@/src/mocks/data/sampleData.js'
+    import { URLS } from '@/src/mocks/handlers/sample'
+    import server from '@/src/mocks/server'
+    import { renderWithStore } from '@/src/mocks/testing/MockApp'
+
+    import LandingPage from './LandingPage'
+
+    const { useDispatch } = require('react-redux')
+    const { getSampleData } = require('@/src/state/slices/sample')
+
+    export const MockPage = () => {
+      const dispatch = useDispatch()
+      dispatch(getSampleData())
+      return <LandingPage />
+    }
+
+    describe('LandingPage', () => {
+      it('should render the page component', async () => {
+        server.use(
+          rest.get(URLS, (req, res, ctx) => {
+            return res(ctx.status(200), ctx.json(sampleData))
+          })
+        )
+
+        const { asFragment, getByText } = await renderWithStore(<MockPage />)
+
+        await waitFor(() => {
+          const rowCount = getByText(/Something Rad/i)
+          expect(rowCount).toBeTruthy()
+        })
+
+        expect(asFragment()).toMatchSnapshot()
+      })
+    })
+    ```
+
+
+
+
+
+
+
+
 
 
 
