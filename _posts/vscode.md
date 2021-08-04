@@ -216,3 +216,7 @@ ogImage:
   ```
   $ ssh-add -K ~/.ssh/id_rsa
   ```
+- If you are using a different rsa key 
+  ```
+  $ ssh-add -K ~/.ssh/id_rsa_other_key
+  ```

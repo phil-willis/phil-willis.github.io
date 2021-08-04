@@ -643,7 +643,7 @@ ogImage:
 - Add some dependencies
   ```shell
   $ npm init -y
-  $ npm i -D babel-cli@6 babel-preset-env
+  $ npm i -D babel-cli@6 babel-preset-env @babel/core@6
   $ npm i express
   ```
 - Create a `.babelrc`
@@ -684,7 +684,7 @@ ogImage:
 - Add some dependencies
   ```shell
   $ npm init -y
-  $ npm i -D @babel/node@7 @babel/preset-env@7 @babel/cli@7
+  $ npm i -D @babel/node@7 @babel/preset-env@7 @babel/cli@7 @babel/core@7
   $ npm i express
   ```
 - Create a `.babelrc`
