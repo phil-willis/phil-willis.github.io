@@ -6,6 +6,12 @@ ogImage:
   url: '/assets/covers/eslint.jpg'
 ---
 
+# Install ESLint
+- The quickest way to add eslint to a project
+  ```shell
+  $ npx eslint --init
+  ```
+
 
 # Setup JavaScript React
 - ESLint => code smell warnings

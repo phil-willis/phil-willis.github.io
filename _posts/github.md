@@ -6,29 +6,9 @@ ogImage:
   url: '/assets/covers/github.jpg'
 ---
 
-# Github CLI Commands
-- Install Github CLI `$ brew install gh`
-- [Github CLI Docs](https://cli.github.com/manual/)
-  ```shell
-  $ gh auth login
+# Git
 
-  # Gist
-  $ gh gist create --public hello.js
-
-  # Repo
-  $ git init my-project
-  $ cd my-project
-  $ gh repo create
-
-  # Create a repository with a specific name
-  $ gh repo create my-project
-
-  # Create a repository in an organization
-  $ gh repo create cli/my-project
-  ```
-
-# Git Commands
-
+## Git Commands
 - Create
   ```shell
   # Clone a repo
@@ -74,6 +54,7 @@ ogImage:
   # Delete branch
   $ git branch -d <branch_to_delete>
   ```
+  - It's sometimes good to prefix a branch with `feat/`, `fix/`
 - Tags
   ```shell
   $ git tag <tag_name>
@@ -118,16 +99,129 @@ ogImage:
   $ git stash apply stash@{1}
   $ git stash drop stash@{1}
   ```
+- Unstage 
+  ```shell
+  $ git reset HEAD
+  $ git reset -- <SOME_FILENAME>
+  ```
+  - This will unstage your code but not delete your changes
+- Revert to last commit
+  ```shell
+  # reset to last commit
+  $ git checkout .
+
+  # clean allows you to remove all the new untracked files
+  # Clean check what gets removed first
+  $ git clean -nfd
+  $ git clean -fd
+  ```
+- 
+- Merging vs. Rebase
+  - For integrating changes from another branch
+  - Both `Merging` & `Rebase` is a process of integrating changes from one branch to another
+  - `Merging` preserves the branch history, it is used to combine public branches
+  - `Rebase` does *not* preserve the branch history, and is used for combining private branches
+
+  - Merging example
+    ```shell
+    $ git checkout main
+    $ git merge branch
+    ```
+  - Rebase example
+    ```shell
+    $ git checkout branch
+    $ git rebase main
+    $ git checkout main
+    ```
+- fast-forward merge
 
 
-# Merging vs. Rebase
+
+
+## Updating a git commit message after it's been pushed
+- When you commit somthing to git it's accompanied with a commit message that explains what changes were made
+- If you need to update a message after it's been commited you can fix it with an `--amend` flag
+  ```shell
+  # Changing the latest git commit message
+  $ git commit --amend -m "New message"
+
+  # Update the remote
+  $ git push --force <repository-name> <branch-name>
+  
+  # 
+  $ git push --force-with-lease <repository-name> <branch-name>
+  ```
+- *Note that the `--force` is not recommended unless you are absolutely sure that no one else has cloned your repository after the latest commit. It's probably best to use `--force-with-lease` flag because it will abort if there was an upstream change to the repository.*
+
+- If you want to update a commit in a past commit you need the sha value
+
+```shell
+# list the last three 
+```
+
+
+## Squash and merge
+
+```shell
+$ git checkout master
+$ git merge --squash bugfix
+$ git commit
+```
 
 
 
 
-# Github
-- ... add notes on what it is
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Github 
+- Github is basically Git in the cloud, it allows you to share with others
+- You can make private and public repos
+- In your source code you can add some github config files in the `.github` folder
+- Some common files are:
+  ```
+  ├── CODEOWNERS
+  ├── pull_request_template.md
+  └── workflows
+      ├── build.yaml
+      └── deploy.yaml
+  ```
+- `.github/workflows/` is where you put your Github actions yaml files
+
+
+
+## Github CLI Commands
+- Install Github CLI `$ brew install gh`
+- [Github CLI Docs](https://cli.github.com/manual/)
+  ```shell
+  $ gh auth login
+
+  # Gist
+  $ gh gist create --public hello.js
+
+  # Repo
+  $ git init my-project
+  $ cd my-project
+  $ gh repo create
+
+  # Create a repository with a specific name
+  $ gh repo create my-project
+
+  # Create a repository in an organization
+  $ gh repo create cli/my-project
+  ```
 
 
 ## Setting up multiple SSH keys
@@ -193,6 +287,200 @@ ogImage:
   ```
 
   
+## PR Templates
+- All you have to do is create a file `.github/pull_request_template.md`
+  ```md
+  <!--- Provide Ticket issue as [<number>] and a general summary of your changes in the Title above -->
+
+  # Description
+  <!--- Why is this change required? What problem does it solve? -->
+
+  ## This pull request includes
+
+  - [ ] Feature
+  - [ ] Bug Fix
+  - [ ] Documentation Update
+  - [ ] Maintenance
+  - [ ] Metrics
+  - [ ] Tests
+
+  ## The following changes were made
+  <!--- List your changes in detail -->
+
+  ## Expected behavior
+  <!--- List expected behavior -->
+
+  ## Steps to reproduce expected behavior
+  <!--- List steps to reproduce expected behavior -->
+  ```
+- Push it up to github
+
+
+
+## Github code owners
+- GitHub codeowners is implemented as a single file `.github/CODEOWNERS` in your repository
+- Whenever a pull request is opened, GitHub will automatically check all changed files and check each codeowners rule, the owners are added as reviewers.
+
+
+
+## Github Actions
+- Workflow files use YAML syntax, and must have either a .yml or .yaml file extension.
+- You must store workflow files in the `.github/workflows` directory of your repository.
+- `Github Actions` works off of [triggers](https://docs.github.com/en/actions/reference/events-that-trigger-workflows)
+- Common webhook events: push, release, pull_request, create, delete, issues
+- There is also `schedule`, `workflow_dispatch`, & `repository_dispatch`
+- There are 3 main pieces to the actions yaml file:
+  1. `name` (whatever name you want to call this workflow, this will show up in the GUI)
+  2. `on` (The trigger, it can be a string or an array of strings)
+  3. `jobs`
+
+- Defining the trigger `on`
+  ```yaml
+  # Triggered when code is pushed to any branch in a repository
+  on: push
+  
+  # Triggers the workflow on push or pull request events
+  on: [push, pull_request]
+  
+  # Ignore a branch
+  on:
+    push:
+      branches-ignore:
+        - main
+  ```
+
+
+- (Job Example) One Job depending on the outcome of the other
+  ```yml
+  name: <Title>
+
+  # Trigger (webhook, scheduled event, manual event)
+  # Common webhook events: push, release, pull_request, create, delete, issues (https://docs.github.com/en/actions/reference/events-that-trigger-workflows)
+  on: 
+    push: 
+      branches: [ main ]  # what branch you want to watch 
+      branches-ignore:
+        - main
+
+  jobs:
+    first-job-name:
+      runs-on: self-hosted
+      steps:
+        - uses: actions/checkout@v1
+        - name: Install Dependencies
+          run: npm ci
+        - name: Run npm Script
+          run: npm run build
+        - name: Save Build
+          uses: actions/upload-artifact@v2
+          with:
+            name: build
+            path: |
+              build
+              pipeline
+              package.json
+              scripts
+
+    second-job-name:
+      runs-on: self-hosted
+      needs: first-job-name
+      env:
+        TEST_USER_USR: ${{ secrets.TEST_USER_USR }}
+        TEST_USER_PSW: ${{ secrets.TEST_USER_PSW }}
+      steps:
+        - name: Fetch `first-job-name`'s build
+          uses: actions/download-artifact@v2
+          with:
+            name: build
+        - name: Run npm Script
+          run: npm run hello
+  ```
+
+
+- (Job example) One workflow to build once and deploy in parallel
+  ```yml
+  name: Build one and deploy in parallel
+
+  on: 
+    push: 
+      branches: main
+
+  jobs:
+    build:
+
+    publish-npm:
+      needs: build
+
+    publish-gpr:
+      needs: build
+  ```
+
+
+- Manually run Actions with `workflow_dispatch`
+  - You can manually trigger workflow runs. To trigger specific workflows in a repository, use the workflow_dispatch event. 
+  - To trigger more than one workflow in a repository and create custom events and event types, use the repository_dispatch event.
+  ```yml
+  name: Manually triggered workflow
+  on:
+    workflow_dispatch:
+      inputs:
+        name:
+          description: 'Person to greet'
+          required: true
+          default: 'Mona the Octocat'
+        home:
+          description: 'location'
+          required: false
+          default: 'The Octoverse'
+
+  jobs:
+    say_hello:
+      runs-on: ubuntu-latest
+      steps:
+        - run: |
+            echo "Hello ${{ github.event.inputs.name }}!"
+            echo "- in ${{ github.event.inputs.home }}!"
+  ```
+
+
+- Conjob 
+  - [docs Scheduled events](https://docs.github.com/en/actions/reference/events-that-trigger-workflows#scheduled-events)
+  - If you are running a shell script you have to add change the owner of the script 
+    ```shell
+    $ git add --chmod=+x -- ./scripts/moveFile.sh
+    ```
+  - GitHub automatically creates a `GITHUB_TOKEN` secret to use in your workflow, so you don’t have to worry about creating this. The `GITHUB_TOKEN` secret allows us to authenticate ourselves (in this example is needed to push the changes).
+    ```yml
+    name: Run a scheduler
+
+    on:
+      schedule:
+        - cron:  '0 0 * * 0'  # At 00:00 on Sunday. (https://crontab.guru/)
+      workflow_dispatch:
+
+    jobs:
+      scheduler:
+        runs-on: self-hosted
+        steps:
+          - uses: actions/checkout@v1
+          - name: Install Dependencies
+            run: npm ci
+          - name: Run the npm Script
+            run: npm run generate:report
+          - name: Commit generated report
+            run: |
+              git config --local user.email "action@github.com"
+              git config --local user.name "GitHub Action"
+              git add -A
+              git commit -m "Auto-generated report" -a
+          - name: Push changes
+            uses: ad-m/github-push-action@v0.6.0
+            with:
+              github_token: ${{ secrets.GITHUB_TOKEN }}.  # Github automatically takes care of this you don't have to create one
+              branch: main  
+    ```
+
+
 
 ## Github Pages
 - You can build a static site and have it hosted on GitHub Pages with a few configurations to the codebase and the github repository’s settings. 
@@ -226,7 +514,7 @@ ogImage:
   - It's ok to keep the path as `/ (root)` because the when you run `gh-pages -d public` it take the contents of the `public` folder and saves it to the root of the `gh-pages` branch
 
 
-## Publishing to GitHub Pages
+4. Publishing to GitHub Pages
 - All you need to do to publish to githubpages is to run the npm `deploy` script
   ```sh
   $ npm run deploy
@@ -236,10 +524,9 @@ ogImage:
 
 
 
-
-## Publish with Github Actions
+### Publish with Github Actions
 1. create a personal access token
-  - click the avatar > profile > `Developer setttings` > `Personal access token` or https://github.com/settings/tokens
+  - click the avatar > profile > `Developer settings` > `Personal access token` or https://github.com/settings/tokens
   - note: `<repo_name> for github actions`
   - check the `repo` section
   - **DON'T FORGET TO COPY THE TOKEN**
@@ -248,73 +535,115 @@ ogImage:
 
 
 
-## PR Templates
-
-- All you have to do is create a file `.github/pull_request_template.md`
-  ```
-  # <SOME TITLE>
-
-  ## Summary
-
-
-  ## Notes
-
-
-  ## Figma Design
-  [Figma Design](<FIGMA_URL>)
-
-
-  ## Screenshot
-
-
-  ## Jira Issue
-  [CX-###](<JIRA-TICKET-URL>)
-
-
-  ## Tested
-
-
-  ```
-- Push it up to github
 
 
 
-# Github code owners
-- GitHub codeowners is implemented as a single file `.github/CODEOWNERS` in your repository
-- Whenever a pull request is opened, GitHub will automatically check all changed files and check each codeowners rule, the owners are added as reviewers.
 
 
-# Updating a git commit message after it's been pushed
-- When you commit somthing to git it's accompanied with a commit message that explains what changes were made
-- If you need to update a message after it's been commited you can fix it with an `--amend` flag
+
+
+# Github REST API
+- [REST API Reference](https://docs.github.com/en/rest/reference)
+
+
+1. Create a `New personal access token`
+  - Go to [Github Developer settings](https://github.com/settings/tokens/new?scopes=repo)
+2. Create a dotenv file in your repo root
   ```shell
-  # Changing the latest git commit message
-  $ git commit --amend -m "New message"
-
-  # Update the remote
-  $ git push --force <repository-name> <branch-name>
-  
-  # 
-  $ git push --force-with-lease <repository-name> <branch-name>
+  # file name: `.env`
+  GH_PERSONAL_ACCESS_TOKEN='<YOUR_ACCESS_TOKEN>'
   ```
-- *Note that the `--force` is not recommended unless you are absolutely sure that no one else has cloned your repository after the latest commit. It's probably best to use `--force-with-lease` flag because it will abort if there was an upstream change to the repository.*
+3. Install `@octokit/rest`
+  ```shell
+  $ npm init -y
+  $ npm i @octokit/rest dotenv
+  ```
+4. Write your code
+  ```js
+  require('dotenv').config()
+  const { Octokit } = require('@octokit/core')
 
-- If you want to update a commit in a past commit you need the sha value
+  // ===== SETUP =============
+  // Create a personal access token at https://github.com/settings/tokens/new?scopes=repo
+  const octokit = new Octokit({
+    auth: process.env.GH_PERSONAL_ACCESS_TOKEN,
+  })
+  // ===== SETUP =============
 
-```shell
-# list the last three 
-```
+  // One way of getting 
+  async function getRepos(org) {
+    const repos = await octokit.rest.repos.listForOrg({
+      org,
+      sort: 'full_name',
+      per_page: 100,
+      type: 'internal',
+    })
+    return repos.data.map((repo) => repo.name)
+  }
+
+  // Another way to get list of repos
+  async function listRepos(org) {
+    const response = await octokit.request('GET /orgs/{org}/repos', {
+      org,
+      per_page: 100,
+      page: 1,
+    })
+    const repos = response.data.map((item) => item.name)
+    console.log(repos)
+
+    // TODO: if the `response.data.length >= 100` make a call for the next page
+    console.log(response.data.length)
+    return repos
+  }
+
+  // Access files
+  async function getFile(owner, repo, path) {
+    return octokit.rest.repos
+      .getContent({ owner, repo, path })
+      .then((file) => Buffer.from(file.data.content, 'base64').toString('ascii'))
+  }
+
+  async function dependencies(org) {
+    const repos = await getRepos(org)
+    console.log('repos', repos)
+
+    repos.forEach(repo =>{
+      try {
+        const package = JSON.parse(await getFile(org, repo, 'package.json'))
+        if (package.dependencies) console.log(package.dependencies)
+        if (package.devDependencies) console.log(package.devDependencies)
+      } catch (err) {}
+    })
+  }
+
+  const orgName = '...'
+  dependencies(orgName)
+  ```
+
+
+# Github GRAPH QL
+- [docs](https://github.com/octokit/graphql.js)
+- Playing with the GraphQL Explorer
+  1. Got to the online [Graph QL explorer](https://docs.github.com/en/graphql/overview/explorer)
+  2. Click the `Sign in with Github` button (Authorize GraphQL API Explorer) if it's your first time
+  3. In the GraphiQL click the `Explorer` button to see your options 
+- example:
+  ```
+  query { 
+    viewer { 
+      login
+    }
+  }
+  ```
 
 
 
 
-# Squash and merge
 
-```shell
-$ git checkout master
-$ git merge --squash bugfix
-$ git commit
-```
+
+
+
+
 
 
 
