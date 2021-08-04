@@ -209,3 +209,10 @@ ogImage:
   - [vscode-styled-components](https://marketplace.visualstudio.com/items?itemName=jpoissonnier.vscode-styled-components)
 - Spell Checker
   - [vscode-spell-checker](https://marketplace.visualstudio.com/items?itemName=streetsidesoftware.code-spell-checker)  
+
+
+# Stop Github from asking for your rsa keyphrase
+- Add your key to ssh-agent (storing the passphrase in MacOS Keychain!)
+  ```
+  $ ssh-add -K ~/.ssh/id_rsa
+  ```
