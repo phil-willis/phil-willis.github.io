@@ -14,5 +14,11 @@
     "editor.defaultFormatter": "esbenp.prettier-vscode",
     "editor.formatOnSave": true
   },
+  "cSpell.ignoreWords": [
+    "dpkg",
+    "pdotwdot",
+    "trivy",
+    "version"
+  ],
   
 }

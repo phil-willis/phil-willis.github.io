@@ -15,10 +15,10 @@ ogImage:
   # List all the images you have locally
   $ docker images
 
-  # List all the containers
+  # List all the running containers
   $ docker ps
 
-  # List all running containers
+  # List all available containers
   $ docker ps -a
   ```
 
@@ -32,7 +32,7 @@ ogImage:
 - Containers
   - A container is a runnable instance of an image.
   - You can have multiple containers that were built from the same image
-
+  - You can stop/start a container whenever
     ```shell
     $ docker start <CONTAINER_NAME>
     $ docker stop <CONTAINER_NAME>
@@ -118,3 +118,145 @@ ogImage:
       $ docker exec -it <CONTAINER_NAME> bash 
       $ docker exec -it qqqqq bash 
       ```
+
+# Docker Compose for development
+- Update the `package.json` file
+  ```json
+  {
+    "scripts": {
+      "prestart": "npm i",
+      "start": "nodemon --exec babel-node src/index.js",
+      "build": "babel src --out-dir dist",
+      "serve": "node dist/index.js"
+    },
+    "devDependencies": {
+      "@babel/cli": "^7.14.8",
+      "@babel/core": "^7.15.0",
+      "@babel/node": "^7.14.9",
+      "@babel/preset-env": "^7.15.0",
+      "nodemon": "^2.0.12"
+    },
+    "dependencies": {
+      "express": "^4.17.1"
+    }
+  }
+  ```
+- Add a `.dockerignore` file with this:
+  ```
+  node_modules
+  npm-debug.log
+  ```
+- Update the `Dockerfile`
+  - Basically a shell of because we are going to add in the `src` as a volume
+    ```Dockerfile
+    FROM node:14
+    WORKDIR /usr/local/app/
+
+    EXPOSE 3000
+    CMD [ "npm", "run", "serve" ]
+    ```
+- Create a `docker-compose.yml` file
+  ```yml
+  version: '3'
+  services:
+    node:
+      build: .
+      command: npm start
+      ports:
+        - "3000:8080"
+      volumes:
+        - ./src/:/usr/local/app/src/
+        - ./.babelrc:/usr/local/app/.babelrc
+        - ./package.json:/usr/local/app/package.json
+        - ./package-lock.json:/usr/local/app/package-lock.json
+  ```
+- Run a command to get it running & visit the site at `http://localhost:3000/`
+  ```shell
+  $ docker-compose up
+  $ docker-compose up  -d 
+  ```
+- Cleanup
+  ```shell
+  $ docker-compose down --rmi all
+  ```
+
+
+
+# Good Practices with 
+- Use .dockerignore to prevent leaking secrets
+  - Include a .dockerignore file that filters out common secret files and development artifacts. 
+  - By doing so, you might prevent secrets from leaking into the image. 
+  - As a bonus the build time will significantly decrease. 
+  - Also, ensure not to copy all files recursively rather explicitly choose what should be copied to Docker
+  - Dependencies install first, then code
+- Install "system" packages first
+- Use explicit image reference, avoid latest tag
+- Prefer smaller Docker base images
+- Scan images for multi-layers of vulnerabilities
+ ```docker
+  sudo apt-get install rpm
+  $ wget https://github.com/aquasecurity/trivy/releases/download/{TRIVY_VERSION}/trivy_{TRIVY_VERSION}_Linux-64bit.deb
+  $ sudo dpkg -i trivy_{TRIVY_VERSION}_Linux-64bit.deb
+  trivy image [YOUR_IMAGE_NAME]
+  ```
+
+# Stop and remove all docker containers and images
+  ```shell
+  #List all containers (only IDs)
+  $ docker ps -aq
+
+  # Stop all running containers
+  $ docker stop $(docker ps -aq)
+
+  #Remove all containers
+  $ docker rm $(docker ps -aq)
+
+  #Remove all images
+  $ docker rmi $(docker images -q)
+  ```
+
+
+# Run a docker image and pass in environment variables
+- do this with the "-e" flag
+- example:
+  ```
+  $ docker run --rm --name test -e PORT=6666  my-image
+  ```
+
+# Cleanup
+- If you’ve ever ran a docker image ls you’ve likely noticed 1 or more items that have a <none> repository and a <none> tag.
+- Dangling images are not referenced by other images and are safe to delete. 
+  ```
+  $ docker rmi -f $(docker images -f "dangling=true" -q)
+  ```
+- newer versions of Docker (1.13+) there’s an even better command called `$ docker system prune` which will not only remove dangling images but it will also remove all stopped containers, all networks not used by at least 1 container, all dangling images and build caches.
+
+```
+$ docker volume prune
+```
+
+# Tags
+
+- Tagging your image during the build with the `-t` flag
+  ```bash
+  # docker build -t <USERNAME>/<IMAGE_NAME>:<TAG_NAME> .
+  $ docker build -t philopian/simple-node-server:0.0.1 .
+  ```
+- You can tag an image after the fact with 
+  ```bash
+  # docker tag <IMAGE_ID> <TAG_NAME>
+  $ docker tag def13b34dc63 jupyter-web-ui-base
+  ```
+
+
+
+
+
+
+
+
+
+
+
+
+
