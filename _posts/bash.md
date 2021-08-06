@@ -204,8 +204,8 @@ $ aws route53 get-hosted-zone --id $hz
 
 
 
-# node init script
-- it get a little tedious to scafold out a quick node application
+# Create a global `node init` bash script
+- It get a little tedious to scafold out a quick node application
 - Create a file in `~/.zsh/nodejs.zsh`
   ```shell
   # NVM
@@ -218,12 +218,10 @@ $ aws route53 get-hosted-zone --id $hz
   alias npmlsg='npm list -g --depth=0'
   alias npmlsl='npm list -g --depth=0 --link=true'
   alias npmis="npm i && npm start"
-
   alias cra="npx create-react-app "
-  # Open Brave browser with term
   
-  # Scaffold a nodejs esm module
-  function initnodejs() { 
+  # Scaffold a nodejs module with esm format
+  function init-nodejs() { 
     # Git
     git init
     git branch -m main default
@@ -233,10 +231,9 @@ $ aws route53 get-hosted-zone --id $hz
     npm i -D @babel/node@7 @babel/preset-env@7 @babel/cli@7 @babel/core@7
     npm i -D prettier eslint eslint-config-prettier eslint-plugin-prettier
 
-    # Create RC Files
-    makeRCFiles
-
-    makeNodeFile
+    # Create files and folders
+    makeNodejsRCFiles
+    makeSampleNodeFile
 
     # Update the `packages.json` file
     newVal="npx nodemon --exec babel-node src/index.js"; echo "`jq --arg newVal "$newVal"  '.scripts.start=$newVal' package.json`" > package.json
@@ -244,16 +241,13 @@ $ aws route53 get-hosted-zone --id $hz
     newVal="node dist/index.js"; echo "`jq --arg newVal "$newVal"  '.scripts.serve=$newVal' package.json`" > package.json
   }
 
-
-
-  function makeRCFiles(){
+  function makeNodejsRCFiles(){
     # Create `.gitignore` files
     cat << 'EOT' > .gitignore
   node_modules
   dist
   .env
   EOT
-
 
     # Create `.prettierrc` files
     cat << 'EOT' > .prettierrc
@@ -324,13 +318,11 @@ $ aws route53 get-hosted-zone --id $hz
       "editor.defaultFormatter": "esbenp.prettier-vscode",
       "editor.formatOnSave": true
     }
-
   }
   EOT
   }
 
-
-  function makeNodeFile(){
+  function makeSampleNodeFile(){
     mkdir src
     cat << 'EOT' > src/index.js
   import crypto from 'crypto'
@@ -340,8 +332,11 @@ $ aws route53 get-hosted-zone --id $hz
   console.log(key)
   EOT
   }
-```
-
-
+  ```
+- Now you can create a new npm node
+  ```
+  $ cd mkdir some-new-dir && $_
+  $ init-nodejs
+  ```
 
 
