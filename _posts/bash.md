@@ -72,6 +72,13 @@ jq '.browserslist.production[0] = "yessss"' client/input.json         # Update
 jq 'del(.browserslist.production[0])' client/input.json               # Delete
 jq '.browserslist.production[] | ' client/input.json  
 ```
+
+## Update a JSON file
+```
+$ echo "`jq '.scripts.serve="node dist/index.js"' package.json`" > package.json
+$ newVal="node dist/index.js"; echo "`jq --arg newVal "$newVal"  '.scripts.serve=$newVal' package.json`" > package.json
+```
+
 ## Loop thru array
 ```bash
 sample='[{"name":"foo"},{"name":"bar"}]'
