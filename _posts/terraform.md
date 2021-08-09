@@ -44,7 +44,7 @@ ogImage:
 - [docs](https://www.terraform.io/docs/backends/types/s3.html)
 - It is highly recommended that you enable Bucket Versioning on the S3 bucket to allow for state recovery in the case of accidental deletions and human error.
 - Paths to the state file inside the bucket: _`<bucket>/<workspace_key_prefix>/<workspace_name>/<key>`_
-  ```t
+  ```hcl
   terraform {
     backend "s3" {
       bucket = "mybucket"
@@ -54,7 +54,7 @@ ogImage:
   }
   ```
 - Key: the path to the state file inside the bucket. When using a non-default workspace, the state path will be /workspace_key_prefix/workspace_name/key
-  ```t
+  ```hcl
   data "terraform_remote_state" "network" {
     backend = "s3"
     config = {
@@ -65,7 +65,7 @@ ogImage:
   }
   ```
 - Or you can have a blank terraform.backend and configure it with bash command
-  ```bash
+  ```shell
   state_key="prod/some-app/${ENVIRONMENT}.tfstate"
   terraform init \
     -backend-config bucket="my-terraform-state-bucket" \
@@ -73,7 +73,7 @@ ogImage:
     -backend-config="encrypt=true" \
     -backend-config="region=us-west-2"
   ```
-  ```t
+  ```hcl
   terraform {
     backend "s3" {}
   }
@@ -84,7 +84,7 @@ ogImage:
 ## Terraform CLI
 - [Terraform CLI](https://www.terraform.io/docs/commands/index.html)
 - `$ terraform workspace (list|select|new|delete|show)`
-  ```sh
+  ```shell
   $ terraform init
   $ terraform plan
   $ terraform apply
@@ -97,7 +97,7 @@ ogImage:
   ```
 
 - The terraform output command is used to extract the value of an output variable from the state file.
-  ```sh
+  ```shell
   $ terraform plan
   $ terraform output
 
@@ -112,7 +112,7 @@ ogImage:
 # Terraform Plugins
 - Terraform relies on plugins called "providers" to interact with remote systems
 - Defining your providers:
-  ```tf
+  ```hcl
   terraform {
     required_providers {
       mycloud = {
@@ -270,7 +270,7 @@ ogImage:
     ```hcl
     provider "aws" {}
     ```
-    ```bash
+    ```shell
     $ export AWS_ACCESS_KEY_ID="anaccesskey"
     $ export AWS_SECRET_ACCESS_KEY="asecretkey"
     $ export AWS_DEFAULT_REGION="us-west-2"
@@ -310,7 +310,7 @@ ogImage:
   - aws_cloudfront_origin_access_identity
 - *** you can make a resource optionally if you pass in a count***
   - if you want the resource to be created if var.env == prod
-    ```
+    ```hcl
     count = "${var.env == "prod" ? 1 : 0}"
     ```
 
@@ -369,7 +369,7 @@ ogImage:
   }
   ```
 
-  ```bash
+  ```shell
   terraform apply -auto-approve
   bucket_name=$(terraform output bucket_name)
   npm run build
@@ -385,7 +385,7 @@ ogImage:
 - defines how operations are executed
 - where persistent data are stored (for example terraform-state file)
 - Creating a new workspace:
-  ```bash
+  ```shell
   $ terraform_state_bucket="ngp-terraform-remote-config"
   $ terraform init -backend-config bucket="${terraform_state_bucket}"
 
@@ -393,7 +393,7 @@ ogImage:
   $ terraform workspace new $ENVIRONMENT
   ```
 - Using an existing workspace:
-  ```bash
+  ```shell
   $ terraform_state_bucket="ngp-terraform-remote-config"
   $ terraform init -backend-config bucket="${terraform_state_bucket}"
 
@@ -404,7 +404,7 @@ ogImage:
 
 
 # Terraform auto-approve apply
-```bash
+```shell
 $ terraform apply -auto-approve
 ```
 
@@ -427,7 +427,7 @@ $ terraform apply -auto-approve
 - Terraform can load modules either from local relative paths (prefix with `./`) or from remote repositories
   - `"./"` prefix indicates that the address is a relative filesystem path.
 - minimal folder structure
-  ```
+  ```shell
   .
   ├── README.md
   ├── main.tf
@@ -445,7 +445,7 @@ $ terraform apply -auto-approve
     - S3 buckets
     - GCS buckets
   - example of using modules source
-    ```
+    ```hcl
     module "consul" {
       source = "./consul"
     }
