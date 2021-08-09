@@ -86,11 +86,12 @@ ogImage:
 - `$ terraform workspace (list|select|new|delete|show)`
   ```shell
   $ terraform init
+  $ terraform validate
+  $ terraform fmt   # format all terraform at the current folder level 
   $ terraform plan
   $ terraform apply
   $ terraform apply -auto-approve
   $ terraform output
-  $ terraform validate
   $ terraform workspace
 
   $ terraform import aws_s3_bucket.bucket <bucket-name>
@@ -130,7 +131,8 @@ ogImage:
 
 
 ## Variable
-- You can define variables and provide `default` value, `description`, as well as assign a `type`
+- You can define variables and provide `type`, `default` value, `description`
+- Varaibles have to be hard-coded (you cannot interpolating values)
   ```hcl
   variable "some_variable" {
     type = string
@@ -138,14 +140,10 @@ ogImage:
     description = "This is an example of a variable that has a string type"
   }
   ```
-- You can also override variables by passing in them as a flag when you run a terraform command
-  ```
-  $ terraform apply -var env="prod"
-  ```
 - Basic variable types are: string/list/map:
 - The basic structure of defining a variable is:
   ```hcl
-  variable "key" {
+  variable "some_key" {
     type    = "<string|list|map>"
     default = "<SOME_DEFAULT_VALUE>"
   }
@@ -163,7 +161,6 @@ ogImage:
     # Use into the resource
     some-parameter = "${var.some_string}
     ```
-
   - List
     ```hcl
     variable some_list {
@@ -178,7 +175,6 @@ ogImage:
     # Use into the resource
     some-parameter = "${var.some_list[0]}
     ```
-
   - Map
     ```hcl
     variable some_map {
@@ -197,37 +193,70 @@ ogImage:
 - `null` value is a special value that has no type
   - a value that represents absence or omission
   - If you set an argument of a resource or module to null, Terraform behaves as though you had completely omitted it
-
+- When you run terraform all the empty variables (ones without a default value) if not provided in the command will be asked before terraform does it magic.
+- You can also override any variables by passing in them as a flag when you run a terraform command
+  ```
+  $ terraform apply -var some_key="this rocks"
+  ```
+- Providing a `Variables File`
+  - All `*.tfvars` will get picked up when you run terraform, sometimes you want to load specific variable files based on the environment you want to deploy so passing supply `-var-file=<FILE_NAME>.tfvars` with variable values might a great way to deal with different variables for different environments
+  - `tfvar` file
+    ```hcl
+    domain_suffix = "-dev"
+    hosted_zone_name = "someawesomesite.com"
+    env_tag          = "Development"
+    ```
+  - `main.tf` file
+    ```hcl
+    variable domain_suffix {}
+    variable hosted_zone_name {}
+    variable env_tag {}
+    ```
+  - `Plan` script
+    ```shell
+    # `plan.sh` script to run a plan
+    WORKSPACE="dev"
+    VAR_FILE="./env_configs/dev.tfvars"
+    terraform_state_bucket="<TERRAFORM_S3_STATE_BUCKET>"
+    rm -rf .terraform/
+    terraform init -backend-config bucket="${terraform_state_bucket}"
+    if ! terraform workspace select ${WORKSPACE}; then
+      terraform workspace new ${WORKSPACE}
+    fi
+    terraform plan -var-file=$VAR_FILE
+    ```
 
 
 
 ## Locals (Local Value Configuration)
 - locals are like variables that you can pass in ${dynamic} values
+- A local value assigns a name to an expression, so you can use it multiple times within a module without repeating it.
 - DRY principles, allows you to preform logic to create a value where you don't have to write every time
+- You can also reference the a local variable inside the locals code block
 - eg of locals
-```hcl
+  ```hcl
   locals {
-    name_prefix = "${var.name_prefix != "" ? var.name_prefix : var.deployment_mame}"
-  }
-  resource "aws_iam_role" "instance1" {
-    name_prefix = "${local.name_prefix}"
-    ...
-  }
-  resource "aws_iam_role" "instance2" {
-    name_prefix = "${local.name_prefix}"
-    ...
+    bucket_name = "${replace(var.app_namespace, "_", "-")}-${terraform.workspace}-client"
+    domain_name = "${var.domain_name}${var.domain_suffix}.${var.hosted_zone_name}"
   }
   ```
 
-- example WITHOUT locals
   ```hcl
-  resource "aws_iam_role" "instance1" {
-    name_prefix = "${var.name_prefix != "" ? var.name_prefix : var.deployment_name}"
-    ...
+  # Ids for multiple sets of EC2 instances, merged together
+  locals {
+    instance_ids = "${concat(aws_instance.blue.*.id, aws_instance.green.*.id)}"
   }
-  resource "aws_iam_role" "instance2 " {
-    name_prefix = "${var.name_prefix != "" ? var.name_prefix : var.deployment_mame}"
-    ...
+
+  # A computed default name prefix
+  locals {
+    default_name_prefix = "${var.project_name}-web"
+    name_prefix         = "${var.name_prefix != "" ? var.name_prefix : local.default_name_prefix}"
+  }
+
+  # Local values can be interpolated elsewhere using the "local." prefix.
+  resource "aws_s3_bucket" "files" {
+    bucket = "${local.name_prefix}-files"
+    # ...
   }
   ```
 
