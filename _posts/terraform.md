@@ -23,11 +23,10 @@ ogImage:
 
 - Terraform is `declarative`, it says "I declare therefore i am"
 - non-Terraform services do not get auto-magicly added to your state, Terraform only tracks the things it makes
-
-(1) configurations: i declare the intent
-(2) State: current state
+  1. configurations: i declare the intent
+  2. State: current state
 - dry run `$ terraform plan`
-
+- **NOTE** Terraform ignores subfolders, in order to use subfolders you have to configure the subfolders to be a `terraform module`, then include those modules in your `main.tf` file
 
 ## Install
 - You can install TF with homebrew but it's better to install it with `tfswitch` with homebrew
@@ -44,14 +43,39 @@ ogImage:
 - [docs](https://www.terraform.io/docs/backends/types/s3.html)
 - It is highly recommended that you enable Bucket Versioning on the S3 bucket to allow for state recovery in the case of accidental deletions and human error.
 - Paths to the state file inside the bucket: _`<bucket>/<workspace_key_prefix>/<workspace_name>/<key>`_
+  ```
+  "Amazon S3"/<BUCKET_NAME_FOR_TF_STATE>/env:/dev/<TF_STATE_KEY>
+  "Amazon S3"/<BUCKET_NAME_FOR_TF_STATE>/env:/staging/<TF_STATE_KEY>
+  "Amazon S3"/<BUCKET_NAME_FOR_TF_STATE>/env:/prod/<TF_STATE_KEY>
+  ```
+- Here is the format for the terraform remote state code block
   ```hcl
   terraform {
     backend "s3" {
       bucket = "mybucket"
-      key    = "path/to/my/key"
+      key    = "path/to/my/key"     # <TF_STATE_KEY>, it can just be a single string
       region = "us-east-1"
     }
   }
+- Here is an example for the terraform remote state code block
+  ```hcl
+  terraform {
+    backend "s3" {
+      key    = "someawesomesite"
+      region = "us-west-2"
+    }
+    required_version = ">= 0.13.5"
+    required_providers {
+      aws = {
+        source  = "hashicorp/aws"
+        version = "~>3.4"
+      }
+    }
+  }
+  ```
+  
+  
+  
   ```
 - Key: the path to the state file inside the bucket. When using a non-default workspace, the state path will be /workspace_key_prefix/workspace_name/key
   ```hcl
@@ -443,7 +467,16 @@ $ terraform apply -auto-approve
 
 
 ## Modules
-- it's like a class for terraform, it encapsulate a piece of configuration
+- Terraform ignores subfolders, in order to use subfolders you have to configure the subfolders to be a `terraform module`, then include those modules in your `main.tf` file.
+  ```hcl
+  module "custom_module" {
+    source = "./modules/custom_module"
+
+    app_name = "app-name"
+  }
+  ```
+- Modules can be created locally or accessed at a url
+- It's like a class for terraform, it encapsulate a piece of configuration
 - A container for multiple resources that are used together.
 - Modules structure:
   1. **Input variables**
@@ -455,13 +488,39 @@ $ terraform apply -auto-approve
 - To define a module, create a new directory and place some `.tf` files inside of it
 - Terraform can load modules either from local relative paths (prefix with `./`) or from remote repositories
   - `"./"` prefix indicates that the address is a relative filesystem path.
-- minimal folder structure
+- minimal folder structure:
   ```shell
   .
   ├── README.md
   ├── main.tf
   ├── variables.tf
   ├── outputs.tf
+  ```
+- Standard structure with nested module
+  ```shell
+  .
+  ├── README.md
+  ├── main.tf
+  ├── variables.tf
+  ├── outputs.tf
+  ├── ...
+  ├── modules/
+  │   ├── nestedA/
+  │   │   ├── README.md
+  │   │   ├── variables.tf
+  │   │   ├── main.tf
+  │   │   ├── outputs.tf
+  │   ├── nestedB/
+  ```
+- Accessing the module's outputs you need to reference the module's outputs inside the root tf files. Example `./main.tf`
+  ```hcl
+  output "root_variable_output_val" {
+    value = "Hello from the root tf"
+  }
+
+  output "module_variable_output_val" {
+    value = module.some_awesome_module
+  }
   ```
 - Calling modules `module.<MODULE_NAME>.<OUPUT_VALUE>`
 - [source modules](https://www.terraform.io/docs/modules/sources.html) 
@@ -477,6 +536,12 @@ $ terraform apply -auto-approve
     ```hcl
     module "consul" {
       source = "./consul"
+    }
+    ```
+  - example of using modules source
+    ```hcl
+    module "consul" {
+      source = "../module_at_parent_level"
     }
     ```
 
