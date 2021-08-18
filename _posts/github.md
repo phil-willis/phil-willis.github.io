@@ -349,8 +349,140 @@ $ git commit
         - main
   ```
 
+### Working with env variables
+- You can set environment variables for each job 
+- You define the variables under the job with an `env`
+- They cannot be a composite of other `env` defined that the same level, you cannot do
 
-- (Job Example) One Job depending on the outcome of the other
+  ```yml
+  name: CANNOT DO THIS
+  jobs:
+    build:
+      runs-on: self-hosted
+      env:
+        WORKSPACE: dev
+        PROJECT_NAME: '....CANNOT-DO-THIS......${{ env.WORKSPACE}}'
+  ```
+- Due to a security vulnerability `set-env` is being deprecated and should no longer be used.
+- Proper way to define define/use env is by setting it under the `env` block and using them with `${{ env.SOME_ENV_KEY }}`
+  ```yml
+  name: Deploy
+
+  on:
+    push:
+      branches:
+        - 'main'
+  jobs:
+    build:
+      runs-on: self-hosted
+      env:
+        WORKSPACE: dev
+        PROJECT_NAME: 'this-rocks'
+      steps:
+        - uses: actions/checkout@v1
+        - name: Run multiple commands
+          run: |
+            echo "Running on ${{ env.WORKSPACE }}"
+            echo "project namet: ${{ env.PROJECT_NAME }}"
+            terraform init -backend-config bucket="${{ env.PROJECT_NAME }}"
+  ```
+
+### Default working-directory option
+- By default the working directory is the root of the checkout repo
+- You can actually set all the jobs to a specific working directory or just a specific job
+- The Github actions have a working-directory option to declare on workflow. It specifies the working directory for all run steps.
+  ```yml
+  name: Configured for all jobs
+  defaults:
+    run:
+      working-directory: web
+  ```
+- Configured for specific jobs
+  ```yrml
+  name: Configured for specific jobs
+  jobs:
+    job1:
+      runs-on: ubuntu-latest
+      defaults:
+        run:
+          working-directory: scripts
+  ```
+
+### Have a step run multiple shell commands
+- Having one step in a job preform multiple command is easy just start with a `|` and all new lines before new commands:
+  ```yml
+  name: Deploy
+
+  on:
+    push:
+      branches:
+        - 'main'
+
+  jobs:
+    build:
+      runs-on: self-hosted
+      steps:
+        - uses: actions/checkout@v1
+        - name: Run multiple commands
+          run: |
+            npm run ci
+            npm run lint
+            npm rum build
+        - name: Save Build
+          uses: actions/upload-artifact@v2
+          with:
+            name: build
+            path: |
+              build
+              pipeline
+              package.json
+              scripts
+  ```
+### Saving temp files for other jobs
+  ```yml
+  name: Deploy
+
+  on:
+    push:
+      branches:
+        - 'main'
+
+  jobs:
+    build:
+      runs-on: self-hosted
+      steps:
+        - uses: actions/checkout@v1
+        - name: Run multiple commands
+          run: |
+            npm run ci
+            npm run lint
+            npm rum build
+        - name: Save Build
+          uses: actions/upload-artifact@v2
+          with:
+            name: build
+            path: |
+              build
+              pipeline
+              package.json
+              scripts
+              
+    using-artifacts:
+      runs-on: self-hosted
+      steps:
+        - uses: actions/checkout@v1   # should have access to all the files uploaded with `actions/upload-artifact@v2`
+  ```
+
+### Composite Run Steps
+- `Composite Run Steps` allows you to reuse parts of your workflows inside other workflows
+  - 
+
+
+
+
+
+### Job dependencie
+- (Job Example) One Job depending on the outcome of the other use the `needs` keyword
   ```yml
   name: <Title>
 
@@ -415,7 +547,7 @@ $ git commit
       needs: build
   ```
 
-
+### Allow to manually run an Action in the Github web GUI
 - Manually run Actions with `workflow_dispatch`
   - You can manually trigger workflow runs. To trigger specific workflows in a repository, use the workflow_dispatch event. 
   - To trigger more than one workflow in a repository and create custom events and event types, use the repository_dispatch event.
@@ -443,7 +575,7 @@ $ git commit
   ```
 
 
-- Conjob 
+### Github action to run a Conjob 
   - [docs Scheduled events](https://docs.github.com/en/actions/reference/events-that-trigger-workflows#scheduled-events)
   - If you are running a shell script you have to add change the owner of the script 
     ```shell
@@ -479,6 +611,151 @@ $ git commit
               github_token: ${{ secrets.GITHUB_TOKEN }}.  # Github automatically takes care of this you don't have to create one
               branch: main  
     ```
+
+
+### Configuring AWS credentials
+- ["Configure AWS Credentials" Action For GitHub Actions](https://github.com/aws-actions/configure-aws-credentials)
+- You will have to add `AWS_ACCESS_KEY_ID` & `AWS_SECRET_ACCESS_KEY` to your github secrets for the repo
+  ```yml
+  name: Using AWS Creds
+
+  on:
+    push:
+      branches:
+        - 'main'
+
+  jobs:
+    build:
+      runs-on: self-hosted
+      steps:
+        - uses: actions/checkout@v1
+        - name: Install Dependencies
+          run: npm ci
+        - name: Run linter
+          run: npm run lint
+        - name: Run Tests
+          run: npm run test:ci
+        - name: Build Library
+          run: npm run build
+        - name: Save Build
+          uses: actions/upload-artifact@v2
+          with:
+            name: build
+            path: |
+              build
+              pipeline
+              package.json
+              scripts
+    deploy:
+      runs-on: self-hosted
+      needs: build
+      env:
+        MY_S3_WEBSITE_BUCKET_NAME: "some-awesome-website"
+      steps:
+        - name: Fetch Build
+          uses: actions/download-artifact@v2
+          with:
+            name: build
+        - name: Configure AWS Credentials
+          uses: aws-actions/configure-aws-credentials@v1
+          with:
+            aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+            aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            # aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }} # if you have/need it
+            aws-region: us-east-2
+        - name: Copy files to the production website with the AWS CLI
+          run: |
+            aws s3 sync . s3://${{ env.MY_S3_WEBSITE_BUCKET_NAME}}
+  ```
+
+
+### GithubAction leveraging Terraform
+- Set up Terraform CLI in your GitHub Actions with [hashicorp/setup-terraform](https://github.com/hashicorp/setup-terraform) 
+  ```yml
+  name: Deploy
+
+  on:
+    push:
+      branches:
+        - 'main'
+
+  jobs:
+    build:
+      runs-on: self-hosted
+      steps:
+        - uses: actions/checkout@v1
+        - name: Install Dependencies
+          run: npm ci
+        - name: Run linter
+          run: npm run lint
+        - name: Run Tests
+          run: npm run test:ci
+        - name: Build Library
+          run: npm run build
+        - name: Save Build
+          uses: actions/upload-artifact@v2
+          with:
+            name: build
+            path: |
+              build
+              pipeline
+              package.json
+              scripts
+
+    dev_infrastructure:
+      runs-on: self-hosted
+      env:
+        WORKSPACE: dev
+        VAR_FILE: './env_configs/dev.tfvars'
+        terraform_state_bucket: '<YOUR_TF_STATE_BUCKET>'
+      defaults:
+        run:
+          working-directory: pipeline/terraform
+      steps:
+        - uses: actions/checkout@v1
+        - uses: hashicorp/setup-terraform@v1
+          with:
+            terraform_version: 0.13.5
+        - name: Configure AWS Credentials
+          uses: aws-actions/configure-aws-credentials@v1
+          with:
+            aws-region: us-west-2
+            role-duration-seconds: 3600
+            role-to-assume: ${{ secrets.<CI_ROLE> }}
+        - name: Terraform init
+          run: |
+            echo "Running tf-deploy on ${{ env.WORKSPACE }}"
+            echo "Using Terraform state bucket: ${{ env.terraform_state_bucket }}"
+            rm -rf .terraform/
+            terraform init -backend-config bucket="${{ env.terraform_state_bucket }}"
+            if ! terraform workspace select ${{ env.WORKSPACE }}; then terraform workspace new ${{ env.WORKSPACE }}; fi
+            terraform apply -auto-approve -var-file=${{ env.VAR_FILE }}
+
+    deploy_dev:
+      runs-on: self-hosted
+      needs: [ dev_infrastructure, build ]
+      steps:
+        - name: Fetch Build
+          uses: actions/download-artifact@v2
+          with:
+            name: build
+        - name: Configure AWS Credentials
+          uses: aws-actions/configure-aws-credentials@v1
+          with:
+            aws-region: us-west-2
+            role-duration-seconds: 3600
+            role-to-assume: ${{ secrets.<CI_ROLE> }}
+        - name: Deploy
+          run: ./pipeline/client-deploy.sh dev
+  ```
+
+
+
+
+
+
+
+
 
 
 
