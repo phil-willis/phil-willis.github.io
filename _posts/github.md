@@ -115,7 +115,6 @@ ogImage:
   $ git clean -nfd
   $ git clean -fd
   ```
-- 
 - Merging vs. Rebase
   - For integrating changes from another branch
   - Both `Merging` & `Rebase` is a process of integrating changes from one branch to another
@@ -134,7 +133,31 @@ ogImage:
     $ git checkout main
     ```
 - fast-forward merge
+- Tags
+  - On Git, tags are often used in order to tag specific commits that may be more important than others.
+  - Tags may be used in order to bookmark certain events : releases, bug-fixes or just to add an informative and descriptive note to a commit.
+  - On GitHub, tags are often associated with actual product releases for example.
+    ```shell
+    # Create a tag
+    $ git tag -a -m "Added terraform action" <TAG_NAME>
+    $ git tag -a -m "Added terraform action" v0.1
 
+    # Push a tag to the remote repo
+    $ git push --follow-tags
+
+    # List tags
+    $ git tag -l
+
+    # Delete a local tag
+    $ git tag -d <TAG_NAME>
+    $ git tag -d v0.1
+
+    # Delete a remote tag
+    $ git push --delete origin <TAG_NAME>
+    $ git push --delete origin v0.1
+    ```
+- How To Set Upstream Branch on Git
+  - Upstream branches define the branch tracked on the remote repository by your local remote branch (also called the remote tracking branch)
 
 
 
@@ -167,7 +190,7 @@ $ git checkout master
 $ git merge --squash bugfix
 $ git commit
 ```
-
+==============
 
 
 
@@ -398,7 +421,7 @@ $ git commit
       working-directory: web
   ```
 - Configured for specific jobs
-  ```yrml
+  ```yml
   name: Configured for specific jobs
   jobs:
     job1:
@@ -472,14 +495,6 @@ $ git commit
       steps:
         - uses: actions/checkout@v1   # should have access to all the files uploaded with `actions/upload-artifact@v2`
   ```
-
-### Composite Run Steps
-- `Composite Run Steps` allows you to reuse parts of your workflows inside other workflows
-  - 
-
-
-
-
 
 ### Job dependencie
 - (Job Example) One Job depending on the outcome of the other use the `needs` keyword
@@ -751,11 +766,99 @@ $ git commit
 
 
 
+## Create a custom Github Action Composite Run Steps
+- `Composite Run Steps` allows you to reuse parts of your workflows inside other workflows
+- It's a type of actions that allows you to bundle multiple run steps in one single actions and re-use that bundle as a single step in another action
+- You might have seen it in your for from 
+- TL;DR `Composite Run Steps` allows you to nest actions steps within an action step
+- Why? 
+  - So you can create a template and reuse multiple places
+  - Keep things DRY (Don't Repeat Yourself)
+  - Use `env` variables 
+  - You just need to modify one place to get the effect everywhere it gets uses that composite run steps
+- Supported properties:
+  ```yml
+  name  
+  id  
+  run  
+  env  
+  shell  
+  working-directory  
+  ```
+- Example of publicly available `Composite run steps` are: `aws-actions/configure-aws-credentials@v1`, `hashicorp/setup-terraform@v1`
 
-
-
-
-
+1. Create a new repo just for this custom composiste run step e.g. `philopian/my-awesome-actions`
+2.  Create a `metadata file` and call it `actions.yml`
+  - do not add trigger blocks in this file
+3. Add your content:
+  ```yml
+  name: 'Build infrastructure'
+  description: 'Builds out our AWS infrastructure with Terraform'
+  inputs:
+    WORKSPACE:
+      description: 'Workspace for which terraform is to build the infrastructure in'
+      required: true
+    VAR_FILE:
+      description: 'Location to the `env_configs/*.tfvars` file'
+      required: true
+    terraform_state_bucket:
+      description: 'The terraform bucket for which terraform can write to the tf-state file in'
+      required: true
+  runs:
+    using: "composite"
+    defaults:
+      run:
+        working-directory: pipeline/terraform
+    steps:
+      - uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: 0.13.5
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-region: us-west-2
+          role-duration-seconds: 3600
+          role-to-assume: ${{ secrets.<CI_ROLE> }}
+      - name: Terraform init
+        run: |
+          echo "Running tf-deploy on ${{ inputs.WORKSPACE }}"
+          echo "Using Terraform state bucket: ${{ inputs.terraform_state_bucket }}"
+          rm -rf .terraform/
+          terraform init -backend-config bucket="${{ inputs.terraform_state_bucket }}"
+          if ! terraform workspace select ${{ inputs.WORKSPACE }}; then terraform workspace new ${{ inputs.WORKSPACE }}; fi
+          terraform apply -auto-approve -var-file=${{ inputs.VAR_FILE }}
+  ```
+4. From your terminal, check in your `actions.yml` file.
+  - Before we can use this "snippet" into our actions, we need to create a Tag and a Release for our repo.
+    ```shell
+    $ git add action.yml
+    $ git commit -m "Add action"
+    $ git push
+    ```
+5. From your terminal, add a tag. This example uses a tag called v1. For more information, see "About actions."
+  ```shell
+  $ git tag -a -m "Description of this release" v1
+  $ git push --follow-tags
+  ```
+6. Use this composite action, **in a different repo**
+  ```yml
+  name: Deploy
+  on:
+    push:
+      branches:
+        - 'main'
+  jobs:
+    infrastructure:
+      runs-on: self-hosted
+      steps:
+        - uses: actions/checkout@v1
+        - id: Terraform
+          uses: actions/philopian/my-awesome-actions@v1
+          with:
+            WORKSPACE: dev
+            VAR_FILE: './env_configs/dev.tfvars'
+            terraform_state_bucket: '<MY_TERRAFORM_S3_BUCKET>'
+  ```
 
 
 
@@ -809,7 +912,6 @@ $ git commit
   - **DON'T FORGET TO COPY THE TOKEN**
 2. In your repo settings paste the `ACCESS_TOKEN`
   - 
-
 
 
 
