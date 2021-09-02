@@ -1,9 +1,9 @@
 ---
 title: 'Databases'
 excerpt: 'a getting started guide for popular databases'
-coverImage: '/assets/blog/hello-world/cover.jpg'
+coverImage: '/assets/covers/database.jpg'
 ogImage:
-  url: '/assets/blog/hello-world/cover.jpg'
+  url: '/assets/covers/database.jpg'
 ---
 
 

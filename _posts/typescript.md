@@ -1,9 +1,9 @@
 ---
 title: 'typescript'
 excerpt: ''
-coverImage: '/assets/blog/hello-world/cover.jpg'
+coverImage: '/assets/covers/typescript.jpg'
 ogImage:
-  url: '/assets/blog/hello-world/cover.jpg'
+  url: '/assets/covers/typescript.jpg'
 ---
 
 

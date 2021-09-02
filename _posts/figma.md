@@ -1,9 +1,9 @@
 ---
 title: 'figma'
 excerpt: 'a little bit of design'
-coverImage: '/assets/blog/hello-world/cover.jpg'
+coverImage: '/assets/covers/figma.jpg'
 ogImage:
-  url: '/assets/blog/hello-world/cover.jpg'
+  url: '/assets/covers/figma.jpg'
 ---
 
 # Overview of figma

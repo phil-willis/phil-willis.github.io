@@ -308,8 +308,13 @@ $ git commit
   # update the second remote origin
   $ git remote set-url origin git@github.com-2:username/<REPO_NAME>.git
   ```
-
-  
+## If git keeps asking for your pass-phase
+- Just edit your `~/.ssh/config` and enable the `UseKeychain` option:
+  ```shell
+  Host *
+      UseKeychain yes
+  ```
+    
 ## PR Templates
 - All you have to do is create a file `.github/pull_request_template.md`
   ```md

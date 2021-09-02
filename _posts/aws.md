@@ -1,9 +1,9 @@
 ---
 title: 'aws'
 excerpt: 'alot of aws stuff'
-coverImage: '/assets/blog/hello-world/cover.jpg'
+coverImage: '/assets/covers/aws.jpg'
 ogImage:
-  url: '/assets/blog/hello-world/cover.jpg'
+  url: '/assets/covers/aws.jpg'
 ---
 
 

@@ -1,9 +1,9 @@
 ---
 title: 'firebase'
 excerpt: ''
-coverImage: '/assets/blog/hello-world/cover.jpg'
+coverImage: '/assets/covers/firebase.jpg'
 ogImage:
-  url: '/assets/blog/hello-world/cover.jpg'
+  url: '/assets/covers/firebase.jpg'
 ---
 
 

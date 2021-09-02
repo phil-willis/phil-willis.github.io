@@ -1,9 +1,9 @@
 ---
 title: 'bash'
 excerpt: ''
-coverImage: '/assets/blog/hello-world/cover.jpg'
+coverImage: '/assets/covers/bash.jpg'
 ogImage:
-  url: '/assets/blog/hello-world/cover.jpg'
+  url: '/assets/covers/bash.jpg'
 ---
 
 

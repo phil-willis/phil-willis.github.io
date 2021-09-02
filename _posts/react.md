@@ -1,9 +1,9 @@
 ---
 title: 'react'
 excerpt: 'react'
-coverImage: '/assets/blog/hello-world/cover.jpg'
+coverImage: '/assets/covers/react.jpg'
 ogImage:
-  url: '/assets/blog/hello-world/cover.jpg'
+  url: '/assets/covers/react.jpg'
 ---
 
 

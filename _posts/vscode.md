@@ -1,9 +1,9 @@
 ---
 title: 'VSCode'
 excerpt: 'Some tips for working with vscode'
-coverImage: '/assets/blog/hello-world/cover.jpg'
+coverImage: '/assets/covers/vscode.jpg'
 ogImage:
-  url: '/assets/blog/hello-world/cover.jpg'
+  url: '/assets/covers/vscode.jpg'
 ---
 
 

@@ -1,9 +1,9 @@
 ---
 title: 'terraform'
 excerpt: ''
-coverImage: '/assets/blog/hello-world/cover.jpg'
+coverImage: '/assets/covers/terraform.jpg'
 ogImage:
-  url: '/assets/blog/hello-world/cover.jpg'
+  url: '/assets/covers/terraform.jpg'
 ---
 
 ## What is Terraform
