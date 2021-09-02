@@ -1,6 +1,6 @@
 ---
 title: 'aws'
-excerpt: 'alot of aws stuff'
+excerpt: ''
 coverImage: '/assets/covers/aws.jpg'
 ogImage:
   url: '/assets/covers/aws.jpg'

@@ -1,6 +1,6 @@
 ---
 title: 'Github'
-excerpt: 'Github'
+excerpt: ''
 coverImage: '/assets/covers/github.jpg'
 ogImage:
   url: '/assets/covers/github.jpg'

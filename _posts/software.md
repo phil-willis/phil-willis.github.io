@@ -1,24 +1,26 @@
 ---
-title: 'Agile Development'
-excerpt: 'How to work in an Agile Development.'
-coverImage: '/assets/blog/hello-world/cover.jpg'
+title: 'Software Engineering'
+excerpt: ''
+coverImage: '/assets/covers/software.jpg'
 ogImage:
-  url: '/assets/blog/hello-world/cover.jpg'
+  url: '/assets/covers/software.jpg'
 ---
 
+# Software Engineering
 
-# What is Agile
+
+## What is Agile
 - Agile ceremories
   - Backlog grooming
   - Sprint planning
   - Active Sprint's Daily standup
   - Retrospective
 
-# How to write good user stories
+### How to write good user stories
 - [who][why][what]
 - e.g. who[As a user], why[i would like to be able to see a profile page], what[so that i can update my avatar and update my profile]
 
 
-# Kanban vs Scrum
+### Kanban vs Scrum
 
 

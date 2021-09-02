@@ -494,10 +494,217 @@ ogImage:
 ===============================
 
 
+# Web application bundlers
+
+
+## Webpack
+- [Webpack](https://webpack.js.org/) homepage
+  ```shell
+  ```
+
+## Create-React-App
+- Not really a bundler but it does abstract all the webpack stuff for you and it focused on React web applications
+  ```shell
+  ```
+## Snowpack
+- [Snowpack](https://www.snowpack.dev/) homepage
+- Snowpack is a faster frontend build tool 
+- what is the learning curve? "Once you try it, it's impossible to go back to anything else."
+- Snowpack doesn't rebundle the entire application, it only 
+- If you are familiar with `webpack`, you would know that while developing you would use the `webpack-dev-server`, everytime you save a file it rebuilds the entire application, rebundles, and serves it to the browser
+- With `Snowpack` the massive benefit is that it bundles and caches all your dependencies and only rebuild/serve the changes that you make to your source code and only the files that you've changed instead of rebundling the entire application
+- It's an insanely fast build tool
+
+- Let get it setup:
+
+1. Install `snowpack` as a dev dependency
+  ```shell
+  $ npm init -y
+  $ npm install --save-dev snowpack
+  ```
+2. Update your `package.json` file
+  ```json
+  {
+    "scripts": {
+      "start": "snowpack dev",
+      "build": "snowpack build"
+    },
+  }
+  ```
+3. Create a `./public/index.html`
+  ```html
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hello Snowpack</title>
+  </head>
+  <body>
+    <h1>Hello snowpack!!</h1>
+  </body>
+  </html>
+  ```
+4. Create a `snowpack.config.js` file
+  ```js
+  // Snowpack Configuration File
+  // See all supported options: https://www.snowpack.dev/reference/configuration
+
+  /** @type {import("snowpack").SnowpackUserConfig } */
+  module.exports = {
+    mount: {
+      public: { url: "/", static: true },
+      src: "/src",
+    }
+  };
+  ```
+5. Run snowpack for the first time
+  - Run:
+    ```shell
+    $ npm start
+    ```
+  - When you run this for the first time it will just reload the changes to the html file cause you haven't referenced a js script yet
+6. Let's add React
+  - **Snowpack will deal with all the babel stuff for you!** so no need to deal with babelrc files
+  - **Note** If you are working with a `React` app you make your entry file `./src/index.jsx` and reference the files as `./src/index.js` in your `./public/index.html` file. Snowpack will deal with the rest. When it compiles from a `jsx` to a `js` file we will have that  `./src/index.js`
+  - Run:
+    ```shell
+    $ npm i react react-dom
+    ``` 
+  - Create a `./src/index.jsx` file
+    ```js
+    import React from "react";
+    import ReactDOM from "react-dom";
+
+    import App from './App.jsx'
+
+    ReactDOM.render(<App />, document.getElementById('root'));
+    ```
+  - Create a `./src/App.jsx` file
+    ```js
+    import React from 'react'
+
+    export default function App(){
+      return <div>Hello React with snowpack</div>
+    }
+    ```
+  - Update the `./public/index.html`
+    ```html
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Hello Snowpack & React</title>
+    </head>
+    <body>
+      <div id="root"></div>
+      <script type="module" src="../src/index.js"></script>
+    </body>
+    </html>
+    ```
+7. Add `CSS Modules` at not cost!
+  - Create a `./src/styles.module.css` file and add:
+    ```css
+    .main{
+      color: red;
+    }
+    ```
+  - You can add this to your `./src/App.jsx` file 
+    ```js
+    import React from 'react'
+    import styles from './styles.module.css'
+
+    export default function App() {
+      return <div className={styles.main}>Hello React with snowpack</div>
+    }
+    ```
+
+
+8. Convert your `js` to `ts`
+  - Change all your `jsx|js` files inside of the `./src/*` folder
+  - Install some dependencies:
+    ```shell
+    $ npm i -D typescript @types/react @types/react-dom @snowpack/plugin-typescript
+    ```
+  - Add a `./tsconfig.json` file with:
+    ```json
+    {
+      "compilerOptions": {
+        "module": "ESNext",
+        "target": "ESNext",
+        "strict": true,
+        "moduleResolution": "node",
+        "esModuleInterop": true,
+        "jsx": "preserve",
+        "noEmit": true,
+        "skipLibCheck": true,
+        "typeRoots": [
+          "node_modules/@types",
+          "types"
+        ]
+      },
+      "include": [
+        "src",
+        "types"
+      ]
+    }
+    ```
+  - Add some type for images and css-modules
+    ```js
+    // `./types/css.d.ts`
+    declare module '*.css' {
+      const classNames: { [className: string]: string };
+      export default classNames;
+    }
+    ```
+    ```js
+    // `./types/images.d.ts`
+    declare module '*.png';
+    declare module '*.jpg';
+    declare module '*.svg';
+    ```
+
+  - Add some file alias to your `./snowpack.config.js` files
+    ```js
+    module.exports = {
+      alias: {
+        "@/components": "./src/components",
+      }
+    };
+    ```
+
+  - Add alias to your `./tsconfig.json` file 
+    ```json
+    {
+      "compilerOptions": {
+        "baseUrl": "./src",
+        "paths": {
+          "@/components/*": ["components/*"]
+        }
+      }
+    }
+    ```
+  - Rerun `$ npm start`
 
 
 
 
+
+
+
+
+
+## Parcel
+- [Parcel](https://parceljs.org/) homepage
+  ```shell
+  ```
+## Vite
+- [Vite](https://vitejs.dev/) homepage
+  ```shell
+  ```
 
 
 

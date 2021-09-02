@@ -1,6 +1,6 @@
 ---
 title: 'VSCode'
-excerpt: 'Some tips for working with vscode'
+excerpt: ''
 coverImage: '/assets/covers/vscode.jpg'
 ogImage:
   url: '/assets/covers/vscode.jpg'

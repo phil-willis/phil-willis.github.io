@@ -1,6 +1,6 @@
 ---
 title: 'ESLint'
-excerpt: 'How to configure ESLint.'
+excerpt: ''
 coverImage: '/assets/covers/eslint.jpg'
 ogImage:
   url: '/assets/covers/eslint.jpg'

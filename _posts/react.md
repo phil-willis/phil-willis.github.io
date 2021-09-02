@@ -1,6 +1,6 @@
 ---
 title: 'react'
-excerpt: 'react'
+excerpt: ''
 coverImage: '/assets/covers/react.jpg'
 ogImage:
   url: '/assets/covers/react.jpg'

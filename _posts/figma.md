@@ -1,6 +1,6 @@
 ---
 title: 'figma'
-excerpt: 'a little bit of design'
+excerpt: ''
 coverImage: '/assets/covers/figma.jpg'
 ogImage:
   url: '/assets/covers/figma.jpg'

@@ -1,13 +1,15 @@
 ---
-title: 'heroku'
+title: 'PaaS'
 excerpt: ''
-coverImage: '/assets/blog/hello-world/cover.jpg'
+coverImage: '/assets/covers/paas.jpg'
 ogImage:
-  url: '/assets/blog/hello-world/cover.jpg'
+  url: '/assets/covers/paas.jpg'
 ---
 
 
-# Overview of heroku
+# Heroku
+
+## Overview of heroku
 - Heroku is a Platform-as-a-Service (PaaS).
 - All Heroku-based applications are hosted by Amazon Web Service (AWS), an Infrastructure as a Service (IaaS) provider and the base of our pyramid.
 - Heroku is a great spot to test out ideas without worring about cost tha might occur when working with the big boys like AWS, Google, Azure.
@@ -21,12 +23,12 @@ ogImage:
   $ heroku login
   ```
 
-# Express app
+## Express app
 
 
 
 
-# PostGIS
+## PostGIS
 - 
 ```shell
 $ echo 'show extwlist.extensions' | heroku pg:psql
