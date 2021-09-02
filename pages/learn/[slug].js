@@ -2,7 +2,7 @@ import { useRouter } from 'next/router'
 import ErrorPage from 'next/error'
 import Container from '../../components/container'
 import PostBody from '../../components/post-body'
-import Header from '../../components/header'
+import Header, { HeaderPhantomSpace } from '../../components/header'
 import PostHeader from '../../components/post-header'
 import Layout from '../../components/layout'
 import { getPostBySlug, getAllPosts } from '../../lib/api'
@@ -32,6 +32,7 @@ export default function Post({ post, morePosts, preview }) {
                   content={post.ogImage.url}
                 />
               </Head>
+              <HeaderPhantomSpace />
               <PostHeader
                 title={post.title}
                 coverImage={post.coverImage}
