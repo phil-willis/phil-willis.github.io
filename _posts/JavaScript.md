@@ -700,12 +700,87 @@ ogImage:
 ## Parcel
 - [Parcel](https://parceljs.org/) homepage
   ```shell
+  $ npm init -y
+  $ npm i parcel-bundler
   ```
+- Update the `package.json` file
+  ```json
+  {
+    "scripts": {
+      "start": "parcel -p 8080 watch public/index.html",
+      "build": "parcel build public/index.html"
+    }
+  }
+  ```
+- Create a `public/index.html` file
+  ```html
+  <html>
+  <body>
+    <script src="../src/index.js"></script>
+  </body>
+  </html>
+  ```
+- Create a `src/index.html` file
+  ```html
+  console.log("hello Parcel")
+  ```
+- Add Typescript & react
+  ```shell
+  $ npm i react react-dom
+  ```
+- Update a `public/index.html` file
+  ```html
+  <html>
+  <body>
+    <div id="root"></div>
+    <script src="../src/index.tsx"></script>
+  </body>
+  </html>
+  ```
+- Create a `src/index.tsx`
+  ```js
+  import React from 'react'
+  import ReactDOM from 'react-dom'
+
+  console.log('Hello from tsx!')
+
+  ReactDOM.render(
+    <p>Hello</p>,
+    document.getElementById('root'),
+  )
+  ```
+- Create a `tsconfig.json`
+  ```json
+  {
+    "compilerOptions": {
+      "jsx": "react"
+    }
+  }
+  ```
+
+
+
+
 ## Vite
 - [Vite](https://vitejs.dev/) homepage
   ```shell
+  $ npm init vite@latest <YOUR_APP_NAME> -- --template react-ts
   ```
-
+- Template options:
+  ```shell
+  vanilla
+  vanilla-ts
+  vue
+  vue-ts
+  react
+  react-ts
+  preact
+  preact-ts
+  lit-element
+  lit-element-ts
+  svelte
+  svelte-ts
+  ```
 
 
 
