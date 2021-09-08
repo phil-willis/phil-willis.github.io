@@ -696,6 +696,35 @@ ogImage:
 
 
 
+- Adding Testing
+  - Snowpack supports all of the popular JavaScript testing frameworks that you’re already familiar with. Mocha, Jest, Jasmine, AVA and Cypress are all supported in Snowpack applications, if integrated correctly.
+  - Snowpack ships pre-built Jest configuration files for several popular frameworks. If you need to use Jest for any reason,consider extending one of these packages: `@snowpack/app-scripts-react`, `@snowpack/app-scripts-preact`, `@snowpack/app-scripts-svelte`
+  - The people at snowpack strongly recommend `@web/test-runner` (WTR) for testing in Snowpack projects.
+
+
+```shell
+$ npm install --save-dev @web/test-runner @snowpack/web-test-runner-plugin chai @testing-library/react
+```
+
+- Install packages
+  ```shell
+  $ npm i -D jest @snowpack/app-scripts-react @testing-library/react @testing-library/jest-dom
+  ```
+- Create `jest.config.js` to extend the pre-built Jest configuration file
+  ```js
+  module.exports = {
+    ...require('@snowpack/app-scripts-preact/jest.config.js')(),
+  };
+  ```
+
+
+
+- `@testing-library/react` =>  It provides light utility functions on top of react-dom and react-dom/test-utils
+- `@testing-library/jest-dom` => Checking for an element's attributes, its text content, its css classes, you name it (used jest to write tests that assert various things about the state of a DOM)
+- `react-test-render` => grab a snapshot of the "DOM tree" rendered by a React DOM or React Native component without using a browser or jsdom.
+
+
+
 
 ## Parcel
 - [Parcel](https://parceljs.org/) homepage

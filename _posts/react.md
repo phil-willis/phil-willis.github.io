@@ -23,9 +23,9 @@ ogImage:
   - stylus
   - stylus & css modules
 - List & keys
-- debug
-- component lifecycle
-- hooks
+- Debug
+- Component lifecycle
+- Hooks
 - fragment
 - HOC (Higher Order Component)
 - Refs
@@ -56,7 +56,7 @@ ogImage:
 
 
 # Setting up a React application
-- boilerplates (CRA, NEXT, Manually)
+- boilerplates (CRA, NEXT, Snowpack, Vite, Parcel)
 
 
 
@@ -74,8 +74,8 @@ ogImage:
 - You can create your own custom hooks
 
 - Simple Hooks rules:
-  1. Used only with Functional components
-  2. Only call them at the top level of a Functional component, cannot nest hooks. They don't work inside of regular JS functions, nested functions, or loops
+  1. Used only with *Functional components*
+  2. Only call them at the *top level* of a Functional component, *cannot nest hooks*. They **don't work inside** of regular JS functions, nested functions, or loops
   3. Exceptions to the rule is when building your own custom hooks
 
 
@@ -146,7 +146,6 @@ ogImage:
   ```
 
 ## useEffect
-
 - Class based lifecycle methods (componentWillMount, componentDidMount, componentWillUnMount)
   ```js
   import React, { Component } from "react";
@@ -285,8 +284,9 @@ ogImage:
     }
   }
 
+  const initialState = 0
   export default function App() {
-    const [state, dispatch] = useReducer(reducer, 0);
+    const [state, dispatch] = useReducer(reducer, initialState);
 
     const handleClick = () => dispatch({ type: "increment" });
     return (
@@ -306,10 +306,11 @@ ogImage:
 
 ## useMemo
 - Help you optimize computation cost for improved performance
+- Use this hook as an *opt-in* tool for expensive calculations you don't want to happen on every render
+- Opt-in when you have expensive computations
 - Think of Memo`iz`ation  as Memo`riz`ation... If you had a calculation that happens frequently like `666666*123` instead of having to compute it in your brain you can just `memorize` the output. Kinda similar with computers when using React, there is no need to re-compute something that hasn't changed. Because React will re-render when props change we can avoid unnecessary re-rendering of a component.
 - memoization *cache results* of function call
 - `useMemo` for memoizing return values
-- Use this hook as an *opt-in* tool for expensive calculations you don't want to happen on every render
 - `useMemo(<Expensive_Computation_Function>, <Array_of_Dependencies>);`
 - Example:
   ```js
@@ -427,16 +428,56 @@ export default function MyParent({ items }) {
 
 
 ## useLayoutEffect
+- It works just like the `useEffect` hook, with one small difference, you callback will run after render but before painting to screen
+- React will way for you code to finish running before it updates the UI (*Caution* this will block visual updates until your callback is finished)
 
 
 
 ## useDebugValue
-
-
+- Makes it possible to define you own custom hooks
+- This will show the value in the `react-dev-tools`
 
 ## Custom Hook
 - Building your own custom Hook is essentially extracting code that uses one or more built in hooks to make it reuseable
-- 
+- For example let's say you use `useState` & `useEffect` together for a functionality, you could bundle this logic up into a custom hook
+- Before bundling logic into a hook:
+  ```js
+  import React, {useEffect, useState} from 'react';
+
+  function App(){
+    const [displayName, setDisplayName] = useState();
+
+    useEffect(()=>{
+      const data = fetchFromDatabase(props.userId);
+      setDisplayName(data.displayName);
+    }, []);
+
+    return <button>{displayName}</button>
+  }
+  ```
+
+- Bundle up the display name logic into a hook
+  ```js
+  import React, {useEffect, useState} from 'react';
+
+  function useDisplayNAme(){
+    const [displayName, setDisplayName] = useState();
+
+    useEffect(()=>{
+      const data = fetchFromDatabase(props.userId);
+      setDisplayName(data.displayName);
+    }, []);
+
+    useDebugValue(displayName ?? 'loading...'); // show the value in `react-dev-tools`
+    return displayName;
+  }
+
+  function App(){
+    const displayName = useDisplayName();
+    return <button>{displayName}</button>
+  }
+  ```
+
 
 
 
@@ -723,10 +764,51 @@ export default function MyParent({ items }) {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # Testing React Applications
 
 - Unit testing (@testing/library)
 - Integrations/End-to-end (cypress)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # Testing with React with @testing-library/react)
 - A light-weight solution for testing React components
