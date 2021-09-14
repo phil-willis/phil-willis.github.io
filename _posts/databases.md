@@ -477,20 +477,270 @@ SELECT  *, ST_AsText(geom)  FROM places WHERE ST_CONTAINS(
 
 
 
-# Firebase
+# Firebase's Firestore
+- Firebase has 2 flavor of NoSQL Database `Realtime Database` & `Firestore Database`
+- The `Realtime Database` as the original database before Google aquired Firebase and the `Firestore Database` is if the Realtime database & Google had a baby.
+- In most cases it's probably best to user `Firestore`, plus `Firestore` allow geo points
+- A great feature of Firebase is that you can use the `Emulator` to test out all the Firebase services locally
+- Resources
+  - [Firebase Emulator](https://firebase.google.com/docs/emulator-suite)
+  - [Add/Get data from a DB](https://firebase.google.com/docs/firestore/query-data/get-data)
+  - [Firebase Reference Docs](https://firebase.google.com/docs/reference/js/v8)
+
+
+- Initialize the Firebase application
+  1. Go to the [Firebase Console](https://console.firebase.google.com/) 
+    - Create or select a project
+    - Go to the `Firestore` tab in the sidebase and click `Create Database`
+  2. Initialize your application in your terminal
+    ```shell
+    # just need to install the `firebase-tools` globally once
+    $ npm i -g firebase-tools
+
+    $ firebase init
+    # Select firestore & the emulator (you can alway add/remove later)
+    # You should have a `firebase.json` & `.firebaserc` file
+  ```
+  3. Install some stuff
+    ```shell
+    $ npm init -y
+    $ npm i firebase-admin
+    $ npm i nodemon -D
+    ```
+  4. Update your `package.json`
+    ```json
+    {
+      "scripts": {
+        "start": "nodemon src",
+        "local:firebase": "firebase emulators:start --import=firebase/backup --export-on-exit=firebase/backup"
+      }
+    }
+    ```
+- So Firebase uses configs and a `firebase.json` & `.firebaserc` file to connect your code to the project. The `firebase.json` file is absolutly fine to add you your source control because all the controls are done in the `firestore.rules` file
+- Example of a `firebase.json`:
+  ```json
+  {
+    "firestore": {
+      "rules": "firebase/firestore.rules",
+      "indexes": "firebase/firestore.indexes.json"
+    },
+    "emulators": {
+      "auth": {
+        "port": 9099
+      },
+      "firestore": {
+        "port": 8088
+      },
+      "ui": {
+        "enabled": true
+      }
+    }
+  }
+  ```
+- Example of a `.firebaserc`:
+  ```json
+  {
+    "projects": {
+      "default": "<YOUR_PROJECT_NAME>"
+    }
+  }
+  ```
+- When you use the `firebase emulators:start` when you close the process the data do not persist in order to persist the data you have to tell it to import/export the data add `--import=firebase/backup --export-on-exit=firebase/backup`
+- Make sure you have a `firebase/firestore.rules`, these current rules anyone to read/write to the database to don't publish this
+  ```text
+  rules_version = '2';
+  service cloud.firestore {
+    match /databases/{database}/documents {
+      match /{document=**} {
+        allow read, write;
+      }
+    }
+  }
+  ```
+- Almost time to add data... Go to your Firebase project in the Console and click the gear icon in the navbar, `Project settings` > `Service account` > `Generate new private key` copy this key to your source code **MAKE SURE YOU GITIGNORE THIS FILE**, this file provides admin access to your application
 
 
 
+## Admin verses Firestore/app
+- If you are using firebase on the client use the `firebase/app` package, if you are using Fiebase on the server where you can control your Firebase credentials use `firebase-admin`
+- Exmaple of initializing a Firebase connection on the client:
+  ```js
+  import firebase from 'firebase/app'
+  import 'firebase/firestore'
+  import config from '../config'
+
+  // Only initialize the firebase app once
+  if (!firebase?.apps.length) firebase.initializeApp(config.firebase)
+
+  const db = firebase.firestore()
+  ```
+- Exmaple of initializing a Firebase connection on the server:
+  ```js
+  const admin = require("firebase-admin");
+
+  const serviceAccount = require("./serviceAccountKey.json");
+
+  admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount),
+  });
+
+  const db = admin.firestore();
+  ```
 
 
 
+## CRUD the Firestore Database
+- [Docs](https://firebase.google.com/docs/firestore/query-data/get-data)
+### Add
+- When adding a document to a collection you can provide the id or you can let firebase create it for you
+- Here's an example of you create the document id:
+  ```js
+  // Defining the document id explicityly
+  const youRef = db.collection("you-define-ids");
+  youRef.doc("some-document-id-001").set({ message: "" });
+  youRef.doc("some-document-id-002").set({ message: "" });
 
+  // Let firebase define the document id
+  const fbRed = db.collection("firebase-define-ids");
+  fbRed.add({ capital: true });
+  fbRed.add({ capital: false});
+  fbRed.add({ capital: true });
+  fbRed.add({ capital: false});
+  fbRed.add({ capital: false });
+  fbRed.add({ capital: false});
+  ```
 
+### Read
+- Get a specific document base of the document ID
+  ```js
+  const docRef = db.collection("you-define-ids").doc("some-document-id-001");
+  docRef
+    .get()
+    .then((doc) => {
+      doc.exists ? console.log("Document data:", doc.data()) : console.log("No such document!");
+    })
+    .catch((error) => {
+      console.log("Error getting document:", error);
+    });
+  ```
+- Query where a value equals something
+  ```js
+  db.collection("firebase-define-ids")
+    .where("capital", "==", true)
+    .get()
+    .then((querySnapshot) => {
+      querySnapshot.forEach((doc) => {
+        // doc.data() is never undefined for query doc snapshots
+        console.log(doc.id, " => ", doc.data());
+      });
+    })
+    .catch((error) => console.log("Error getting documents: ", error));
+  ``
+- Other queries like `orderBy()`, `.orderBy(<key>, "desc")`, `limit()`
+- If you want to query all the times a user is tagged you an array value in the document
+  ```json
+  {
+    "users":["user1", "user2"]
+  }
+  ```
+- Query the following users
+  ```js
+  const usersRef = db.collection("users");
+  usersRef.add({ following: ["user1", "user2"] });
+  usersRef.add({ following: ["user1"] });
+  usersRef.add({ following: ["user1", "user2"] });
+  usersRef.add({ following: ["user1"] });
+  usersRef.add({ following: [] });
+  usersRef.add({ following: ["user3"] });
 
+  usersRef
+    .where("following", "array-contains-any", ["user3"])
+    .get()
+    .then((querySnapshot) => {
+      querySnapshot.forEach((doc) => console.log(doc.id, " => ", doc.data()));
+    })
+    .catch((error) => console.log("Error getting documents: ", error));
+  ```
 
+## Let's make it spatial!
+- You can do geospatial stuff with `firestore` because of geohashing
+- A geohash is a convenient way of expressing a location (anywhere in the world) using a short alphanumeric string, with greater precision obtained with longer strings.
+- A geohash actually identifies a rectangular cell: at each level, each extra character identifies one of 32 sub-cells.
+- ![geohash](/assets/blog/geo/geohash.jpg)
+- [Read more on geohashes](https://www.movable-type.co.uk/scripts/geohash.html)
+- Vancouver, BC has coordinates of 49.2827° N, 123.1207° W and the geohash would be [`c2b2q7dhx`](http://geohash.org/c2b2q7dhx)
 
+### Using `geofirestore`
+- [geofirestore docs](https://geofirestore.com/)
+- As of 09-2021 `geofirestore` only supports up to `firebase` v8
+- When using `geofirestore` all you need to provide in the document is a `coordinates: new firebase.firestore.GeoPoint(<lat>, <lng>)` property. Geofirestore will take this GeoPoint and create a geohash from it
+- **NOTE** you can still query your collection with the regular Friebase querys however you now have the option to do some limited spatial queries
 
+- Setup
+  ```js
+  import firebase from 'firebase/app';
+  import 'firebase/firestore';
+  import * as geofirestore from 'geofirestore';
 
+  // Initialize the Firebase SDK
+  firebase.initializeApp({
+    // ...
+  });
+
+  // Create a Firestore reference
+  const firestore = firebase.firestore();
+
+  // Create a GeoFirestore reference
+  const GeoFirestore = geofirestore.initializeApp(firestore);
+
+  // Create a GeoCollection reference
+  const geocollection = GeoFirestore.collection('restaurants');
+  ```
+- Add a point to the collection
+  ```js
+  // Add a document to the collection containing `coordinates` key
+  const uuid = uuidv4();
+  geocollection.doc(uuid).set({
+    coordinates: new firestore.firestore.GeoPoint(42.3547255, -71.0549425), // YOU NEED THIS LINE
+    geojson: {
+      type: "Feature",
+      geometry: { type: "Point", coordinates: [-71.0549425, 42.3547255] },
+      properties: {
+        uuid,
+        uid: ["user1_000"], // This allows you to filter by multiple users
+        name: "Starbucks",
+        address: "211 Congress St,Boston, MA 02210",
+        rating: 3.5,
+        image: "https://s3-media4.fl.yelpcdn.com/bphoto/AVDfFF1OaqiNDqeg-Z2xEQ/o.jpg",
+      },
+    },
+  });
+  ```
+
+- Query the collection
+  ```js
+  async function findNearest(point, radiusInKm, users = [], limit = 100) {
+    // Create a GeoQuery based on a location
+    const center = new firestore.firestore.GeoPoint(point.lat, point.lng);
+
+    // perform the query
+    const query = geocollection
+      .near({ center, radius: radiusInKm }) //
+      .where("geojson.properties.uid", "array-contains-any", users)
+      .limit(limit);
+    const value = await query.get();
+
+    // Cleanup the data
+    const results = value.docs.map(({ data }) => {
+      const { geojson, g } = data();
+      return { ...geojson, properties: { ...geojson.properties, geohash: g.geohash } };
+    });
+    console.log("[length]", results.length);
+    return results;
+  }
+
+  findNearest({ lat: 42.3461, lng: -71.0974 }, 10, ["user3_000", "user1_000"]);
+  ```
 
 
 

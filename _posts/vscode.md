@@ -32,11 +32,22 @@ ogImage:
       "editor.defaultFormatter": "esbenp.prettier-vscode",
       "editor.formatOnSave": true
     },
+    "[javascriptreact]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode",
+      "editor.formatOnSave": true
+    },
+    "[typescript]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode",
+      "editor.formatOnSave": true
+    },
+    "[typescriptreact]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode",
+      "editor.formatOnSave": true
+    },
     "[json]": {
       "editor.defaultFormatter": "esbenp.prettier-vscode",
       "editor.formatOnSave": true
     },
-
   }
   ```
 # The launch file
@@ -219,4 +230,26 @@ ogImage:
 - If you are using a different rsa key 
   ```
   $ ssh-add -K ~/.ssh/id_rsa_other_key
+  ```
+
+
+# Snippets
+- [Create your own snippets](https://code.visualstudio.com/docs/editor/userdefinedsnippets)
+  ```json
+  {
+
+    "component": {
+      "scope": "javascript,typescript",
+      "prefix": "next-page",
+      "body": [
+        "export default function Page({ }) {",
+        "  return (",
+        "    <div>",
+        "    </div>",
+        "  )",  
+        "}",
+      ],
+      "description": "React component"
+    }
+  }
   ```

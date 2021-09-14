@@ -31,7 +31,11 @@ $ kill -9 <PID>
 ```
 
 
-
+# Change the extension of all files in a directory
+- Change all `*.jsx` to `*.tsx`
+```shell
+$ for f in *.jsx; do mv -- "$f" "${f%.jsx}.tsx"; done
+```
 
 
 

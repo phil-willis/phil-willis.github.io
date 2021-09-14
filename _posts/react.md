@@ -1204,8 +1204,199 @@ export default function MyParent({ items }) {
 
 
 
+# Nextjs
+- A traditional React app is rendered clienside, where the browser starts with a shell of an HTML file lacking any rendered content. From there the browser fetches the JS files containing the react code to render content to the page and make it interactive
+- A drawback of this is that your website is note reliably indexed by search engines or read by social media link bots
+- Another drawback is that it can take longer to reach the first contentful paint when the user first lands on the site
+- **Nextjs** is a framework that allows you to build a react app but render the content in advance during build phase to the first thing your user/search bot sees is the fully render HTML. After receiving this initial page the client-side rendering takes over and it works just like a traditional react app
+- So Nextjs is a little opinionated on the folder structure
+- The file structure in the `pages` folder mirrors the actual urls in the application
+- Next can preform multiple server rendering strategies from a single project (SSG, SSR, ISR)
+- Nextjs will make *static generation* (or pre-rendering) renders all pages at build time
+- The site can be build and served by a CDN 
+- Getting data for a REST API you can use `getStaticProps`
+- You can also implement server-sde rendering ehivh build the HTML each time it's requested `getServerSideProps`
+- Nextjs supports css modules out of the box with `<Name>.module.css` for a specific page or component and in the `styles/global.css` you can write styles for the entire application
 
-# Nextjs - why?
+
+## Get started
+- Initialize your app
+  ```shell
+  $ npx create-next-app <PROJECT_NAME>
+  ```
+- Update the *npm scripts*
+  ```json
+  {
+    "scripts": {
+      "dev": "next dev -p 3000",
+      "build": "next build && next export",
+    }
+  }
+  ```
+- Adding **file alias** all you need to do is provide a `jsconfig.json` | `tsconfig.json` with:
+  ```json
+  {
+    "compilerOptions": {
+      "baseUrl": ".",
+      "paths": {
+        "@/components/*": ["components/*"],
+        "@/libs/*": ["libs/*"],
+        "@/pages/*": ["pages/*"],
+        "@/models/*": ["models/*"]
+      }
+    }
+  }
+  ```
+- Run the app local
+  ```shell
+  $ npm run dev
+  ```
+- The `./api` 
+  - This directory is a special par of Nextjs for setting up routes that will only apply to the server
+  - This could be userful cause the code you write here won't increase the client-side JS bundle that will be sent over the network
+  - It's a useful feature if you have some work that needs to be done on the backend OR if you want to expose an API for your end users
+- The `./pages/`
+  - Routing for a Nextjs app is based of the files in the `./pages/` directory 
+- The `./pages/_app.js` 
+  - This is a is a wrapper around your entire applications, this is a good place to add navbars, headers, footers, and expecially authentification for your app
+- Nextjs used hybrid rendering
+  - If you have a site that is completely static (doesn't rely on any external REST API), all you have to do to build the application is run `$ next build` or `$ next build && next export`
+  - If you have pages that relay on external data there are 4 way you can accomplish this
+    1. Server-Side Rendering (SSR) with `getServerSideProps()` run-time you app will get fresh data every time
+    2. Static Site Generation (SSG) using `getStaticProps()` at build-time it will make those fetch and hard code them in the application (drawback is the data is hard-code at build-time and you app will be stale if the REST service updates)
+    3. **Incremental Static Regeneration** (ISR) allows you to statically generate a page and then regenerate it when new data comes in on an interval you decide
+    4. You could just fetch the data inside your react components with `fetch`
+
+
+
+## Fetching data from REST Service
+- Use `getStaticProps` if you want to make the request at build time & `getServerSideProps` if you want to make the request each time at runtime
+- The nice thing about Nextjs is that we can use both of these paradims throughout the application we are not limited to one or the other
+- If you know in advance how many *dynamic* routes you have you want to use the `getStaticProps`. The `getStaticPaths` function tell next which dynamic pages to render
+  ```js
+  export async function getStaticProps() {
+    const req = await fetch("https://api.spacexdata.com/v4/launches/latest");
+    const launches = await req.json();
+
+    return {
+      props: { launches },
+    };
+  }
+
+  export async function getStaticPaths() {
+    return {
+      paths: [],
+      fallback: true,
+    };
+  }
+
+  export default function app({ launches }) {
+    return (
+      <div>
+        SpaceX next launch details: <span>{launches.details}</span>
+      </div>
+    );
+  }
+  ```
+
+
+- If you want the data to be fetch every time the page loads you want to use `getServerSideProps` the code you have in the `getStaticProps` is the exact same thing **HOWEVER** does it on every request instead of at build time
+  ```js
+  export async function getServerSideProps() {
+    const req = await fetch("https://api.spacexdata.com/v4/launches/latest");
+    const launches = await req.json();
+
+    return {
+      props: { launches },
+    };
+  }
+
+  export default function app({ launches }) {
+    return (
+      <div>
+        SpaceX next launch details: <span>{launches.details}</span>
+      </div>
+    );
+  }
+  ```
+
+
+## Routing
+- The file structure in the `pages` folder mirrors the actual urls in the application
+- The *pages* folder structure is also the routing for you applications
+  ```shell
+  pages
+  ├── _app.js
+  ├── api
+  │   └── hello.js
+  └── index.js
+  ```
+- The *pages* folder structure is also the routing for you applications
+  ```shell
+  pages
+  ├── _app.js
+  ├── api
+  │   └── hello.js
+  ├── search.js
+  ├── profile.js
+  └── user
+    └── [id].js
+  └── index.js
+  ```
+  - These would map to *http://localhost:3000*, *http://localhost:3000/search*, *http://localhost:3000/profile*, etc
+- If you want a dynamic route make a file with the `[]` for the name for example: `./user/[param].js` and the route would be *http://localhost:3000/user/:id*
+- Getting the dynamic route parameter
+
+```js
+// http://localhost:3000/user/:username
+import Layout from "@/components/Layout";
+import { useRouter } from "next/router";
+
+export default function profile() {
+  const router = useRouter();
+  const { username } = router.query;
+
+  // TODO: make a call the the DB for user profile
+
+  return (
+    <div>
+      username: {username}
+    </div>
+  );
+}
+```
+- Static routes have priority over dynamic ones
+- If you are using the `<a href="">...</a>` you should use the `import Link from 'next/link'`
+  ```js 
+  import Link from 'next/link'
+
+  function App(){
+    return (
+    <Link href="/thisrocks">
+      <a>Awesome page</a>
+    </Link>
+    )
+  }
+  ```
+
+
+
+
+
+## Server Rendering
+- *Static-Side Generation* (SSG) or *Server-Side Rendering* (SSR)
+- *SSG* or Static generation is pre-rendering, you generate all the html pages at build time. You can easily upload all the generated HTML files to storage bucket or static host and they can be delivered with very high performance over a CDN
+- If you site has a large scale of pages that changes this might not be the best case
+- *SSR*
+
+
+## Data Fetching
+- Next can preform multiple server rendering strategies from a single project
+- SSG ()
+- SSR 
+- ISR 
+
+## Nextjs - why?
 1. Lambda (serverless) functions
   - These are functions that reside under the /api route of a Next.js app
   - server-side rendered React applications

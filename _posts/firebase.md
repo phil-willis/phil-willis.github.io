@@ -12,7 +12,7 @@ ogImage:
   - Firebase allows you to:
   - authenticate users
   - Database
-  - Server-side code
+  - Server-side code via Functions
   - Security 
   - Analytics
   - Scale
@@ -22,6 +22,7 @@ ogImage:
 - Firebase is just an extension of Google Cloud Platform, at it's core Firebase is an SDK that makes it easy for your frontend app to back google cloud infrastructure
 - The console sidebar is divided into sections: *Build*, *Release & Monitor*, *Analytics*, & *Engage* 
 - Firebase is `opt-in` 
+- Firebase also has extenstions
 
 # Get Started
 1. Go to [Firebase console](https://console.firebase.google.com/) and log in with your gmail account
@@ -362,8 +363,9 @@ ogImage:
   }
 
   async function addUser() {
+    const userCollection = collection(db, 'user')
     try {
-      const docRef = await addDoc(collection(db, 'users'), {
+      const docRef = await addDoc(userCollection, {
         first: 'Ada',
         last: 'Lovelace',
         born: 1815,
@@ -373,13 +375,71 @@ ogImage:
       console.error('Error adding document: ', e)
     }
   }
+
+  async function getAllUsers() {
+    const userCollection = collection(db, 'user')
+    const querySnapshot = await getDocs(userCollection)
+    let listData: any = []
+    querySnapshot.forEach((doc) => listData.push(doc.data()))
+    console.log(' [List] ', listData)
+  }
+
+  async function queryUser() {
+    const userCollection = collection(db, 'user')
+    const q = query(userCollection, where('name', '==', 'luis'))
+
+    const querySnapshot = await getDocs(q)
+    let listData: any = []
+    querySnapshot.forEach((doc) => listData.push(doc.data()))
+    console.log(' [List] ', listData)
+  }
+
+  async function queryUserRealtime() {
+    const userCollection = collection(db, 'user')
+    const q = query(userCollection, where('name', '==', 'phil'))
+
+    // MAKE SURE YOU UNSUBSCRIBE! (this will run anytime the data changes)
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      let cities: any = []
+      querySnapshot.forEach((doc) => {
+        cities.push(doc.data().username)
+      })
+      console.log('username: ', cities.join(', '))
+    })
+  }
   ```
 - You can view your current DB rules [here](http://localhost:8088/emulator/v1/projects/<database_name>:ruleCoverage.html)
+- Make sure that when you create a **timestamp** that you use thee `serverTimestamp()` provided by firebase `import { serverTimestamp } from 'firebase/firestore'` to make sure the timestamp is consistent along all client devices
+- [Docs on preforming simple & compound queries](https://firebase.google.com/docs/firestore/query-data/queries)
+- Firebase will warn you if you need to create a `composite index`, but you just need to click on the link and it will create it for you
+- Now Security Rules
+  - Start by making the entire DB locked down
+    ```js
+    rules_version = '2';
+    service cloud.firestore {
 
+      match /databases/{database}/documents {
+        match /{document=**} {
+          allow read, write: if false;
+        }
+      }
 
+    }
+    ```
+  - Now add in rights selectively
+   ```js
+    rules_version = '2';
+    service cloud.firestore {
 
+      match /databases/{database}/documents {
+        match /{document=**} {
+          allow read, write: if false;
+        }
+      }
 
-
+    
+    }
+    ```
 
 
 
@@ -389,6 +449,60 @@ ogImage:
 
 
 ## Adding Geospatial to your DB
+- You can do geospatial stuff with `firestore` because of geohashing
+- A geohash is a convenient way of expressing a location (anywhere in the world) using a short alphanumeric string, with greater precision obtained with longer strings.
+- A geohash actually identifies a rectangular cell: at each level, each extra character identifies one of 32 sub-cells.
+- ![geohash](/assets/blog/geo/geohash.jpg)
+- [Read more on geohashes](https://www.movable-type.co.uk/scripts/geohash.html)
+- Vancouver, BC has coordinates of 49.2827° N, 123.1207° W and the geohash would be [`c2b2q7dhx`](http://geohash.org/c2b2q7dhx)
+
+
+
+### Using `geofirestore`
+- [geofirestore docs](https://geofirestore.com/)
+- As of 09-2021 `geofirestore` only supports up to `firebase` v8
+- Exmaple
+  ```js
+  import firebase from 'firebase/app';
+  import 'firebase/firestore';
+  import * as geofirestore from 'geofirestore';
+
+
+  // Initialize the Firebase SDK
+  firebase.initializeApp({
+    // ...
+  });
+
+  // Create a Firestore reference
+  const firestore = firebase.firestore();
+
+  // Create a GeoFirestore reference
+  const GeoFirestore = geofirestore.initializeApp(firestore);
+
+  // Create a GeoCollection reference
+  const geocollection = GeoFirestore.collection('restaurants');
+
+  // Add a GeoDocument to a GeoCollection
+  geocollection.add({
+    name: 'Geofirestore',
+    score: 100,
+    // The coordinates field must be a GeoPoint!
+    coordinates: new firebase.firestore.GeoPoint(40.7589, -73.9851)
+  })
+
+  // Create a GeoQuery based on a location
+  const query = geocollection.near({ center: new firebase.firestore.GeoPoint(40.7589, -73.9851), radius: 1000 });
+
+  // Get query (as Promise)
+  query.get().then((value) => {
+    // All GeoDocument returned by GeoQuery, like the GeoDocument added above
+    console.log(value.docs);
+  });
+  ```
+
+
+### Addig geospatial functionality with `geofirex`
+- Unfortunately `geofirex` has a peer dependency of `"firebase": "^7.2.0"` and firebase is at v9 as of 2021 so this may not be the best option
 - Start by adding some npm packages
   ```shell
   npm init -y

@@ -119,17 +119,17 @@ ogImage:
   - [Prettier - Code formatter](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
 
 1. Create a react app
-  ```sh
+  ```shell
   $ npx create-react-app <APP_NAME> --template typescript
   ```
 
 2. Install additional packages
-  ```sh
+  ```shell
   # ESLint
   $ npm i -D @typescript-eslint/eslint-plugin @typescript-eslint/parser eslint-plugin-jest
 
   # Prettier
-  $ prettier eslint-config-prettier eslint-plugin-prettier
+  $ npm i -D prettier eslint-config-prettier eslint-plugin-prettier
   ```
   - `eslint-config-prettier` => turns off all ESLint rules that could conflict with Prettier
   - `eslint-plugin-prettier` => integrates the Prettier rules into ESLint rules.
