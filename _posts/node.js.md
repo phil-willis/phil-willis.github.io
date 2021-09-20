@@ -7,6 +7,46 @@ ogImage:
 ---
 
 
+
+```plain
+plain
+ exact package version               1.13.0 => 1.13.0
+  update patch and minor releases     ~1.13.0 => 1.13.*
+  exact version                       ^1.13.0 => 1.*.*
+```
+
+```none
+none
+ exact package version               1.13.0 => 1.13.0
+  update patch and minor releases     ~1.13.0 => 1.13.*
+  exact version                       ^1.13.0 => 1.*.*
+```
+
+```text
+text
+ exact package version               1.13.0 => 1.13.0
+  update patch and minor releases     ~1.13.0 => 1.13.*
+  exact version                       ^1.13.0 => 1.*.*
+```
+
+```html
+html
+ exact package version               1.13.0 => 1.13.0
+  update patch and minor releases     ~1.13.0 => 1.13.*
+  exact version                       ^1.13.0 => 1.*.*
+```
+
+```markup
+markup
+ exact package version               1.13.0 => 1.13.0
+  update patch and minor releases     ~1.13.0 => 1.13.*
+  exact version                       ^1.13.0 => 1.*.*
+```
+
+
+
+
+
 # What is Nodejs
 - Node.js is an open-source and cross-platform JavaScript runtime environment. 
 - Node.js runs the V8 JavaScript engine, the core of Google Chrome, outside of the browser. This allows Node.js to be very performant.
@@ -75,8 +115,8 @@ ogImage:
       "node": ">=14.0.0 <=15.0.0"
     }
     ```
-  3. Add in your `.npmrc` file
-    ```none
+  2. Add in your `.npmrc` file
+    ```plain
     engine-strict=true
     ```
 # The `package-lock.json` file 
