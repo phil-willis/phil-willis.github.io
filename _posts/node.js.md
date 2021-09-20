@@ -62,14 +62,23 @@ ogImage:
   - `engines` sets which versions of Node.js this package/app works on
   - `browserslist` is used to tell which browsers (and their versions) you want to support
 -  In package.json you can set which versions you want to upgrade to (patch or minor), using the semver notation, for example:
-  ```
+  ```none
   exact package version               1.13.0 => 1.13.0
   update patch and minor releases     ~1.13.0 => 1.13.*
   exact version                       ^1.13.0 => 1.*.*
   ```
 - Don't commit your `node_modules` files because the `package.json` is used to fetch and manage the packaged used for the nodejs project
-
-
+- You can enforce the nodejs version a repo can use with
+  1. Add in your `package.json` file
+    ```json
+    "engines": {
+      "node": ">=14.0.0 <=15.0.0"
+    }
+    ```
+  3. Add in your `.npmrc` file
+    ```none
+    engine-strict=true
+    ```
 # The `package-lock.json` file 
 - In version 5, npm introduced the package-lock.json file.
 - The goal of package-lock.json file is to keep track of the exact version of every package that is installed so that a product is 100% reproducible in the same way even if packages are updated by their maintainers.
