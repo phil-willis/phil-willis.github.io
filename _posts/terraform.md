@@ -43,7 +43,7 @@ ogImage:
 - [docs](https://www.terraform.io/docs/backends/types/s3.html)
 - It is highly recommended that you enable Bucket Versioning on the S3 bucket to allow for state recovery in the case of accidental deletions and human error.
 - Paths to the state file inside the bucket: _`<bucket>/<workspace_key_prefix>/<workspace_name>/<key>`_
-  ```
+  ```html
   "Amazon S3"/<BUCKET_NAME_FOR_TF_STATE>/env:/dev/<TF_STATE_KEY>
   "Amazon S3"/<BUCKET_NAME_FOR_TF_STATE>/env:/staging/<TF_STATE_KEY>
   "Amazon S3"/<BUCKET_NAME_FOR_TF_STATE>/env:/prod/<TF_STATE_KEY>
@@ -219,7 +219,7 @@ ogImage:
   - If you set an argument of a resource or module to null, Terraform behaves as though you had completely omitted it
 - When you run terraform all the empty variables (ones without a default value) if not provided in the command will be asked before terraform does it magic.
 - You can also override any variables by passing in them as a flag when you run a terraform command
-  ```
+  ```shell
   $ terraform apply -var some_key="this rocks"
   ```
 - Providing a `Variables File`
