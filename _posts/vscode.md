@@ -177,49 +177,130 @@ ogImage:
 
 
 # Extensions
-- VSCode Advanced New File
-  - [advanced-new-file](https://marketplace.visualstudio.com/items?itemName=patbenatar.advanced-new-file)
-  - global settings
-    ```json
-    "advancedNewFile.exclude": {
-      "node_modules": true,
-      "node_modules_electron": true,
-      "dev": true,
-      "dist": true
-    },
-    "advancedNewFile.showInformationMessages": true,
-    "advancedNewFile.convenienceOptions": ["last", "current", "root"]
+- Monokai Operator
+  - [extension link](https://marketplace.visualstudio.com/items?itemName=markfknight.monokai-operator-theme)
+
+- Debugger for Chrome
+  - This is now baked in VSCode
+
+- AWS Toolkit 
+  - [extension link](https://marketplace.visualstudio.com/items?itemName=AmazonWebServices.aws-toolkit-vscode)
+  - This will connect to whatever account in your `~/.aws/credentials`
+  - If your credentials rotate, just run `gimme-aws-creds` and reopen this extension
+  - Really quick way to see your `S3 buckets`, `API Gateway`, `Lambda`
+
+- Serverless Console
+  - [extension link](https://marketplace.visualstudio.com/items?itemName=devAdvice.serverlessconsole)
+
+- SQLTools
+  - [extension](https://marketplace.visualstudio.com/items?itemName=mtxr.sqltools)
+  - You can connect to SQL Databases
+  - Can connect to MySQL, Postgres, SQLite, AWS Redshift, MariaDB, SQL Server
+  - You need to add the additional extensions
+    - [sqltools-driver-sqlite](https://marketplace.visualstudio.com/items?itemName=mtxr.sqltools-driver-sqlite)
+    - [sqltools sqlite connection docs](https://vscode-sqltools.mteixeira.dev/driver/sqlite)    
+    - [sqlite tutorial](https://www.sqlitetutorial.net/)
+    - [sqltools Postgres connection docs](https://vscode-sqltools.mteixeira.dev/driver/postgresql)
+
+- Thunder Client
+  - [extension link](https://marketplace.visualstudio.com/items?itemName=rangav.vscode-thunder-client)
+  - Basically a simpler version of Postman inside of VSCode
+  - You can create `Collections` & `ENV`
+  
+- REST Client  
+  - [extension link](https://marketplace.visualstudio.com/items?itemName=humao.rest-client)
+  - Create a `*.http`|`*.rest` file 
+  - Use `###` to separate calls
+    ```html
+    POST https://example.com/comments HTTP/1.1
+    content-type: application/json
+
+    {
+        "name": "sample",
+        "time": "Wed, 21 Oct 2015 18:27:50 GMT"
+    }
+    ###
+
+    GET https://api.spacexdata.com/v4/launches/latest HTTP/1.1
+    Content-Type: application/json
     ```
-  - Keybindings, you can add your own keybinding in your keybindings.json
+
+- Prettier
+  - [extension link](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
+  - Update your `.vscode/settings.json`
     ```json
     {
-      "key": "ctrl+n", // "cmd+n" on mac
-      "command": "extension.advancedNewFile",
+      "editor.formatOnSave": false,
+      "editor.detectIndentation": false,
+      "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": true
+      },
+
+      // Prettier config file
+      "prettier.configPath": ".prettierrc.toml", // or .prettierrc
+
+      // Define the file types to do the autoformatting
+      "[javascript]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.formatOnSave": true
+      },
+      "[json]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.formatOnSave": true
+      },
+      "[stylus]": {
+        "editor.formatOnSave": true
+      },
     }
     ```
-    - *NOTE* You can also open the keybindings.json file from the Command Palette (Ctrl+Shift+P) with the `Preferences: Open Keyboard Shortcuts (JSON)` command.
-- File Utils
-  - [File Utils](https://marketplace.visualstudio.com/items?itemName=sleistner.vscode-fileutils
-  - [cmd]+[shift]+[P], then >reaname
-- Prettier
-  - [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
+
 - ESLint
-  - [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint
-- SQLTools
-  - [SQLTools](https://marketplace.visualstudio.com/items?itemName=mtxr.sqltools
-- Serverless Console
-  - [Serverless Console](https://marketplace.visualstudio.com/items?itemName=devAdvice.serverlessconsole)
-- Thunder Client
-  - [Thunder Client](https://marketplace.visualstudio.com/items?itemName=rangav.vscode-thunder-client)
-  - Doing `Postman` link request to servers within vscode
+  - [extension link](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint)
+
 - Git Graph
   - [Git Graph](https://marketplace.visualstudio.com/items?itemName=mhutchie.git-graph)
+
 - Document This
   - [Document This](https://marketplace.visualstudio.com/items?itemName=oouo-diogo-perdigao.docthis)
+
 - Styled-Components Syntax
   - [vscode-styled-components](https://marketplace.visualstudio.com/items?itemName=jpoissonnier.vscode-styled-components)
-- Spell Checker
-  - [vscode-spell-checker](https://marketplace.visualstudio.com/items?itemName=streetsidesoftware.code-spell-checker)  
+  
+- Viewing PDF `vscode-pdf`
+  - [extension link](https://marketplace.visualstudio.com/items?itemName=tomoki1207.pdf)
+
+- Terraform syntax
+  - [extension link](https://marketplace.visualstudio.com/items?itemName=4ops.terraform)
+  - Syntax highlighting, Basic syntax validation, & Snippets
+
+- Redux DevTools
+  - [extension link](https://marketplace.visualstudio.com/items?itemName=jingkaizhao.vscode-redux-devtools)
+
+- MDX
+  - MDX support
+  - [extension link](https://marketplace.visualstudio.com/items?itemName=silvenon.mdx)
+  - Update your `.vscode/settings.json`
+    ```json
+    "files.associations": {
+      "*.md": "mdx"
+    },
+    ```
+- Manta's Stylus Supremacy
+  - [extension link](https://marketplace.visualstudio.com/items?itemName=thisismanta.stylus-supremacy)
+  - Stylus Supremacy extension helps formatting Stylus files
+  - [docs](https://thisismanta.github.io/stylus-supremacy/#vscode)
+
+- Material Icon Theme
+  - [extension link](https://marketplace.visualstudio.com/items?itemName=PKief.material-icon-theme)
+
+- Docker
+  - [extension link](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-docker)
+
+- DotENV
+  - [extension link](https://marketplace.visualstudio.com/items?itemName=mikestead.dotenv)
+
+- JavaScript and TypeScript Nightly
+  - [extension link](https://marketplace.visualstudio.com/items?itemName=ms-vscode.vscode-typescript-next)
 
 
 # Stop Github from asking for your rsa keyphrase
