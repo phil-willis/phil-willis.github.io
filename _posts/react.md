@@ -56,7 +56,318 @@ ogImage:
 
 
 # Setting up a React application
-- boilerplates (CRA, NEXT, Snowpack, Vite, Parcel)
+- boilerplates (Create-react-app, NEXT, Snowpack, Vite, Parcel)
+
+
+## Create-React-App
+- Not really a bundler but it does abstract all the webpack stuff for you and it focused on React web applications
+  ```shell
+  $ npx create-react-app <PROJECT_NAME>
+  $ npx create-react-app <PROJECT_NAME> --template typescript
+  ```
+
+
+
+## Snowpack
+- [Snowpack](https://www.snowpack.dev/) homepage
+- Snowpack is a faster frontend build tool 
+- what is the learning curve? "Once you try it, it's impossible to go back to anything else."
+- Snowpack doesn't rebundle the entire application, it only 
+- If you are familiar with `webpack`, you would know that while developing you would use the `webpack-dev-server`, everytime you save a file it rebuilds the entire application, rebundles, and serves it to the browser
+- With `Snowpack` the massive benefit is that it bundles and caches all your dependencies and only rebuild/serve the changes that you make to your source code and only the files that you've changed instead of rebundling the entire application
+- It's an insanely fast build tool
+
+- Let get it setup:
+
+1. Install `snowpack` as a dev dependency
+  ```shell
+  $ npm init -y
+  $ npm install --save-dev snowpack
+  ```
+2. Update your `package.json` file
+  ```json
+  {
+    "scripts": {
+      "start": "snowpack dev",
+      "build": "snowpack build"
+    },
+  }
+  ```
+3. Create a `./public/index.html`
+  ```html
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hello Snowpack</title>
+  </head>
+  <body>
+    <h1>Hello snowpack!!</h1>
+  </body>
+  </html>
+  ```
+4. Create a `snowpack.config.js` file
+  ```js
+  // Snowpack Configuration File
+  // See all supported options: https://www.snowpack.dev/reference/configuration
+
+  /** @type {import("snowpack").SnowpackUserConfig } */
+  module.exports = {
+    mount: {
+      public: { url: "/", static: true },
+      src: "/src",
+    }
+  };
+  ```
+5. Run snowpack for the first time
+  - Run:
+    ```shell
+    $ npm start
+    ```
+  - When you run this for the first time it will just reload the changes to the html file cause you haven't referenced a js script yet
+6. Let's add React
+  - **Snowpack will deal with all the babel stuff for you!** so no need to deal with babelrc files
+  - **Note** If you are working with a `React` app you make your entry file `./src/index.jsx` and reference the files as `./src/index.js` in your `./public/index.html` file. Snowpack will deal with the rest. When it compiles from a `jsx` to a `js` file we will have that  `./src/index.js`
+  - Run:
+    ```shell
+    $ npm i react react-dom
+    ``` 
+  - Create a `./src/index.jsx` file
+    ```js
+    import React from "react";
+    import ReactDOM from "react-dom";
+
+    import App from './App.jsx'
+
+    ReactDOM.render(<App />, document.getElementById('root'));
+    ```
+  - Create a `./src/App.jsx` file
+    ```js
+    import React from 'react'
+
+    export default function App(){
+      return <div>Hello React with snowpack</div>
+    }
+    ```
+  - Update the `./public/index.html`
+    ```html
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Hello Snowpack & React</title>
+    </head>
+    <body>
+      <div id="root"></div>
+      <script type="module" src="../src/index.js"></script>
+    </body>
+    </html>
+    ```
+7. Add `CSS Modules` at not cost!
+  - Create a `./src/styles.module.css` file and add:
+    ```css
+    .main{
+      color: red;
+    }
+    ```
+  - You can add this to your `./src/App.jsx` file 
+    ```js
+    import React from 'react'
+    import styles from './styles.module.css'
+
+    export default function App() {
+      return <div className={styles.main}>Hello React with snowpack</div>
+    }
+    ```
+
+
+8. Convert your `js` to `ts`
+  - Change all your `jsx|js` files inside of the `./src/*` folder
+  - Install some dependencies:
+    ```shell
+    $ npm i -D typescript @types/react @types/react-dom @snowpack/plugin-typescript
+    ```
+  - Add a `./tsconfig.json` file with:
+    ```json
+    {
+      "compilerOptions": {
+        "module": "ESNext",
+        "target": "ESNext",
+        "strict": true,
+        "moduleResolution": "node",
+        "esModuleInterop": true,
+        "jsx": "preserve",
+        "noEmit": true,
+        "skipLibCheck": true,
+        "typeRoots": [
+          "node_modules/@types",
+          "types"
+        ]
+      },
+      "include": [
+        "src",
+        "types"
+      ]
+    }
+    ```
+  - Add some type for images and css-modules
+    ```js
+    // `./types/css.d.ts`
+    declare module '*.css' {
+      const classNames: { [className: string]: string };
+      export default classNames;
+    }
+    ```
+    ```js
+    // `./types/images.d.ts`
+    declare module '*.png';
+    declare module '*.jpg';
+    declare module '*.svg';
+    ```
+
+  - Add some file alias to your `./snowpack.config.js` files
+    ```js
+    module.exports = {
+      alias: {
+        "@/components": "./src/components",
+      }
+    };
+    ```
+
+  - Add alias to your `./tsconfig.json` file 
+    ```json
+    {
+      "compilerOptions": {
+        "baseUrl": "./src",
+        "paths": {
+          "@/components/*": ["components/*"]
+        }
+      }
+    }
+    ```
+  - Rerun `$ npm start`
+
+- Adding Testing
+  - Snowpack supports all of the popular JavaScript testing frameworks that you’re already familiar with. Mocha, Jest, Jasmine, AVA and Cypress are all supported in Snowpack applications, if integrated correctly.
+  - Snowpack ships pre-built Jest configuration files for several popular frameworks. If you need to use Jest for any reason,consider extending one of these packages: `@snowpack/app-scripts-react`, `@snowpack/app-scripts-preact`, `@snowpack/app-scripts-svelte`
+  - The people at snowpack strongly recommend `@web/test-runner` (WTR) for testing in Snowpack projects.
+
+
+```shell
+$ npm install --save-dev @web/test-runner @snowpack/web-test-runner-plugin chai @testing-library/react
+```
+
+- Install packages
+  ```shell
+  $ npm i -D jest @snowpack/app-scripts-react @testing-library/react @testing-library/jest-dom
+  ```
+- Create `jest.config.js` to extend the pre-built Jest configuration file
+  ```js
+  module.exports = {
+    ...require('@snowpack/app-scripts-preact/jest.config.js')(),
+  };
+  ```
+
+- `@testing-library/react` =>  It provides light utility functions on top of react-dom and react-dom/test-utils
+- `@testing-library/jest-dom` => Checking for an element's attributes, its text content, its css classes, you name it (used jest to write tests that assert various things about the state of a DOM)
+- `react-test-render` => grab a snapshot of the "DOM tree" rendered by a React DOM or React Native component without using a browser or jsdom.
+
+
+
+## Parcel
+- [Parcel](https://parceljs.org/) homepage
+  ```shell
+  $ npm init -y
+  $ npm i parcel-bundler
+  ```
+- Update the `package.json` file
+  ```json
+  {
+    "scripts": {
+      "start": "parcel -p 8080 watch public/index.html",
+      "build": "parcel build public/index.html"
+    }
+  }
+  ```
+- Create a `public/index.html` file
+  ```html
+  <html>
+  <body>
+    <script src="../src/index.js"></script>
+  </body>
+  </html>
+  ```
+- Create a `src/index.html` file
+  ```html
+  console.log("hello Parcel")
+  ```
+- Add Typescript & react
+  ```shell
+  $ npm i react react-dom
+  ```
+- Update a `public/index.html` file
+  ```html
+  <html>
+  <body>
+    <div id="root"></div>
+    <script src="../src/index.tsx"></script>
+  </body>
+  </html>
+  ```
+- Create a `src/index.tsx`
+  ```js
+  import React from 'react'
+  import ReactDOM from 'react-dom'
+
+  console.log('Hello from tsx!')
+
+  ReactDOM.render(
+    <p>Hello</p>,
+    document.getElementById('root'),
+  )
+  ```
+- Create a `tsconfig.json`
+  ```json
+  {
+    "compilerOptions": {
+      "jsx": "react"
+    }
+  }
+  ```
+
+## Vite
+- [Vite](https://vitejs.dev/) homepage
+  ```shell
+  $ npm init vite@latest <YOUR_APP_NAME> -- --template react-ts
+  ```
+- Template options:
+  ```shell
+  vanilla
+  vanilla-ts
+  vue
+  vue-ts
+  react
+  react-ts
+  preact
+  preact-ts
+  lit-element
+  lit-element-ts
+  svelte
+  svelte-ts
+  ```
+
+
+
+
+
+
+
+
+
 
 
 
