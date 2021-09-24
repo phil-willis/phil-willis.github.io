@@ -408,6 +408,31 @@ ogImage:
     })
   }
   ```
+- Using a `batch` allows you to preform multiple functions on the DB and have them fail/success together
+  ```js
+  // Get a new write batch
+  var batch = db.batch();
+
+  // Set the value of 'NYC'
+  var nycRef = db.collection("cities").doc("NYC");
+  batch.set(nycRef, {name: "New York City"});
+
+  // Update the population of 'SF'
+  var sfRef = db.collection("cities").doc("SF");
+  batch.update(sfRef, {"population": 1000000});
+
+  // Delete the city 'LA'
+  var laRef = db.collection("cities").doc("LA");
+  batch.delete(laRef);
+
+  // Commit the batch
+  batch.commit().then(() => {
+      // ...
+  });
+  ```
+
+
+
 - You can view your current DB rules [here](http://localhost:8088/emulator/v1/projects/<database_name>:ruleCoverage.html)
 - Make sure that when you create a **timestamp** that you use thee `serverTimestamp()` provided by firebase `import { serverTimestamp } from 'firebase/firestore'` to make sure the timestamp is consistent along all client devices
 - [Docs on preforming simple & compound queries](https://firebase.google.com/docs/firestore/query-data/queries)
@@ -570,7 +595,9 @@ ogImage:
 
 
 
-
+# Firebase Storage 
+- When working with an Application with user's it's best to make a folder in your storage with the uid of that user
+- When you add files to the *Firebase Storage* it will create a storage location URL for that file
 
 
 
