@@ -359,8 +359,46 @@ $ npm install --save-dev @web/test-runner @snowpack/web-test-runner-plugin chai 
   svelte
   svelte-ts
   ```
-
-
+- Add some testing packages
+  ```shell
+  $ npm i -D jest ts-jest @testing-library/jest-dom @testing-library/react identity-obj-proxy
+  ```
+- Update the package.json scripts
+  ```json
+  {
+    "scripts": {
+      "dev": "vite",
+      "build": "tsc && vite build",
+      "serve": "vite preview",
+      "lint": "prettier --write src/**/*.ts{,x}",
+      "test": "jest --colors --watch",
+      "test:once": "jest --colors",
+      "pretest:coverage": "jest --colors --collectCoverage=true",
+      "test:coverage": "npx http-server coverage/lcov-report"
+    }
+  }
+  ```
+- Add a `jest.config.js` file
+  ```js
+  module.exports = {
+    roots: ['<rootDir>/src'],
+    transform: {
+      '^.+\\.tsx$': 'ts-jest',
+      '^.+\\.ts$': 'ts-jest',
+    },
+    testRegex: '(/src/.*.(test|spec)).(jsx?|tsx?)$',
+    moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
+    collectCoverage: true,
+    collectCoverageFrom: ['<rootDir>/src/**/*.{ts,tsx}'],
+    coverageDirectory: '<rootDir>/coverage/',
+    coveragePathIgnorePatterns: ['(tests/.*.mock).(jsx?|tsx?)$', '(.*).d.ts$'],
+    moduleNameMapper: {
+      '.+\\.(css|styl|less|sass|scss|png|jpg|ttf|woff|woff2|svg)$': 'identity-obj-proxy',
+    },
+    verbose: true,
+    testTimeout: 30000,
+  }
+  ```
 
 
 
