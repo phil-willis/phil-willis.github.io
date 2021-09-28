@@ -265,3 +265,161 @@ ogImage:
         return <div>Hello</div>
       }
       ```
+
+
+
+# Tired of having to add all the linting files
+- Make a shell script!!
+- You can create a stand-alone script file or add it to your `.zshrc` file
+- If you are adding it to your `.zshrc` file make sure that you do a `$ source ~/.zshrc` in your terminal to update
+
+## Add Linting to React App
+  ```sh
+  function add-linting(){
+    npm i -D @types/react @types/react-dom prettier eslint eslint-config-prettier eslint-plugin-prettier
+
+    # Create `.eslintrc` files
+    cat << 'EOT' > .eslintrc
+  {
+    "extends": [ "react-app", "prettier"],
+    "plugins": ["prettier"],
+    "rules": {
+      "prettier/prettier": ["error"]
+    },
+  }
+  EOT
+
+    # Create `.prettierrc` files
+    cat << 'EOT' > .prettierrc
+  {
+    "semi": false,
+    "trailingComma": "all",
+    "singleQuote": true,
+    "printWidth": 100
+  }
+  EOT
+
+    # Create `.vscode/settings.json` files
+    mkdir .vscode
+    cat << 'EOT' > .vscode/settings.json
+  {
+    // Set prettier to be the default formatter
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+
+    // Don't format any files by default
+    "editor.formatOnSave": false,
+
+    // Define the file types to do the autoformatting
+    "[javascript]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode",
+      "editor.formatOnSave": true
+    },
+    "[javascriptreact]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode",
+      "editor.formatOnSave": true
+    },
+    "[json]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode",
+      "editor.formatOnSave": true
+    }
+
+  }
+  EOT
+
+    # Echo
+    echo "[Add this to your package.json scripts]"
+    echo "\"lint\": \"prettier --config .prettierrc 'src/**/*.js' --write\""
+
+    # DONE
+  }
+  ```
+
+
+## Add Linting to React + Typescript App
+  ```sh
+  function add-linting-ts(){
+    npm i -D @typescript-eslint/eslint-plugin @typescript-eslint/parser eslint-plugin-jest prettier eslint-config-prettier eslint-plugin-prettier
+
+    # Create `.eslintrc` files
+    cat << 'EOT' > .eslintrc
+  {
+    "extends": [
+      "plugin:@typescript-eslint/recommended",
+      "plugin:jest/recommended",
+      "plugin:prettier/recommended"
+    ],
+    "plugins": ["react", "@typescript-eslint", "jest"],
+    "env": {
+      "browser": true,
+      "es6": true,
+      "jest": true
+    },
+    "globals": {
+      "Atomics": "readonly",
+      "SharedArrayBuffer": "readonly"
+    },
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+      "ecmaFeatures": {
+        "jsx": true
+      },
+      "ecmaVersion": 2018,
+      "sourceType": "module",
+      "project": "./tsconfig.json"
+    }
+  }
+  EOT
+
+    # Create `.prettierrc` files
+    cat << 'EOT' > .prettierrc
+  {
+    "semi": false,
+    "trailingComma": "all",
+    "singleQuote": true,
+    "printWidth": 100
+  }
+  EOT
+
+    # Create `.vscode/settings.json` files
+    mkdir .vscode
+    cat << 'EOT' > .vscode/settings.json
+  {
+    // Set prettier to be the default formatter
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+
+    // Don't format any files by default
+    "editor.formatOnSave": false,
+
+    // Define the file types to do the autoformatting
+    "[javascript]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode",
+      "editor.formatOnSave": true
+    },
+    "[typescript]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode",
+      "editor.formatOnSave": true
+    },
+    "[typescriptreact]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode",
+      "editor.formatOnSave": true
+    },
+    "[json]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode",
+      "editor.formatOnSave": true
+    },
+  }
+  EOT
+
+    # Echo
+    echo "[Add this to your package.json scripts]"
+    echo "\"lint\": \"prettier --write src/**/*.ts{,x}\""
+
+    # DONE
+  }
+  ```
+  
+
+
+
+
+
