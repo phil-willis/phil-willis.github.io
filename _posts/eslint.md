@@ -274,7 +274,7 @@ ogImage:
 - If you are adding it to your `.zshrc` file make sure that you do a `$ source ~/.zshrc` in your terminal to update
 
 ## Add Linting to React App
-  ```sh
+  ```shell
   function add-linting(){
     npm i -D @types/react @types/react-dom prettier eslint eslint-config-prettier eslint-plugin-prettier
 
@@ -336,7 +336,7 @@ ogImage:
 
 
 ## Add Linting to React + Typescript App
-  ```sh
+  ```shell
   function add-linting-ts(){
     npm i -D @typescript-eslint/eslint-plugin @typescript-eslint/parser eslint-plugin-jest prettier eslint-config-prettier eslint-plugin-prettier
 
