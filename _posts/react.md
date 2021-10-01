@@ -77,7 +77,29 @@ ogImage:
 - With `Snowpack` the massive benefit is that it bundles and caches all your dependencies and only rebuild/serve the changes that you make to your source code and only the files that you've changed instead of rebundling the entire application
 - It's an insanely fast build tool
 
-- Let get it setup:
+- Starting for a official boilerplate:
+  ```shell
+  $ npx create-snowpack-app <PROJECT_NAME> --template @snowpack/app-template-<NAME_NAME>
+  $ npx create-snowpack-app <PROJECT_NAME> --template @snowpack/app-template-react-typescript
+  ```
+
+  ```html
+  @snowpack/app-template-blank
+  @snowpack/app-template-blank-typescript
+  @snowpack/app-template-11ty
+  @snowpack/app-template-lit-element
+  @snowpack/app-template-lit-element-typescript
+  @snowpack/app-template-preact
+  @snowpack/app-template-preact-typescript
+  @snowpack/app-template-react
+  @snowpack/app-template-react-typescript
+  @snowpack/app-template-svelte
+  @snowpack/app-template-svelte-typescript
+  @snowpack/app-template-vue
+  @snowpack/app-template-vue-typescript
+  ```
+
+- Let get it setup manually:
 
 1. Install `snowpack` as a dev dependency
   ```shell
