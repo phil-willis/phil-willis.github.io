@@ -251,30 +251,119 @@ ogImage:
     ```
   - Rerun `$ npm start`
 
-- Adding Testing
+### Adding Testing with (@web/test-runner & chai)
   - Snowpack supports all of the popular JavaScript testing frameworks that you’re already familiar with. Mocha, Jest, Jasmine, AVA and Cypress are all supported in Snowpack applications, if integrated correctly.
   - Snowpack ships pre-built Jest configuration files for several popular frameworks. If you need to use Jest for any reason,consider extending one of these packages: `@snowpack/app-scripts-react`, `@snowpack/app-scripts-preact`, `@snowpack/app-scripts-svelte`
   - The people at snowpack strongly recommend `@web/test-runner` (WTR) for testing in Snowpack projects.
+    ```shell
+    $ npm install --save-dev @web/test-runner @snowpack/web-test-runner-plugin chai @testing-library/react
+    ```
 
+  - Install packages
+    ```shell
+    $ npm i -D jest @snowpack/app-scripts-react @testing-library/react @testing-library/jest-dom
+    ```
+  - Create `jest.config.js` to extend the pre-built Jest configuration file
+    ```js
+    module.exports = {
+      ...require('@snowpack/app-scripts-preact/jest.config.js')(),
+    };
+    ```
 
-```shell
-$ npm install --save-dev @web/test-runner @snowpack/web-test-runner-plugin chai @testing-library/react
-```
+  - `@testing-library/react` =>  It provides light utility functions on top of react-dom and react-dom/test-utils
+  - `@testing-library/jest-dom` => Checking for an element's attributes, its text content, its css classes, you name it (used jest to write tests that assert various things about the state of a DOM)
+  - `react-test-render` => grab a snapshot of the "DOM tree" rendered by a React DOM or React Native component without using a browser or jsdom.
 
-- Install packages
+### Adding testing with (Jest & RTL)
+
+- Install some dependencies
   ```shell
-  $ npm i -D jest @snowpack/app-scripts-react @testing-library/react @testing-library/jest-dom
+  $ npm i -D @snowpack/app-scripts-react @testing-library/jest-dom @testing-library/react identity-obj-proxy jest ts-jest
   ```
-- Create `jest.config.js` to extend the pre-built Jest configuration file
+
+- Update your `package.json` scripts
+  ```json
+  {
+    "scripts": {
+      "start": "snowpack dev",
+      "build": "snowpack build",
+      "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx}\"",
+      "lint": "prettier --check \"src/**/*.{js,jsx,ts,tsx}\"",
+      "test": "jest --colors --watch",
+      "test:once": "jest --colors",
+      "pretest:coverage": "jest --colors --collectCoverage=true",
+      "test:coverage": "npx http-server coverage/lcov-report"
+    }
+  }
+  ```
+
+- Update the `tsconfig.json` file
+  ```json
+  {
+    "include": ["src", "types"],
+    "compilerOptions": {
+      "module": "esnext",
+      "target": "esnext",
+      "moduleResolution": "node",
+      "baseUrl": "./",
+      "paths": {
+        // If you configured any Snowpack aliases, add them here.
+      },
+      "noEmit": true,
+      "strict": true,
+      "types": [ "snowpack-env"],
+      "forceConsistentCasingInFileNames": true,
+      "resolveJsonModule": true,
+      "allowSyntheticDefaultImports": true,
+      "importsNotUsedAsValues": "error",
+      "jsx": "react-jsx"
+    }
+  }
+  ```
+
+- Create a `jest.config.js`
   ```js
   module.exports = {
-    ...require('@snowpack/app-scripts-preact/jest.config.js')(),
-  };
+    ...require('@snowpack/app-scripts-react/jest.config.js')(),
+    roots: ['<rootDir>/src'],
+    transform: {
+      '^.+\\.tsx$': 'ts-jest',
+      '^.+\\.ts$': 'ts-jest',
+    },
+    moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
+    collectCoverage: true,
+    collectCoverageFrom: [
+      '<rootDir>/src/**/*.{ts,tsx}',
+    ],
+    testPathIgnorePatterns : [
+      "<rootDir>/ignore/this/path/" 
+    ],
+    coverageDirectory: '<rootDir>/coverage/',
+    coveragePathIgnorePatterns: [
+      '<rootDir>/src/index.ts',
+      '(tests/.*.mock).(jsx?|tsx?)$', 
+      '(.*).d.ts$'
+  ],
+    moduleNameMapper: {
+      '.+\\.(css|styl|less|sass|scss|png|jpg|ttf|woff|woff2|svg)$': 'identity-obj-proxy',
+    },
+    verbose: true,
+    testTimeout: 30000,
+    setupFilesAfterEnv: ['./jest.setup.js'],
+  }
   ```
-
-- `@testing-library/react` =>  It provides light utility functions on top of react-dom and react-dom/test-utils
-- `@testing-library/jest-dom` => Checking for an element's attributes, its text content, its css classes, you name it (used jest to write tests that assert various things about the state of a DOM)
-- `react-test-render` => grab a snapshot of the "DOM tree" rendered by a React DOM or React Native component without using a browser or jsdom.
+- Create a `jest.setup.js`
+  ```js
+  import { server } from '__src/mockServices/server'
+  
+  // Establish API mocking before all tests.
+  beforeAll(() => server.listen())
+  // Reset any request handlers that we may add during the tests,
+  // so they don't affect other tests.
+  afterEach(() => server.resetHandlers())
+  // Clean up after the tests are finished.
+  afterAll(() => server.close())
+  ```
 
 
 
