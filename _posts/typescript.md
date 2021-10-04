@@ -11,7 +11,49 @@ ogImage:
 
 
 
+# TypeScript nodejs project
 
+- Initialize an app
+  ```shell
+  $ npm init -y
+  $ npm i --save-dev ts-node ts-node-dev typescript
+  ```
+- You clean this `tsconfig.json` file to something like this
+  ```json
+  {
+    "compilerOptions": {
+      "target": "es6",
+      "module": "commonjs",
+      "declaration": true,
+      "sourceMap": true,
+      "outDir": "dist",
+      "rootDir": "./src",
+      "strict": true,
+      "esModuleInterop": true
+    }
+  }
+  ```
+- Create a ts file
+  ```shell
+   $ mkdir src
+   $ echo "console.log('Hello typescript !')" > src/index.ts
+  ```
+- Update your `package.json` file
+  ```json
+  {
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "scripts": {
+      "start": "node dis/index.js",
+      "dev": "ts-node-dev --respawn -- src/index.ts",
+      "build": "tsc"
+    }
+   }
+  ```
+- Start developing
+  ```shell
+  $ npm run dev
+  ```
 
 # React + typeScript
 - First thing to do is to setup a project that can handle & compile a Typescript
