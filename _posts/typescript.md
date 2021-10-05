@@ -35,8 +35,8 @@ ogImage:
   ```
 - Create a ts file
   ```shell
-   $ mkdir src
-   $ echo "console.log('Hello typescript !')" > src/index.ts
+  $ mkdir src
+  $ echo "console.log('Hello typescript !')" > src/index.ts
   ```
 - Update your `package.json` file
   ```json
@@ -44,7 +44,7 @@ ogImage:
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
     "scripts": {
-      "start": "node dis/index.js",
+      "start": "node dist/index.js",
       "dev": "ts-node-dev --respawn -- src/index.ts",
       "build": "tsc"
     }
