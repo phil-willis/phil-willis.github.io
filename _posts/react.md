@@ -1363,6 +1363,14 @@ export default function MyParent({ items }) {
   fireEvent.change(container.querySelector('input'), {target: { value: 'ahhhh' }})
   ```
 
+- Testing tips
+```js
+expect(getAllByRole('row')[3]).toContainTextContent(/45/)
+fireEvent.click(within(getAllByRole('row')[2]).getByText('Delete'))
+
+
+```
+
 - Testing code that request data from `msw`
   ```js
   
