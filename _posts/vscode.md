@@ -302,6 +302,9 @@ ogImage:
 - JavaScript and TypeScript Nightly
   - [extension link](https://marketplace.visualstudio.com/items?itemName=ms-vscode.vscode-typescript-next)
 
+- Swagger Viewer
+  - [Swagger Viewer](https://marketplace.visualstudio.com/items?itemName=Arjun.swagger-viewer)
+  - Do a `[cmd][shift][p] > swagger`
 
 # Stop Github from asking for your rsa keyphrase
 - Add your key to ssh-agent (storing the passphrase in MacOS Keychain!)
