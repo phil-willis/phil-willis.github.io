@@ -224,6 +224,14 @@ ogImage:
     GET https://api.spacexdata.com/v4/launches/latest HTTP/1.1
     Content-Type: application/json
     ```
+   - Using variables
+    ```hml
+    @token = xxx
+
+    GET https://api.awesomeness.com HTTP/1.1
+    Authorization: Bearer {{token}}
+    Content-Type: application/json
+    ```
 
 - Prettier
   - [extension link](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
