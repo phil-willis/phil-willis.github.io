@@ -84,6 +84,38 @@ ogImage:
 - The package-lock.json sets your currently installed version of each package in stone, and npm will use those exact versions when running npm install.
 - The `package-lock.json` file needs to be committed to your Git repository, so it can be fetched by other people, if the project is public or you have collaborators, or if you use Git as a source for deployments.
 
+# Node package managers
+- When you install `Node.js` `npm` (Node Package Manager) gets installed along with it
+- NPM does 2 things:
+  - It serves as an online platform registry where anyone can create/update/publish node packages
+  - It's a command-line tool, where you can download packages from the npm registry
+- Updating npm
+  ```shell
+  $ npm i -g npm
+  ```
+- Yarn (Yet Another Resource Negotiator) is a JavaScript package manager created by Facebook. It provides similar functionalities as NPM. It is an alternative to NPM when installing, uninstalling, and managing package dependencies from the NPM registry or GitHub repositories.
+- Updating yarn
+  ```shell
+  $ npm i -g yarn
+  ```
+- Reasons for using yarn:
+  - Enhanced security
+  - Better stability
+  - Faster
+  - Has offline mode, can install packages from local cache
+  - Resolved issues around `versioning` using `lock` files
+  - Reuses NPM json files and doesn't change its structure
+  - Imposes string guarantees around package installations
+  - Active user community
+- Not all roses
+  - new package manager, sometimes more skepticism
+  - Smaller community than NPM
+  - Problems installing "Native Modules"
+  - Doesn't work with Nodejs version < 5
+
+![similar-npm-vs-yarn-commands](https://user-images.githubusercontent.com/79557260/138965939-58b9a4d5-2e38-4210-a471-b7f3d8d3ff5c.jpg)
+
+
 
 
 # Creating a npm package
