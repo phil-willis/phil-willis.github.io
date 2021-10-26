@@ -249,7 +249,23 @@ ogImage:
     fi
     terraform plan -var-file=$VAR_FILE
     ```
+- You can provide variables via the terminal 
 
+  ```shell
+  terraform apply -auto-approve \
+    -var="SOME_VAR_NAME=SOME_VALUE" \
+    -var="SOME_OTHER_VAR_NAME=SOME_VALUE"
+  ```
+
+  ```hcl
+  variable "SOME_VAR_NAME" {
+    type = string
+  }
+
+  variable "SOME_OTHER_VAR_NAME" {
+    type = string
+  }
+  ```
 
 
 ## Locals (Local Value Configuration)
