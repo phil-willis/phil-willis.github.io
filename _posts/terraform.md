@@ -594,8 +594,93 @@ $ terraform apply -auto-approve
   ```
 
 
+# Terraform for New Relic Dashboard
+- Assign some variables to the new-relic account id & api-key
+  ```hcl
+  variable account_id {}
+  variable api_key {}
+  ```
+- terraform block & newrelic provider
+  ```hcl
+  terraform {
+    required_version = ">= 0.13.5"
+    required_providers {
+      newrelic = {
+        source  = "newrelic/newrelic"
+        version = "~> 2.21.0"
+      }
+    }
+  }
 
+  provider "newrelic" {
+    account_id = var.account_id
+    api_key    = var.api_key
+    region     = "US" # Valid regions are US and EU
+  }
+  ```
 
+- Create a new relic one dashboard
+  ```hcl
+  resource "newrelic_one_dashboard" "nark_dashboard" {
+    name = var.dashboard_name
+
+    page {
+      name = var.dashboard_name
+
+      widget_markdown {
+        title  = "Dashboard Note"
+        row    = 1
+        column = 1
+        text = "# A"
+      }
+      widget_markdown {
+        title  = "Dashboard Note"
+        row    = 1
+        column = 5
+        text = "# B"
+      }
+      widget_markdown {
+        title  = "Dashboard Note"
+        row    = 1
+        column = 9
+        text = "# C"
+      }
+
+      widget_markdown {
+        title  = "Dashboard Note"
+        row    = 5
+        column = 1
+        text = "# D"
+      }
+      widget_markdown {
+        title  = "Dashboard Note"
+        row    = 5
+        column = 5
+        text = "# E"
+      }
+      widget_markdown {
+        title  = "Dashboard Note"
+        row    = 5
+        column = 6
+        text = "# F"
+      }
+
+    }
+  }
+  ```
+- Pass in the newrelic account/api-key which running the terraform script
+  ```shell
+  $ NR_ACCOUNT_NUMBER="****"
+  $ NR_API_KEY="****"
+
+  $ terraform plan \
+    -var="account_id=$NR_ACCOUNT_NUMBER" \
+    -var="api_key=$NR_API_KEY"
+
+  $ terraform apply -auto-approve \
+    -var="account_id=$NR_ACCOUNT_NUMBER" \
+    -var="api_key=$NR_API_KEY"
+  ```
 
 
 
