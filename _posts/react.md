@@ -6,7 +6,7 @@ ogImage:
   url: '/assets/covers/react.jpg'
 ---
 
-
+<!--
 # Overview of react
 
 # Topics
@@ -51,7 +51,7 @@ ogImage:
 - Craco
   - file alias
   - css modules
-- local & session storage
+- local & session storage -->
 
 
 
@@ -469,7 +469,7 @@ ogImage:
   ```json
   {
     "scripts": {
-      "dev": "vite",
+      "dev": "vite --port 3003",
       "build": "tsc && vite build",
       "serve": "vite preview",
       "lint": "prettier --write src/**/*.ts{,x}",
