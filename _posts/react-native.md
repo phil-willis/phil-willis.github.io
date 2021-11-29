@@ -1,5 +1,5 @@
 ---
-title: 'react'
+title: 'react native'
 excerpt: ''
 coverImage: '/assets/covers/react.jpg'
 ogImage:
