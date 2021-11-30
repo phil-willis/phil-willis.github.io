@@ -343,7 +343,11 @@ https://dev.to/joshaguilar/fully-automating-npm-package-releases-3k7ez
         PATH="/usr/local/opt/grep/libexec/gnubin:$PATH"
         ```
 - *note :* every time you switch node versions you'll have to install all your globals again as well as you will have to delete your projects `node_modules` because these dependencies are specfic to the exact node version & OS installed
-
+- Upgrade `NVM` 
+  ```shell
+  $ nvm install stable --reinstall-packages-from=current
+  ```
+    
 - If your npm global packages point to a different nodejs version run this
     ```shell
     $ npm list -g --depth=0
