@@ -89,13 +89,13 @@ jq '.browserslist.production[] | ' client/input.json
 ```
 
 ## Update a JSON file
-```
+```shell
 $ echo "`jq '.scripts.serve="node dist/index.js"' package.json`" > package.json
 $ newVal="node dist/index.js"; echo "`jq --arg newVal "$newVal"  '.scripts.serve=$newVal' package.json`" > package.json
 ```
 
 ## Loop thru array
-```bash
+```shell
 sample='[{"name":"foo"},{"name":"bar"}]'
 echo "${sample}" | jq '.'
 ```
@@ -112,18 +112,18 @@ sub("<LOOKING_FOR>", "<REPLACE_WITH>")
 
 ## Output in a single line
 - To get outputs from jq on a single line use the `-c` flag
-  ```bash
+  ```shell
   jq -c . input
   ```
 
 ## Raw Output
 - This allows you to not have wrapped quotes around the result
-  ```bash
+  ```shell
   jq -r . input
   ```
 
 ## AWS-CLI and JQ
-```bash
+```shell
 $ aws route53 list-hosted-zones | jq '.[]'
 $ aws route53 list-hosted-zones | jq '.HostedZones[]'
 $ aws route53 list-hosted-zones | jq '.HostedZones[].Name'
@@ -349,7 +349,7 @@ $ aws route53 get-hosted-zone --id $hz
   }
   ```
 - Now you can create a new npm node
-  ```
+  ```shell
   $ cd mkdir some-new-dir && $_
   $ init-nodejs
   ```
