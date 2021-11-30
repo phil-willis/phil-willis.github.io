@@ -8,6 +8,8 @@ ogImage:
 
 
 # Overview of bash
+- Bash is the shell, or command language interpreter, for the GNU operating system. 
+- The name is an acronym for the ‘Bourne-Again SHell’, a pun on Stephen Bourne, the author of the direct ancestor of the current Unix shell sh, which appeared in the Seventh Edition Bell Labs Research version of Unix.
 
 ## Bash tips
 - Create a new directory or folder
@@ -17,8 +19,17 @@ ogImage:
   # For oh-my-zsh users:
   $ take <directory_name>
   ```
- 
- 
+
+# Set Environment Variables in Your Bash Shell From a `.env` File
+  ```shell
+  # Show env vars
+  grep -v '^#' .env
+
+  # Export env vars
+  export $(grep -v '^#' .env | xargs)
+  ```
+
+
 
 # Kill process running on a port number
 
