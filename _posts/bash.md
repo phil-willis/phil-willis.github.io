@@ -59,7 +59,7 @@ $ for f in *.jsx; do mv -- "$f" "${f%.jsx}.tsx"; done
 - [playground](https://jqplay.org/)
 
 ## How to filter
-```sh
+```shell
 # read a file
 jq '.' package.json
 
