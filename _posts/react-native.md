@@ -1,9 +1,9 @@
 ---
 title: 'react native'
 excerpt: ''
-coverImage: '/assets/covers/react.jpg'
+coverImage: '/assets/covers/react-native.jpg'
 ogImage:
-  url: '/assets/covers/react.jpg'
+  url: '/assets/covers/react-native.jpg'
 ---
 
 
