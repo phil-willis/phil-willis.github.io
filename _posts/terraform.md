@@ -74,9 +74,6 @@ ogImage:
   }
   ```
   
-  
-  
-  ```
 - Key: the path to the state file inside the bucket. When using a non-default workspace, the state path will be /workspace_key_prefix/workspace_name/key
   ```hcl
   data "terraform_remote_state" "network" {
