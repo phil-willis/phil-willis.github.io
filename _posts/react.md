@@ -376,6 +376,7 @@ ogImage:
   ```
 - Create a `jest.setup.js`
   ```js
+  import '@testing-library/jest-dom/extend-expect'
   ```
 
 
