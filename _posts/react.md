@@ -378,6 +378,38 @@ ogImage:
   ```js
   import '@testing-library/jest-dom/extend-expect'
   ```
+### Using MSW with Snowpack?
+- You need to update the `packageOptions`
+- I believe this is because `msw` module depends on Node built-ins
+  ```js
+  /** @type {import("snowpack").SnowpackUserConfig } */
+  module.exports = {
+
+    packageOptions: {
+      polyfillNode: true,
+      external: [
+        'crypto',
+        'events',
+        'fs',
+        'http',
+        'https',
+        'net',
+        'os',
+        'path',
+        'stream',
+        'tls',
+        'url',
+        'zlib',
+      ],
+    }
+
+  }
+  ```
+### Other snowpack configs tweaks
+
+
+
+
 
 
 
