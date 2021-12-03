@@ -21,6 +21,7 @@ ogImage:
   ```
 
 # Set Environment Variables in Your Bash Shell From a `.env` File
+- You can load all the environment variables from a file
   ```shell
   # Show env vars
   grep -v '^#' .env
@@ -28,25 +29,26 @@ ogImage:
   # Export env vars
   export $(grep -v '^#' .env | xargs)
   ```
-
-
+- Only load them if the file exist
+  ```shell
+  if [ -f .env ]; then export $(cat .env | xargs); fi
+  ```
 
 # Kill process running on a port number
+  ```shell
+  # Find:
+  $ lsof -i :3000
 
-```shell
-# Find:
-$ lsof -i :3000
-
-# Kill:
-$ kill -9 <PID>
-```
+  # Kill:
+  $ kill -9 <PID>
+  ```
 
 
 # Change the extension of all files in a directory
 - Change all `*.jsx` to `*.tsx`
-```shell
-$ for f in *.jsx; do mv -- "$f" "${f%.jsx}.tsx"; done
-```
+  ```shell
+  $ for f in *.jsx; do mv -- "$f" "${f%.jsx}.tsx"; done
+  ```
 
 
 
