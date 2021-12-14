@@ -356,4 +356,14 @@ $ aws route53 get-hosted-zone --id $hz
   $ init-nodejs
   ```
 
+# MacOS 
+
+
+
+## Disk Utility does not show APFS format? 
+- Try switching "View" in the top left corner of Disk Utility to "Show All Devices" and try again.
+
+
+
+
 
