@@ -68,6 +68,195 @@ ogImage:
 
 
 
+
+
+
+
+
+## Parcel
+- [Parcel](https://parceljs.org/) homepage
+  ```shell
+  $ npm init -y
+  $ npm i parcel-bundler
+  ```
+- Update the `package.json` file
+  ```json
+  {
+    "scripts": {
+      "start": "parcel -p 8080 watch public/index.html",
+      "build": "parcel build public/index.html"
+    }
+  }
+  ```
+- Create a `public/index.html` file
+  ```html
+  <html>
+  <body>
+    <script src="../src/index.js"></script>
+  </body>
+  </html>
+  ```
+- Create a `src/index.html` file
+  ```html
+  console.log("hello Parcel")
+  ```
+- Add Typescript & react
+  ```shell
+  $ npm i react react-dom
+  ```
+- Update a `public/index.html` file
+  ```html
+  <html>
+  <body>
+    <div id="root"></div>
+    <script src="../src/index.tsx"></script>
+  </body>
+  </html>
+  ```
+- Create a `src/index.tsx`
+  ```js
+  import React from 'react'
+  import ReactDOM from 'react-dom'
+
+  console.log('Hello from tsx!')
+
+  ReactDOM.render(
+    <p>Hello</p>,
+    document.getElementById('root'),
+  )
+  ```
+- Create a `tsconfig.json`
+  ```json
+  {
+    "compilerOptions": {
+      "jsx": "react"
+    }
+  }
+  ```
+
+
+
+
+
+
+
+## Vite
+- [Vite](https://vitejs.dev/) homepage
+  ```shell
+  $ npm init vite@latest <YOUR_APP_NAME> -- --template react-ts
+  ```
+- Template options:
+  ```shell
+  vanilla
+  vanilla-ts
+  vue
+  vue-ts
+  react
+  react-ts
+  preact
+  preact-ts
+  lit-element
+  lit-element-ts
+  svelte
+  svelte-ts
+  ```
+  
+  
+  
+- Add some packages:
+  ```shell
+  $ npm i -D jest @testing-library/react @testing-library/jest-dom
+  $ npm i -D @babel/preset-react @babel/preset-typescript @babel/preset-env
+  $ npm i -D identity-obj-proxy
+  ```
+
+  - `@testing-library/react` provides APIs to work with React Components in our test
+  - `@testing-library/jest-dom` is a library that provides a set of custom jest matchers that you can use with jest
+  - Optional `@testing-library/user-event`, `@testing-library/react` library already provides a *fireEvent* function to simulate events, but @testing-library/user-event provides a more advanced simulation.
+  - All these babel packages allow jest to ability to read typescript/ES6 modules/React files
+  - The `identity-obj-proxy` allows us to use css modules
+
+- Create `jest.config.js`
+  - This allows you to define where all the files are
+  - You can add this to your `package.json` file if you want
+    ```js
+    module.exports = {
+      roots: ['<rootDir>/src'],
+      transform: {
+        '^.+\\.tsx$': 'ts-jest',
+        '^.+\\.ts$': 'ts-jest',
+      },
+      testRegex: '(/src/.*.(test|spec)).(jsx?|tsx?)$',
+      moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
+      collectCoverage: true,
+      collectCoverageFrom: ['<rootDir>/src/**/*.{ts,tsx}'],
+      coverageDirectory: '<rootDir>/coverage/',
+      coveragePathIgnorePatterns: ['(tests/.*.mock).(jsx?|tsx?)$', '(.*).d.ts$'],
+      moduleNameMapper: {
+        '.+\\.(css|styl|less|sass|scss|png|jpg|ttf|woff|woff2|svg)$': 'identity-obj-proxy',
+      },
+      verbose: true,
+      testTimeout: 30000,
+    }
+    ```
+- Create a `jest.setup.ts` 
+  - This library will extend Jest with a whole bunch of features to make it easier to test the react components in your application
+    ```js
+    import '@testing-library/jest-dom';
+    ```
+- Now add a new npm script in your `package.json` file
+  ```json
+  {
+    "scripts": {
+      "dev": "vite --port 3003",
+      "build": "tsc && vite build",
+      "serve": "vite preview",
+      "lint": "prettier --write src/**/*.ts{,x}",
+      "test": "jest --colors --watch",
+      "test:once": "jest --colors",
+      "pretest:coverage": "jest --colors --collectCoverage=true",
+      "test:coverage": "npx http-server coverage/lcov-report"
+    }
+  }
+  ```
+- One last file `.babelrc`
+  - We didn't have to do babel with Vite cause it uses ES Build instead of Babel to compile our JS for the browser
+  - For Jest we need Babel to do so
+  ```json
+  {
+    "presets": [
+      [
+        "@babel/preset-env",
+        {
+          "targets": {
+            "node": "current"
+          }
+        }
+      ],
+      "@babel/preset-react",
+      "@babel/preset-typescript"
+    ]
+  }
+  ```
+- Now create a test file `src/App.test.tsx`
+  ```ts
+  import React from 'react'
+  import { render } from '@testing-library/react'
+
+  describe('App', ()=>{
+    test('should...', ()=>{
+      expect(true).toBe(true)
+    })
+  })
+  ```
+  
+  
+  
+
+
+
+
+
 ## Snowpack
 - [Snowpack](https://www.snowpack.dev/) homepage
 - Snowpack is a faster frontend build tool 
@@ -406,138 +595,6 @@ ogImage:
   }
   ```
 ### Other snowpack configs tweaks
-
-
-
-
-
-
-
-## Parcel
-- [Parcel](https://parceljs.org/) homepage
-  ```shell
-  $ npm init -y
-  $ npm i parcel-bundler
-  ```
-- Update the `package.json` file
-  ```json
-  {
-    "scripts": {
-      "start": "parcel -p 8080 watch public/index.html",
-      "build": "parcel build public/index.html"
-    }
-  }
-  ```
-- Create a `public/index.html` file
-  ```html
-  <html>
-  <body>
-    <script src="../src/index.js"></script>
-  </body>
-  </html>
-  ```
-- Create a `src/index.html` file
-  ```html
-  console.log("hello Parcel")
-  ```
-- Add Typescript & react
-  ```shell
-  $ npm i react react-dom
-  ```
-- Update a `public/index.html` file
-  ```html
-  <html>
-  <body>
-    <div id="root"></div>
-    <script src="../src/index.tsx"></script>
-  </body>
-  </html>
-  ```
-- Create a `src/index.tsx`
-  ```js
-  import React from 'react'
-  import ReactDOM from 'react-dom'
-
-  console.log('Hello from tsx!')
-
-  ReactDOM.render(
-    <p>Hello</p>,
-    document.getElementById('root'),
-  )
-  ```
-- Create a `tsconfig.json`
-  ```json
-  {
-    "compilerOptions": {
-      "jsx": "react"
-    }
-  }
-  ```
-
-## Vite
-- [Vite](https://vitejs.dev/) homepage
-  ```shell
-  $ npm init vite@latest <YOUR_APP_NAME> -- --template react-ts
-  ```
-- Template options:
-  ```shell
-  vanilla
-  vanilla-ts
-  vue
-  vue-ts
-  react
-  react-ts
-  preact
-  preact-ts
-  lit-element
-  lit-element-ts
-  svelte
-  svelte-ts
-  ```
-- Add some testing packages
-  ```shell
-  $ npm i -D jest ts-jest @testing-library/jest-dom @testing-library/react identity-obj-proxy
-  ```
-- Update the package.json scripts
-  ```json
-  {
-    "scripts": {
-      "dev": "vite --port 3003",
-      "build": "tsc && vite build",
-      "serve": "vite preview",
-      "lint": "prettier --write src/**/*.ts{,x}",
-      "test": "jest --colors --watch",
-      "test:once": "jest --colors",
-      "pretest:coverage": "jest --colors --collectCoverage=true",
-      "test:coverage": "npx http-server coverage/lcov-report"
-    }
-  }
-  ```
-- Add a `jest.config.js` file
-  ```js
-  module.exports = {
-    roots: ['<rootDir>/src'],
-    transform: {
-      '^.+\\.tsx$': 'ts-jest',
-      '^.+\\.ts$': 'ts-jest',
-    },
-    testRegex: '(/src/.*.(test|spec)).(jsx?|tsx?)$',
-    moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
-    collectCoverage: true,
-    collectCoverageFrom: ['<rootDir>/src/**/*.{ts,tsx}'],
-    coverageDirectory: '<rootDir>/coverage/',
-    coveragePathIgnorePatterns: ['(tests/.*.mock).(jsx?|tsx?)$', '(.*).d.ts$'],
-    moduleNameMapper: {
-      '.+\\.(css|styl|less|sass|scss|png|jpg|ttf|woff|woff2|svg)$': 'identity-obj-proxy',
-    },
-    verbose: true,
-    testTimeout: 30000,
-  }
-  ```
-
-
-
-
 
 
 
