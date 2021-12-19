@@ -183,8 +183,8 @@ ogImage:
     module.exports = {
       roots: ['<rootDir>/src'],
       transform: {
-        '^.+\\.tsx$': 'ts-jest',
-        '^.+\\.ts$': 'ts-jest',
+        // '^.+\\.tsx$': 'ts-jest', // If you don't want to use babel
+        // '^.+\\.ts$': 'ts-jest', // If you don't want to use babel
       },
       testRegex: '(/src/.*.(test|spec)).(jsx?|tsx?)$',
       moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
@@ -238,6 +238,7 @@ ogImage:
     ]
   }
   ```
+- **NOTE** If you don't want to deal with `babel` you can just use `ts-jest` and then you don't have to make that `.babelrc` file. You will have to add the `transform` to your `jest.config.js`
 - Now create a test file `src/App.test.tsx`
   ```ts
   import React from 'react'
