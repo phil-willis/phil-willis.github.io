@@ -181,7 +181,9 @@ ogImage:
   - You can add this to your `package.json` file if you want
     ```js
     module.exports = {
-      roots: ['<rootDir>/src'],
+      testEnvironment: "jsdom",
+      setupFilesAfterEnv: ["<rootDir>/jest.setup.ts"], // Cause we are using ts-jest we want the `.ts`
+      roots: ["<rootDir>/src"],
       transform: {
         // '^.+\\.tsx$': 'ts-jest', // If you don't want to use babel
         // '^.+\\.ts$': 'ts-jest', // If you don't want to use babel
