@@ -230,9 +230,56 @@ ogImage:
     })
   })
   ```
-  
-  
-  
+- If you wanted to use `babel` instead of `ts-jest`
+  1. Install some babel packages
+    ```shell
+    $ yarn add -D @babel/preset-react @babel/preset-typescript babel-jest @babel/core @babel/preset-env @types/jest
+    $ yarn add -D jest-transform-stub
+    ```
+
+  2. Create a `.babelrc` file
+    ```json
+    {
+      "presets": [
+        ["@babel/preset-env", { "targets": { "node": "current" } }], 
+        "@babel/preset-react", 
+        "@babel/preset-typescript"
+      ]
+    }
+    ```
+
+  3. Update the  `jest.config.js` 
+    - This allows you to define where all the files are
+    - You can add this to your `package.json` file if you wantp
+      ```js
+      module.exports = {
+        testEnvironment: "jsdom",
+        setupFilesAfterEnv: ["<rootDir>/jest.setup.ts"],
+        roots: ["<rootDir>/src"],
+        testRegex: "(/src/.*.(test|spec)).(jsx?|tsx?)$",
+        moduleFileExtensions: ["ts", "tsx", "js", "jsx", "json", "node"],
+        collectCoverage: true,
+        collectCoverageFrom: ["<rootDir>/src/**/*.{ts,tsx}"],
+        coverageDirectory: "<rootDir>/coverage/",
+        coveragePathIgnorePatterns: ["(tests/.*.mock).(jsx?|tsx?)$", "(.*).d.ts$"],
+        verbose: true,
+        transform: {
+          "\\.[jt]sx?$": "babel-jest",
+          ".+\\.(css|styl|less|sass|scss|png|jpg|ttf|woff|woff2|svg)$": "jest-transform-stub",
+        },
+      };
+      ```
+
+
+
+
+
+
+
+
+
+
+
 
 
 
