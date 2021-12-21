@@ -1988,6 +1988,71 @@ fireEvent.click(within(getAllByRole('row')[2]).getByText('Delete'))
     })
   })
   ```
+- Testing Zustand
+  ```shell
+  $ yarn add -D zustand
+  ```
+  
+  ```ts
+  import create from 'zustand'
+
+  export interface Store {
+    count: number
+    increment: () => void
+    decrement: () => void
+  }
+
+  export const useStore = create<Store>((set) => ({
+    count: 0,
+    increment: () => set((state) => ({ count: state.count + 1 })),
+    decrement: () => set((state) => ({ count: state.count - 1 })),
+  }))
+  ```
+
+  ```ts
+  import React from 'react'
+  import { useStore } from '../state/zustand-store'
+
+  export default function ReduxComponent() {
+    const { count, increment, decrement } = useStore()
+
+    return (
+      <div>
+        <button onClick={() => increment()}>Increment me!</button>
+        <button onClick={() => decrement()}>Decrement me!</button>
+        <p role="contentinfo">current value: {count}</p>
+      </div>
+    )
+  }
+  ```
+
+  ```ts
+  import React from 'react'
+  import { render, screen, fireEvent } from '@testing-library/react'
+  import { useStore } from '../state/zustand-store'
+  import ZustandCounter from './ZustandCounter'
+
+  const originalState = useStore.getState()
+  beforeEach(() => {
+    useStore.setState(originalState)
+  })
+
+  describe('ReduxComponent', () => {
+    test('increment', () => {
+      render(<ZustandCounter />)
+      const incrementButton = screen.getByText(/increment me/i)
+      fireEvent.click(incrementButton)
+      const counter = screen.getByRole('contentinfo')
+      expect(counter).toHaveTextContent('current value: 1')
+    })
+  })
+  ```
+
+
+
+
+
+
 
 
 
