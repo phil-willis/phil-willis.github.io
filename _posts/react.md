@@ -1617,6 +1617,134 @@ fireEvent.click(within(getAllByRole('row')[2]).getByText('Delete'))
 
 
 
+- Testing - if text is present
+  ```ts
+  // Person.tsx
+  import React from 'react'
+
+  export default function Person({name}: {name:string}){
+    return (
+      <div role="contentinfo">Name is {name}</div>
+    )
+  }
+  ```
+  ```ts
+  // Person.test.tsx
+  import React from 'react'
+  import {render, screen} from '@testing-library/react'
+  import Person from './Person'
+
+  describe('Person', ()=>{
+    test('getByText', ()=>{
+      render(<Person name="Jack" />)
+      const divElement = screen.getByText(/Jack/)
+      expect(divElement).toBeInTheDocument()
+    })
+
+    test('by role ', ()=>{
+      render(<Person name="Jack" />)
+      const divElement = screen.getByRole('contentinfo')
+      expect(divElement).toHaveTextContent('Name is Jack')
+      expect(divElement).toHaveAttribute('role', 'contentinfo')
+    })
+  })
+  ```
+
+- Testing list
+  ```ts
+  import React from 'react'
+
+  interface Props {
+    items: {
+      name: string
+      href?: string
+    }[]
+  }
+  export default function Sidebar({ items }: Props) {
+    return (
+      <ul>
+        {items.map(({ name, href }, i) => (
+          <li key={href}>
+            <a role="navigation" href={href}>
+              {name}
+            </a>
+          </li>
+        ))}
+      </ul>
+    )
+  }
+  ```
+  ```ts
+  import React from 'react'
+  import { render, screen } from '@testing-library/react'
+  import Sidebar from './Sidebar'
+
+  describe('Sidebar', () => {
+    test('getByText', () => {
+      const items = [{ name: 'mike', href: '/hello' }]
+      render(<Sidebar items={items} />)
+      const anchorElements = screen.getAllByRole('navigation')
+      expect(anchorElements[0]).toHaveTextContent(items[0].name)
+      expect(anchorElements[0]).toHaveAttribute('href', items[0].href)
+    })
+  })
+  ```
+
+- Testing `useState`
+  ```ts
+  // Counter.tsx
+  import React, { useState } from 'react'
+
+  export default function Counter() {
+    const [count, setCount] = useState(0)
+
+    return (
+      <div>
+        <button onClick={() => setCount(count + 1)}>Add count</button>
+        <p role="contentinfo">Current Count: {count}</p>
+      </div>
+    )
+  }
+  ```
+  ```ts
+  // Counter.test.tsx
+  import React from 'react'
+  import { render, screen, fireEvent } from '@testing-library/react'
+  import Counter from './Counter'
+
+  describe('Testing State Hooks', () => {
+    test('handles on click', () => {
+      render(<Counter />)
+
+      const divElement = screen.getByRole('contentinfo')
+      const buttonElement = screen.getByText('Add count')
+      fireEvent.click(buttonElement)
+      expect(divElement).toHaveTextContent('Current Count: 1')
+    })
+  })
+  ```
+- Testing Async
+  ```ts
+  import React, { useState, useEffect } from 'react'
+
+  export default function APIComponent() {
+    const [data, setData] = useState<{ name: String }>()
+
+    useEffect(() => {
+      let isMounted = true
+      fetch('/api')
+        .then((response) => response.json())
+        .then((data) => {
+          if (isMounted) setData(data)
+        })
+
+      return () => {
+        isMounted = false
+      }
+    }, [])
+    return <div>{data && <div role="term">Name is {data.name}</div>}</div>
+  }
+  ```
 
 
 
