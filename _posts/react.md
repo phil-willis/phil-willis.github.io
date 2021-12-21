@@ -161,20 +161,16 @@ ogImage:
   svelte-ts
   ```
   
-  
-  
 - Add some packages:
   ```shell
-  $ npm i -D jest @testing-library/react @testing-library/jest-dom
-  $ npm i -D @babel/preset-react @babel/preset-typescript @babel/preset-env
+  $ npm i -D jest ts-jest @testing-library/react @testing-library/jest-dom 
   $ npm i -D identity-obj-proxy
   ```
-
-  - `@testing-library/react` provides APIs to work with React Components in our test
-  - `@testing-library/jest-dom` is a library that provides a set of custom jest matchers that you can use with jest
-  - Optional `@testing-library/user-event`, `@testing-library/react` library already provides a *fireEvent* function to simulate events, but @testing-library/user-event provides a more advanced simulation.
-  - All these babel packages allow jest to ability to read typescript/ES6 modules/React files
-  - The `identity-obj-proxy` allows us to use css modules
+    - `ts-jest` lets to use typescript tests
+    - `@testing-library/react` provides APIs to work with React Components in our test
+    - `@testing-library/jest-dom` is a library that provides a set of custom jest matchers that you can use with jest
+    - Optional `@testing-library/user-event`, `@testing-library/react` library already provides a *fireEvent* function to simulate events, but @testing-library/user-event provides a more advanced simulation.
+    - The `identity-obj-proxy` tells Jest to mock object as imported, like css or svg
 
 - Create `jest.config.js`
   - This allows you to define where all the files are
@@ -182,27 +178,27 @@ ogImage:
     ```js
     module.exports = {
       testEnvironment: "jsdom",
-      setupFilesAfterEnv: ["<rootDir>/jest.setup.ts"], // Cause we are using ts-jest we want the `.ts`
+      setupFilesAfterEnv: ["<rootDir>/jest.setup.ts"],
       roots: ["<rootDir>/src"],
       transform: {
-        // '^.+\\.tsx$': 'ts-jest', // If you don't want to use babel
-        // '^.+\\.ts$': 'ts-jest', // If you don't want to use babel
+        "^.+\\.tsx$": "ts-jest",
+        "^.+\\.ts$": "ts-jest",
       },
-      testRegex: '(/src/.*.(test|spec)).(jsx?|tsx?)$',
-      moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
+      testRegex: "(/src/.*.(test|spec)).(jsx?|tsx?)$",
+      moduleFileExtensions: ["ts", "tsx", "js", "jsx", "json", "node"],
       collectCoverage: true,
-      collectCoverageFrom: ['<rootDir>/src/**/*.{ts,tsx}'],
-      coverageDirectory: '<rootDir>/coverage/',
-      coveragePathIgnorePatterns: ['(tests/.*.mock).(jsx?|tsx?)$', '(.*).d.ts$'],
+      collectCoverageFrom: ["<rootDir>/src/**/*.{ts,tsx}"],
+      coverageDirectory: "<rootDir>/coverage/",
+      coveragePathIgnorePatterns: ["(tests/.*.mock).(jsx?|tsx?)$", "(.*).d.ts$"],
       moduleNameMapper: {
-        '.+\\.(css|styl|less|sass|scss|png|jpg|ttf|woff|woff2|svg)$': 'identity-obj-proxy',
+        ".+\\.(css|styl|less|sass|scss|png|jpg|ttf|woff|woff2|svg)$": "identity-obj-proxy",
       },
       verbose: true,
-      testTimeout: 30000,
-    }
+    };
     ```
 - Create a `jest.setup.ts` 
   - This library will extend Jest with a whole bunch of features to make it easier to test the react components in your application
+  - Make sure that it's a `.ts` file
     ```js
     import '@testing-library/jest-dom';
     ```
@@ -220,34 +216,17 @@ ogImage:
     }
   }
   ```
-- One last file `.babelrc`
-  - We didn't have to do babel with Vite cause it uses ES Build instead of Babel to compile our JS for the browser
-  - For Jest we need Babel to do so
-  ```json
-  {
-    "presets": [
-      [
-        "@babel/preset-env",
-        {
-          "targets": {
-            "node": "current"
-          }
-        }
-      ],
-      "@babel/preset-react",
-      "@babel/preset-typescript"
-    ]
-  }
-  ```
-- **NOTE** If you don't want to deal with `babel` you can just use `ts-jest` and then you don't have to make that `.babelrc` file. You will have to add the `transform` to your `jest.config.js`
 - Now create a test file `src/App.test.tsx`
   ```ts
   import React from 'react'
-  import { render } from '@testing-library/react'
+  import { render, screen } from '@testing-library/react'
+  import App from './App'
 
   describe('App', ()=>{
-    test('should...', ()=>{
-      expect(true).toBe(true)
+    test('should have welcome message', ()=>{
+      render(<App />)
+      const welcomeElement = screen.getByText(/Hello Vite/)
+      expect(welcomeElement).toBeInTheDocument()
     })
   })
   ```
