@@ -201,6 +201,7 @@ ogImage:
   - Make sure that it's a `.ts` file
     ```js
     import '@testing-library/jest-dom';
+    // import 'whatwg-fetch' // If you are using browser's native `fetch` API
     ```
 - Now add a new npm script in your `package.json` file
   ```json
@@ -1724,6 +1725,11 @@ fireEvent.click(within(getAllByRole('row')[2]).getByText('Delete'))
   })
   ```
 - Testing Async
+  - We can use `MSW` to mock out the REST API calls
+    ```shell
+    $ yarn add -D msw
+    ```
+  - Now we can   
   ```ts
   import React, { useState, useEffect } from 'react'
 
@@ -1745,6 +1751,251 @@ fireEvent.click(within(getAllByRole('row')[2]).getByText('Delete'))
     return <div>{data && <div role="term">Name is {data.name}</div>}</div>
   }
   ```
+
+  ```ts
+  import React from 'react'
+  import { rest } from 'msw'
+  import { setupServer } from 'msw/node'
+  import { render, screen, waitFor } from '@testing-library/react'
+  import APIComponent from './APIComponent'
+
+  const server = setupServer(
+    rest.get('/api', (req, res, ctx) => {
+      return res(ctx.json({ name: 'Sam' }))
+    }),
+  )
+
+  beforeAll(() => server.listen())
+  afterEach(() => server.resetHandlers())
+  afterAll(() => server.close())
+
+  describe('APIComponent', () => {
+    test('Gets data', async () => {
+      render(<APIComponent />)
+
+      const out = await waitFor(() => screen.getByRole('contentinfo'))
+      expect(out).toHaveTextContent('Name is Sam')
+    })
+  })
+  ```
+- Testing custom hooks
+  - You need to install a testing package to act on the hook
+    ```shell
+    $ yarn add -D @testing-library/react-hooks
+    ```
+  - Now:
+    ```ts
+    import { useState, useCallback } from 'react'
+
+    export function useCounter() {
+      const [count, setCount] = useState(0)
+      const increment = useCallback(() => setCount((x) => x + 1), [])
+
+      return { count, increment }
+    }
+    ```
+
+    ```ts
+    import { renderHook, act } from '@testing-library/react-hooks'
+    import { useCounter } from './use-counter'
+
+    describe('Custom Hook', () => {
+      test('should increment', async () => {
+        const { result } = renderHook(() => useCounter())
+
+        act(() => {
+          result.current.increment()
+        })
+
+        expect(result.current.count).toBe(1)
+      })
+    })
+    ```
+- Testing an Async Custom Hook
+
+  ```ts
+  import React, { useState, useEffect } from 'react'
+
+  export default function useAPI() {
+    const [data, setData] = useState<{ name: String }>()
+
+    useEffect(() => {
+      let isMounted = true
+
+      fetch('/api')
+        .then((response) => response.json())
+        .then((data) => {
+          if (isMounted) setData(data)
+        })
+        .catch(() => console.log(':('))
+
+      return () => {
+        isMounted = false
+      }
+    }, [])
+    return data
+  }
+  ```
+
+  ```ts
+  import React from 'react'
+  import { rest } from 'msw'
+  import { setupServer } from 'msw/node'
+  import useAPI from './use-api'
+  import { renderHook } from '@testing-library/react-hooks'
+
+  const server = setupServer(
+    rest.get('/api', (req, res, ctx) => {
+      return res(ctx.json({ name: 'Sam' }))
+    }),
+  )
+
+  beforeAll(() => server.listen())
+  afterEach(() => server.resetHandlers())
+  afterAll(() => server.close())
+
+  describe('useAPI', () => {
+    test('Gets data', async () => {
+      const { result, waitForNextUpdate } = renderHook(() => useAPI())
+
+      await waitForNextUpdate()
+
+      expect(result.current).toEqual({ name: 'Sam' })
+    })
+  })
+  ```
+- Testing Redux
+  ```shell
+  $ yarn add -D @reduxjs/toolkit react-redux
+  ```
+
+  ```ts
+  // src/state/store.ts
+  import { configureStore } from '@reduxjs/toolkit'
+  import counterReducer from './slices/counter'
+
+  export const createStore = () =>
+    configureStore({
+      reducer: {
+        counter: counterReducer,
+      },
+    })
+  export const store = createStore()
+  export type RootState = ReturnType<typeof store.getState>
+  export type AppDispatch = typeof store.dispatch
+  export type SliceSelector<T, D> = (state: T) => D
+  ```
+
+  ```ts
+  // src/state/slices/counter.ts
+  import { createSlice, PayloadAction, SliceCaseReducers } from '@reduxjs/toolkit'
+  import { SliceSelector } from '../store'
+
+  export interface CounterState {
+    value: number
+  }
+
+  const initialState: CounterState = {
+    value: 0,
+  }
+
+  const reducers: SliceCaseReducers<CounterState> = {
+    increment: (state) => {
+      // Redux Toolkit allows us to write "mutating" logic in reducers. It
+      // doesn't actually mutate the state because it uses the Immer library,
+      // which detects changes to a "draft state" and produces a brand new
+      // immutable state based off those changes
+      console.log(state.value)
+      state.value += 1
+    },
+    decrement: (state) => {
+      state.value -= 1
+    },
+    incrementByAmount: (state, action: PayloadAction<number>) => {
+      state.value += action.payload
+    },
+  }
+
+  export const counterSlice = createSlice({
+    name: 'counter',
+    initialState,
+    reducers,
+  })
+  export default counterSlice.reducer
+
+  // Actions creators
+  export const { increment, decrement, incrementByAmount } = counterSlice.actions
+
+  // Selectors
+  type CounterSliceSelector<T> = SliceSelector<{ counter: CounterState }, T | undefined>
+  export const selectCurrentCounterData: CounterSliceSelector<number> = (state) =>
+    state.counter?.value
+  ```
+
+  ```ts
+  // src/components/ReduxCounter.tsx
+  import React from 'react'
+  import {
+    increment,
+    decrement,
+    incrementByAmount,
+    selectCurrentCounterData,
+  } from '../state/slices/counter'
+  import { useDispatch, useSelector } from 'react-redux'
+
+  export default function ReduxComponent() {
+    const dispatch = useDispatch()
+    const value = useSelector(selectCurrentCounterData)
+
+    const handleIncrement = () => {
+      dispatch(increment({}))
+    }
+
+    const handleDecrement = () => {
+      dispatch(decrement({}))
+    }
+
+    return (
+      <div>
+        <button onClick={handleIncrement}>Increment me!</button>
+        <button onClick={handleDecrement}>Decrement me!</button>
+        <p role="contentinfo">current value: {value}</p>
+      </div>
+    )
+  }
+  ```
+
+  ```ts
+  // src/components/ReduxCounter.test.tsx
+  import React from 'react'
+  import { render, screen, fireEvent } from '@testing-library/react'
+  import { Provider } from 'react-redux'
+  import { createStore } from '../state/store'
+  import ReduxCounter from './ReduxCounter'
+
+  describe('ReduxComponent', () => {
+    test('increment', () => {
+      render(
+        <Provider store={createStore()}>
+          <ReduxCounter />
+        </Provider>,
+      )
+      const incrementButton = screen.getByText(/increment me/i)
+      fireEvent.click(incrementButton)
+      const counter = screen.getByRole('contentinfo')
+
+      expect(counter).toHaveTextContent('current value: 1')
+    })
+  })
+  ```
+
+
+
+
+
+
+
+
 
 
 
