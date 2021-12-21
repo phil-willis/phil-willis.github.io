@@ -213,8 +213,7 @@ ogImage:
       "dev": "vite --port 3003",
       "build": "tsc && vite build",
       "serve": "vite preview",
-      "lint": "prettier --write src/**/*.ts{,x}",
-      "test": "jest --colors --watch",
+      "test": "jest --watchAll --collectCoverage=false",
       "test:once": "jest --colors",
       "pretest:coverage": "jest --colors --collectCoverage=true",
       "test:coverage": "npx http-server coverage/lcov-report"
