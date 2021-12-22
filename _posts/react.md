@@ -1748,7 +1748,7 @@ fireEvent.click(within(getAllByRole('row')[2]).getByText('Delete'))
         isMounted = false
       }
     }, [])
-    return <div>{data && <div role="term">Name is {data.name}</div>}</div>
+    return <div>{data && <div role="contentinfo">Name is {data.name}</div>}</div>
   }
   ```
 
