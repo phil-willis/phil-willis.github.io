@@ -2013,7 +2013,7 @@ fireEvent.click(within(getAllByRole('row')[2]).getByText('Delete'))
   import React from 'react'
   import { useStore } from '../state/zustand-store'
 
-  export default function ReduxComponent() {
+  export default function ZustandCounter() {
     const { count, increment, decrement } = useStore()
 
     return (
@@ -2037,7 +2037,7 @@ fireEvent.click(within(getAllByRole('row')[2]).getByText('Delete'))
     useStore.setState(originalState)
   })
 
-  describe('ReduxComponent', () => {
+  describe('ZustandCounter', () => {
     test('increment', () => {
       render(<ZustandCounter />)
       const incrementButton = screen.getByText(/increment me/i)
