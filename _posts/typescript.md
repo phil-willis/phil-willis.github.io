@@ -217,10 +217,6 @@ ogImage:
     _string: string
     _number: number
     _boolean: boolean
-    _bigint: bigint
-    _symbol: symbol
-    _undefined: undefined
-    _null: null
     _object: {
       name: string
     }
@@ -270,7 +266,7 @@ ogImage:
 - You can make `Union` type with a `|`
   ```ts
   type UnionType = {
-    _string: string | number
+    someUnionType: string | number
   }
   ```
 - Defining a array 
