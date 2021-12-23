@@ -10,9 +10,9 @@ ogImage:
 # Databases 
 - [x] MySQL + baked in spatial functions
 - [x] PostgreSQL + PostGIS
-- [ ] SQLite + SpatiaLite
+- [x] Firebase
 - [ ] DynamoDB
-- [ ] Firebase
+- [ ] SQLite + SpatiaLite
 - [ ] MongoDB
 - [ ] CouchDB
 
@@ -743,6 +743,6 @@ SELECT  *, ST_AsText(geom)  FROM places WHERE ST_CONTAINS(
   ```
 
 
-
+# DynamoDB
 
 
