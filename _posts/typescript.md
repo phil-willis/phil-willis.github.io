@@ -100,7 +100,7 @@ ogImage:
   ```
 3. Create config files
 - `.prettierignore`
-  ```
+  ```shell
   # ignore npm modules
   node_modules
 
@@ -113,7 +113,7 @@ ogImage:
   ```
 
 - `.prettierrc`
-  ```
+  ```json
   {
     "semi": false,
     "trailingComma": "all",
@@ -946,7 +946,43 @@ const status = useFriendStatus(9)   // **inferred type boolean**
 
 
 
+# What is `.d.ts` files?
+- The `.d.ts` is a file that contains only type definitions,  no implementations
+- Usually you will add your type definitions in a regular `.ts` file and not `.d.ts` files
+- In most cases the `d.ts` files are either used to provide the types for the libraries that don't have typescript support, OR are automatically generated and shipped with the library to provide typescript support
+- Example of writing your own `.d.ts` file
+  ```ts
+  // index.d.ts
+  export type User {
+    firstName: string
+    lastName: string
+  }
 
+  export function someFunc(x: string, y: number): number
+  ```
+ - The easiest way is to just let the tsc compiler build it from your code
+   - Update your `tsconfig.json` file 
+      ```json
+      {
+        "compilerOptions": {
+          "outDir": "dist",
+          "declarationDir": "dist/types",
+          "declaration": true
+        }
+      }
+      ```
+   - Add a new npm script & run it
+      ```json
+      {
+        "scripts": {
+          "build": "tsc"
+        }
+      }
+      ```
+  - This will auto generate all the types to the `dist/types` directory so if you want to use this as an external libary
+- [DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types) is a repo that groups different packages that add typescruipt support to JS libraries
+- When you install a packages like `@types/react` there will be a `node_modules/@types/react/index.d.ts` file with the type definitions for react. Also in the `package.json` the types are defined with `"types": "index.d.ts",`. With way when you us react in your project your typescript compiler will know what type definitions it should use.
+- Some packages provide different options of js, ts, ts definitions
 
 
 
