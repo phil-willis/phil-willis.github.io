@@ -115,6 +115,14 @@ ogImage:
   $ git clean -nfd
   $ git clean -fd
   ```
+- Deleting # of commits
+  ```shell
+  $ git checkout <BRANCH_WITH_COMMITS_TO_REMOVE>
+  $ git reset --soft HEAD~<NUMBER_OF_COMMITS_TO_DELETE>. # example: git reset --soft HEAD~2
+
+  # Now if you update github
+  $ git push origin +<BRANCH_NAME> --force # make sure that you have `+` in front of the branch name
+  ```
 - Merging vs. Rebase
   - For integrating changes from another branch
   - Both `Merging` & `Rebase` is a process of integrating changes from one branch to another
