@@ -217,6 +217,16 @@ ogImage:
     }
   }
   ```
+- Make sure you r `tsconfig.json` has the proper `"jsx": "react-jsx"` config
+  ```
+  {
+    "compilerOptions": {
+      "target": "es5",
+      "module": "esnext",
+      "jsx": "react-jsx"  # https://www.typescriptlang.org/docs/handbook/jsx.html#basic-usage
+    }
+  }
+  ```
 - Now create a test file `src/App.test.tsx`
   ```ts
   import React from 'react'
