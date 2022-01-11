@@ -218,7 +218,7 @@ ogImage:
   }
   ```
 - Make sure you r `tsconfig.json` has the proper `"jsx": "react-jsx"` config
-  ```
+  ```json
   {
     "compilerOptions": {
       "target": "es5",
@@ -2278,6 +2278,119 @@ fireEvent.click(within(getAllByRole('row')[2]).getByText('Delete'))
     }
   }
   ```
+- Add testing
+  - Add some packages:
+    ```shell
+    $ npm i -D jest ts-jest @testing-library/react @testing-library/jest-dom @testing-library/react-hooks
+    $ npm i -D identity-obj-proxy
+    ```
+  - Create a `jest.config.js` file
+    ```js
+    module.exports = {
+      testEnvironment: 'jsdom',
+      setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
+      roots: [
+        '<rootDir>/components',
+        '<rootDir>/hooks',
+        '<rootDir>/utils',
+        '<rootDir>/pages',
+      ],
+      transform: {
+        '^.+\\.tsx$': 'ts-jest',
+        '^.+\\.ts$': 'ts-jest',
+      },
+      testRegex:
+        '(/(components?|hooks?|utils?|pages?)/.*.(test|spec)).(jsx?|tsx?)$',
+      moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
+      collectCoverage: true,
+      collectCoverageFrom: [
+        '<rootDir>/{components,hooks,utils,pages}/**/*.{ts,tsx}',
+      ],
+      coverageDirectory: '<rootDir>/coverage/',
+      coveragePathIgnorePatterns: [
+        '(tests/.*.mock).(jsx?|tsx?)$',
+        '(.*).d.ts$',
+      ],
+      moduleNameMapper: {
+        '.+\\.(css|styl|less|sass|scss|png|jpg|ttf|woff|woff2|svg)$':
+          'identity-obj-proxy',
+      },
+      verbose: true,
+      globals: {
+        'ts-jest': {
+          tsconfig: 'tsconfig.jest.json',
+        },
+      },
+    }
+    ```
+  - Create a `jest.setup.ts` file
+    ```ts
+    import '@testing-library/jest-dom'
+    // import 'whatwg-fetch' // If you are using browser's native `fetch` API
+    ```
+  - Update your npm scripts:
+    ```json
+    {
+      "scripts": {
+        "lint": "prettier --write {components,hooks,pages}/**/*.tsx {components,hooks,pages}/*.tsx utils/**/*.ts",
+        "test": "jest --watchAll --collectCoverage=false",
+        "test:once": "jest --colors",
+        "pretest:coverage": "jest --colors --collectCoverage=true",
+        "test:coverage": "npx http-server coverage/lcov-report"
+      }
+    }
+    ```
+
+  - Make a tsconfig just for Jest. Next.js needs `"jsx": "preserve"` but we want `"jsx": "react-jsx"` for jest [docs] (https://www.typescriptlang.org/docs/handbook/jsx.html#basic-usage)
+    ```json
+    {
+      "extends": "./tsconfig.json",
+      "compilerOptions": {
+        "jsx": "react-jsx"
+      }
+    }
+    ```
+  - Make a test file
+    ```tsx
+    import React from 'react'
+    import { render, screen } from '@testing-library/react'
+    import App from './App'
+
+    describe('App', ()=>{
+      test('should have welcome message', ()=>{
+        render(<App />)
+        const welcomeElement = screen.getByText(/Hello Vite/)
+        expect(welcomeElement).toBeInTheDocument()
+      })
+    })
+    ```
+- *Optional* If you are having ESLint issues with the build add this to your `next.config.js` file
+  ```js
+  module.exports = {
+    eslint: {
+      // Warning: This allows production builds to successfully complete even if
+      // your project has ESLint errors.
+      ignoreDuringBuilds: true,
+    },
+  }
+  ```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 - Run the app local
   ```shell
   $ npm run dev
