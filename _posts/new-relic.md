@@ -1,9 +1,9 @@
 ---
 title: 'new relic'
 excerpt: ''
-coverImage: '/assets/covers/new-relic.jpg'
+coverImage: '/assets/covers/newrelic.jpg'
 ogImage:
-  url: '/assets/covers/new-relic.jpg'
+  url: '/assets/covers/newrelic.jpg'
 ---
 
 
