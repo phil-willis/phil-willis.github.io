@@ -147,10 +147,6 @@ $ mkdir components hooks utils
 ```
 
 
-
-
-
-
 # Adding Jest & React-Testing-Library
 - Add testing
   - Add some packages:
@@ -325,12 +321,11 @@ $ mkdir components hooks utils
   ```
 
 # Adding Storybook
-
-```shell
-$ npx -y sb init --builder webpack5
-$ yarn add -D @storybook/addon-postcss
-```
-
+- Add some packages:
+  ```shell
+  $ npx -y sb init --builder webpack5
+  $ yarn add -D @storybook/addon-postcss
+  ```
 - Update your `package.json`
   ```json
     {
@@ -465,6 +460,68 @@ $ yarn add -D @storybook/addon-postcss
   }
   ```
 <!-- https://theodorusclarence.com/blog/nextjs-storybook-tailwind -->
+
+
+# Add Playwright
+- Install the packages
+  ```shell
+  npm i -D @playwright/test
+  # install supported browsers
+  npx playwright install
+  ```
+- Update your `package.json` file
+  ```json
+  {
+    "scripts": {
+      "test:e2e": "playwright test",
+      "test:e2e:debug": "PWDEBUG=1 playwright test --project=chromium",
+      "test:e2e:headed": "playwright test --headed"
+      }
+  }
+  ```
+- Create a `playwright.config.ts` file
+  ```ts
+  import { PlaywrightTestConfig, devices } from '@playwright/test';
+
+  const config: PlaywrightTestConfig = {
+    forbidOnly: !!process.env.CI,
+    retries: process.env.CI ? 2 : 0,
+    use: {
+      trace: 'on-first-retry',
+    },
+    projects: [
+      {
+        name: 'chromium',
+        use: { ...devices['Desktop Chrome'] },
+      },
+      {
+        name: 'firefox',
+        use: { ...devices['Desktop Firefox'] },
+      },
+      {
+        name: 'webkit',
+        use: { ...devices['Desktop Safari'] },
+      },
+    ],
+  };
+  export default config;
+  ```
+ - Add some test `./e2e/index.spec.ts`
+  ```ts
+  import { test, expect } from '@playwright/test'
+
+  test('basic test', async ({ page }) => {
+    await page.goto('https://playwright.dev/')
+    const title = page.locator('.navbar__inner .navbar__title')
+    await expect(title).toHaveText('Playwright')
+  })
+  ```
+
+
+
+
+
+
 
 # Start Developing
 - Run the app local
