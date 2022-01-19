@@ -86,7 +86,11 @@ ogImage:
   ```
 - Undo
   ```shell
-
+  # Reset all change files to last commit
+  $ git checkout .
+  
+  # Delete all newly added files (untracked) (think of `f` for files and `d` for directories) 
+  $ git clean -fd
   ```
 - Stash
   ```shell
