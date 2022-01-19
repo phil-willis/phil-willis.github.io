@@ -1058,8 +1058,50 @@ export default function MyParent({ items }) {
   }
   ```
 
+## Custom REST Fetch Hook
+  ```js
+  import { useState, useEffect } from 'react'
+  import axios from 'axios'
 
+  export default function useFetchData(url: string) {
+    const [isLoading, setIsLoading] = useState(false)
+    const [apiData, setApiData] = useState(null)
+    const [serverError, setServerError] = useState(null)
 
+    useEffect(() => {
+      setIsLoading(true)
+      const fetchData = async () => {
+        try {
+          const resp = await axios.get(url)
+          const data = await resp?.data
+
+          setApiData(data)
+          setIsLoading(false)
+        } catch (error) {
+          setServerError(error)
+          setIsLoading(false)
+        }
+      }
+
+      fetchData()
+    }, [url])
+
+    return { isLoading, apiData, serverError }
+  }
+  ```
+
+  ```js
+  import useFetchData from '../hooks/use-fetch-data'
+  import config from '../config'
+
+  export default function RocketMan() {
+    const { isLoading, serverError, apiData } = useFetchData(config.dataUrl)
+
+    console.log(isLoading, serverError, apiData)
+
+    return <div>{apiData && <pre>{JSON.stringify(apiData, null, 1)} </pre>}</div>
+  }
+  ```
 
 
 
