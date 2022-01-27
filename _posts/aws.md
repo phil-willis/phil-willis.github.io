@@ -8,6 +8,68 @@ ogImage:
 
 
 
+# AWS CLI
+- Installing the AWS CLI [Docs here](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
+- For macOS [download](https://awscli.amazonaws.com/AWSCLIV2.pkg)
+  - You can install to any folder, or choose the recommended default folder of `/usr/local/aws-cli`.
+  - The installer automatically creates a symlink at `/usr/local/bin/aws` that links to the main program in the installation folder you chose.
+- Check to see if it's installed properly
+  ```shell
+  $ which aws
+  /usr/local/bin/aws 
+  $ aws --version
+  aws-cli/2.4.5 Python/3.8.8 Darwin/18.7.0 botocore/2.4.5
+  ```
+- You can access your AWS services via:
+  1. Named profiles
+    - AWS uses `~./aws/credentials` file for accessing your AWS accounts where you can have multiple profiles but you should probably have a `default` profile
+      ```shell
+      [default]
+      aws_access_key_id=AAAAAAAAAAAAAEXAMPLE
+      aws_secret_access_key=123456789123456789
+
+      [user1]
+      aws_access_key_id=BBBBBBBBBBBBBEXAMPLE
+      aws_secret_access_key=12345678923456789
+      ```
+    - You can also define the default regions for each profile in `~/.aws/config`
+      ```shell
+      [default]
+      region=us-west-2
+      output=json
+
+      [profile user1]
+      region=us-east-1
+      output=text
+      ```
+    - Accessing a specific profile's resources you just have to pass in the `--profile <PROFILE_NAME>`
+      ```shell
+      $ aws s3 ls --profile default
+      ```
+  2. Environment variables
+    - You can also pass in environment variables access key/secrets
+      ```shell
+      $ export AWS_ACCESS_KEY_ID=BBBBBBBBBBBBBEXAMPLE
+      $ export AWS_SECRET_ACCESS_KEY=12345678923456789
+      $ export AWS_DEFAULT_REGION=us-west-2
+      ```
+- Now, getting your `AWS_ACCESS_KEY_ID` & `AWS_SECRET_ACCESS_KEY` values
+  1.  Go to Amazon Web Services console and click on the name of your account (it is located in the top right corner of the console). Then, in the expanded drop-down list, select `Security Credentials`.
+    ![Security Page](public/assets/blog/aws/credentials_1.jpg)
+  2. Click the `Access keys (access key ID and secret access key)` accordion title and click `Create New Access Key`
+    ![Security Page](public/assets/blog/aws/credentials_2.jpg)
+  3. Click `Show Access Key` to have it displayed on the screen. Note, that you can download it to your machine as a file and open it whenever needed. To download it, just click the `Download Key File` button.
+    ![Security Page](public/assets/blog/aws/credentials_2.jpg)
+  4. Now update your `~/.aws/credentials` file with this key pair
+    ```shell
+    [default]
+    aws_access_key_id=AAAAAAAAAAAAAEXAMPLE
+    aws_secret_access_key=123456789123456789
+    ```
+
+
+
+
 # AWS CDK (AWS Cloud Development Kit)
 - The AWS CDK (Amazon Web Services Cloud Development Kit) is a [new open source framework](https://github.com/aws/aws-cdk) to define cloud infrastructure in code (Infrastructure as Code) and provisioning it through AWS CloudFormation.
 - CDK provides many high level components to allow rapid code development requiring much less input compared to the typical CloudFormation templates. 
