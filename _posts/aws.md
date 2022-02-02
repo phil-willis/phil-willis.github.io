@@ -70,23 +70,39 @@ ogImage:
 
 
 
-# AWS CDK (AWS Cloud Development Kit)
-- The AWS CDK (Amazon Web Services Cloud Development Kit) is a [new open source framework](https://github.com/aws/aws-cdk) to define cloud infrastructure in code (Infrastructure as Code) and provisioning it through AWS CloudFormation.
-- CDK provides many high level components to allow rapid code development requiring much less input compared to the typical CloudFormation templates. 
-- CDK is available in TypeScript, Python, Java and C#.
-  ```shell
-  # Install globally 
-  $ npm i -g aws-cdk
+# S3
+- Storage
 
-  $ mkdir my-app && cd my-app
-  $ cdk init app --language=typescript
 
-  $ npm i @aws-cdk/aws-apigatewayv2 @aws-cdk/aws-apigatewayv2-integrations @aws-cdk/aws-ec2 @aws-cdk/aws-lambda @aws-cdk/aws-rds @aws-cdk/core source-map-support
-  ```
+# CLoudFront
+- Distribute your static content at AWS edge locations
 
 
 
 
+# ACM
+- AWS Certificate Manager is a service provided by Amazon that issues on-demand TLS certificates at no cost. Much like Let’s Encrypt, Amazon controls the Certificate Authority (Amazon Trust Services, LLC) behind the certificates, as well as the accompanying API to manage them.
+- Amazon Certificate Manager (ACM) provides an elegant wayt to convert  a cumbersome multi-step process (the process of provisioning, validating, and configuring Transport Layer Security (TLS) certificates) into a single step
+- ACM certificates can only be associated with AWS Elastic and Application Load Balancers, CloudFront distributions, and API Gateway endpoints.
+
+
+# Route53
+
+
+# API Gateway
+- Allows you to make RESTful applications
+
+
+# Lambda
+- Serverless functions
+
+
+# DynamoDB
+- DynamoDB is a NoSQL database service
+
+
+# RDS
+- Relational Database Service (RDS)
 
 
 # Aurora DB
@@ -110,6 +126,381 @@ ogImage:
   - If you are building a new application, just use the Aurora Serverless and save yourself the headache
 - DynamoDB used the model of accessing the DB via the API
 - In the serverless world dealing with DB connections is a pain,  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Terraform (Infrastructure as Code) to build out your services
+- Why? 
+  - To document all the services that are being used
+  - Repeatable & reusable solution
+  - Tare down all the services created with Terraform because TF creates an inventory of all the services in a state file
+
+# Terraform for a client-side static web application
+
+
+## The variable file
+- This file is the only `.tf` file where you need to update values the rest of the `.tf` files are totally project agnostic
+  ```hcl
+  # (./varables.tf)
+  #-------------------------------------------
+  # Required variables (values passed in via command)
+  #-------------------------------------------
+  variable domain_name {}
+  variable hosted_zone_name {}
+  variable env_tags {}
+
+  #-------------------------------------------
+  # TF version & State file config
+  #-------------------------------------------
+  terraform {
+    backend "s3" {
+      key    = "<YOUR_PROJECT_NAME_HERE>" # this will define the TF state file
+      region = "us-west-2"
+    }
+    required_version = ">= 0.13.5"
+    required_providers {
+      aws = {
+        source  = "hashicorp/aws"
+        version = "~>3.4"
+      }
+    }
+  }
+
+  #-------------------------------------------
+  # Default region
+  #-------------------------------------------
+  variable "region" {
+    default = "us-west-2"
+  }
+  provider "aws" {
+    region = var.region
+  }
+
+  #-------------------------------------------
+  # Interpolated Values
+  #-------------------------------------------
+  locals {
+    bucket_name = "${var.domain_name}"
+    domain_name = "${var.domain_name}"
+  }
+
+  #-------------------------------------------
+  # Data
+  #-------------------------------------------
+  data "aws_caller_identity" "current" {}
+  ```
+
+
+## S3
+- Use S3 to store the static web files and a second bucket for logging
+  ```hcl
+  # (./s3.tf)
+  resource "aws_s3_bucket" "site" {
+    bucket = local.bucket_name
+    acl    = "private"
+    policy = data.aws_iam_policy_document.website_s3_policy.json
+
+    website {
+      index_document = "index.html"
+      error_document = "404.html"
+    }
+
+    tags = {
+      Environment = var.env_tags
+      Created_with = "Terraform"
+    }
+  }
+
+  resource "aws_s3_bucket" "log_bucket" {
+    bucket = "${local.bucket_name}-logs"
+    acl    = "log-delivery-write"
+  }
+  ```
+
+## Policies
+- This policie only allows access via CloudFront to serve the webcontent
+  ```hcl
+  # (./policies.tf)
+  data "aws_iam_policy_document" "website_s3_policy" {
+    statement {
+      actions   = ["s3:GetObject"]
+      resources = ["arn:aws:s3:::${local.bucket_name}/*"]
+
+      principals {
+        type        = "AWS"
+        identifiers = ["${aws_cloudfront_origin_access_identity.website_origin_access_identity.iam_arn}"]
+      }
+    }
+  }
+  ```
+## Route53
+- Make sure that you purchase your domain name beforehand because we will need the Hosted Zone Id
+- We will use TF to create an `A` record to connect to the CloudFront instance
+  ```hcl
+  # (./route53.tf)
+  resource "aws_route53_record" "domain" {
+    name    = local.domain_name
+    zone_id = data.aws_route53_zone.base.zone_id
+    type    = "A"
+    alias {
+      name                   = aws_cloudfront_distribution.website_cdn.domain_name
+      zone_id                = aws_cloudfront_distribution.website_cdn.hosted_zone_id
+      evaluate_target_health = true
+    }
+  }
+
+  data "aws_route53_zone" "base" {
+    name         = "${var.hosted_zone_name}."
+    private_zone = false
+  }
+  ```
+## ACM for certs
+- ACM provides an elegant wayt to convert  a cumbersome multi-step process into a single step, however when combined with Terraform this process is a little more complex because some processes have to happen in senquential steps
+- Some of the TF modules include:
+  - `aws_acm_certificate`: To request a certificate for example.com
+  - `aws_route53_record`: To create a DNS record to validate the certificate request
+  - `aws_certificate_validation`: To ensure that ACM validates our DNS record before certificate use
+- In an effort to reduce the timming steps, [azavea's team](https://www.azavea.com/) assembled a reusable [Terraform module](https://github.com/azavea/terraform-aws-acm-certificate) to encapsulate the ACM and Route 53 resources used. Using the output from the validation resource ensures that Terraform will wait for ACM to validate the certificate before resolving its ARN. Now, the process of creating, validating, and waiting for a valid certificate looks like this:
+  ```hcl
+  # (./certs.tf)
+  data "aws_route53_zone" "base" {
+    name         = "${var.hosted_zone_name}."
+    private_zone = false
+  }
+
+  provider "aws" {
+    region = "us-east-1"
+    alias  = "certificates"
+  }
+
+  provider "aws" {
+    region = var.region
+    alias  = "dns"
+  }
+
+  module "cert" {
+    source = "github.com/azavea/terraform-aws-acm-certificate?ref=3.0.0"
+
+    providers = {
+      aws.acm_account     = aws.certificates
+      aws.route53_account = aws.dns
+    }
+
+    domain_name                       = local.domain_name
+    hosted_zone_id                    = data.aws_route53_zone.base.zone_id
+    validation_record_ttl             = "60"
+    allow_validation_record_overwrite = true
+  }
+
+  resource "aws_route53_record" "domain" {
+    name    = local.domain_name
+    zone_id = data.aws_route53_zone.base.zone_id
+    type    = "A"
+    alias {
+      name                   = aws_cloudfront_distribution.website_cdn.domain_name
+      zone_id                = aws_cloudfront_distribution.website_cdn.hosted_zone_id
+      evaluate_target_health = true
+    }
+  }
+  ```
+
+# CloudFront
+- CloudFront allows for global distribution of our web content with the ability to cache content at AWS edge locations
+- The CloudFront configuration is kind of a beast
+  ```hcl
+  # (./cloudfront.tf)
+  resource "aws_cloudfront_origin_access_identity" "website_origin_access_identity" {
+    comment = "site ${terraform.workspace} Access Identity"
+  }
+
+
+  resource "aws_cloudfront_distribution" "website_cdn" {
+    origin {
+      domain_name = aws_s3_bucket.site.bucket_regional_domain_name
+      origin_id   = "origin-bucket-${aws_s3_bucket.site.id}"
+
+      s3_origin_config {
+        origin_access_identity = aws_cloudfront_origin_access_identity.website_origin_access_identity.cloudfront_access_identity_path
+      }
+    }
+
+    enabled             = true
+    is_ipv6_enabled     = true
+    default_root_object = "index.html"
+
+    logging_config {
+      include_cookies = false
+      bucket          = aws_s3_bucket.log_bucket.bucket_domain_name
+      prefix          = "cloudfront_logs"
+    }
+
+    aliases = [local.domain_name]
+
+    default_cache_behavior {
+      allowed_methods  = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
+      cached_methods   = ["GET", "HEAD"]
+      target_origin_id = "origin-bucket-${aws_s3_bucket.site.id}"
+
+      forwarded_values {
+        query_string = "true"
+
+        cookies {
+          forward = "none"
+        }
+      }
+
+      viewer_protocol_policy = "redirect-to-https"
+      compress               = true
+      min_ttl                = 0
+      default_ttl            = 300
+      max_ttl                = 1200
+    }
+
+    # Cache behavior with precedence 0
+    ordered_cache_behavior {
+      path_pattern     = "/index.html"
+      allowed_methods = ["GET", "HEAD", "DELETE", "OPTIONS", "PATCH", "POST", "PUT"]
+      cached_methods   = ["GET", "HEAD", "OPTIONS"]
+      target_origin_id = "origin-bucket-${aws_s3_bucket.site.id}"
+
+      forwarded_values {
+        query_string = "true"
+
+        cookies {
+          forward = "none"
+        }
+      }
+
+      min_ttl                = 0
+      default_ttl            = 0
+      max_ttl                = 0
+      compress               = true
+      viewer_protocol_policy = "redirect-to-https"
+    }
+
+    custom_error_response {
+      error_code = "404"
+      response_code      = "200"
+      response_page_path = "/index.html"
+    }
+    
+    custom_error_response {
+      error_code = "403"
+      response_code      = "200"
+      response_page_path = "/index.html"
+    }
+
+    price_class = "PriceClass_100" # https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/PriceClass.html
+
+    restrictions {
+      geo_restriction {
+        restriction_type = "none"
+      }
+    }
+
+    viewer_certificate {
+      acm_certificate_arn      = module.cert.arn
+      ssl_support_method       = "sni-only"
+      minimum_protocol_version = "TLSv1"
+    }
+
+    lifecycle {
+      ignore_changes = [tags]
+    }
+
+    tags = {
+      Environment = var.env_tags
+      Created_with = "Terraform"
+    }
+  }
+  ```
+## Finally the `.tfvars` file
+- Creating a `.tfvar` file allows you to deploy this applications to multiple environments (dev|statging|prod)
+  ```hcl
+  # (./env_configs/prod.tfvars)
+  domain_name      = "myawesomesite.com"
+  hosted_zone_name = "myawesomesite.com"
+  env_tags          = "Production"
+  ```
+- Now running this
+  ```shell
+  # *NOTE* run these commands in the terraform folder
+
+  export AWS_PROFILE="<YOUR_AWS_PROFILE_HERE>"
+  CLIENT_BUCKET_NAME="<YOUR_AWS_S3_BUCKET_NAME>"
+  TERRAFORM_STATE_BUCKET_NAME="<YOUR_TF_REMOTE_STATE_BUCKET_NAME>"
+
+  # Environment variables
+  WORKSPACE="prod"
+  VAR_FILE="./env/prod.tfvars"
+
+  # TF version
+  tf_ver="v0.13.5"; if [[ ! $(Terraform --version) =~ "Terraform $tf_ver" ]]; then echo "Terraform $tf_ver is required"; exit 1; fi
+
+  # Cleanup .terraform
+  rm -rf .terraform/
+
+  # Deploy terraform
+  echo "[Running] terraform"
+  terraform init -backend-config bucket="${TERRAFORM_STATE_BUCKET_NAME}"
+
+  # If the workspace does not exist, create it.
+  if ! terraform workspace select ${WORKSPACE}; then terraform workspace new ${WORKSPACE}; fi
+  terraform apply -auto-approve -var-file=$VAR_FILE
+
+  cd .. # where the package.json file exist
+
+  # Build the static files
+  echo "[Build] production version of the website]"
+  yarn
+  yarn run build
+
+  # Upload the source code to AWS S3
+  echo "[Upload] website content"
+  aws s3 rm s3://$CLIENT_BUCKET_NAME/  --recursive
+  aws s3 sync dist/ s3://$CLIENT_BUCKET_NAME/ --exclude \"*.DS_Store*\"
+  aws s3 cp dist/index.html s3://$CLIENT_BUCKET_NAME/ --cache-control max-age=0
+  ```
+
+
+
+
+
+
+
+
+
+# AWS CDK (AWS Cloud Development Kit)
+- The AWS CDK (Amazon Web Services Cloud Development Kit) is a [new open source framework](https://github.com/aws/aws-cdk) to define cloud infrastructure in code (Infrastructure as Code) and provisioning it through AWS CloudFormation.
+- CDK provides many high level components to allow rapid code development requiring much less input compared to the typical CloudFormation templates. 
+- CDK is available in TypeScript, Python, Java and C#.
+  ```shell
+  # Install globally 
+  $ npm i -g aws-cdk
+
+  $ mkdir my-app && cd my-app
+  $ cdk init app --language=typescript
+
+  $ npm i @aws-cdk/aws-apigatewayv2 @aws-cdk/aws-apigatewayv2-integrations @aws-cdk/aws-ec2 @aws-cdk/aws-lambda @aws-cdk/aws-rds @aws-cdk/core source-map-support
+  ```
 
 
 
