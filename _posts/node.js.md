@@ -600,4 +600,34 @@ https://auth0.com/docs/tokens/json-web-tokens/json-web-token-claims#reserved-cla
     ```
 
 
+# Download images from the web
 
+```js
+const fs = require("fs");
+const path = require("path");
+const Axios = require("axios");
+
+async function downloadImage(url, filepath) {
+  const response = await Axios({
+    url,
+    method: "GET",
+    responseType: "stream",
+  });
+  return new Promise((resolve, reject) => {
+    response.data
+      .pipe(fs.createWriteStream(filepath))
+      .on("error", reject)
+      .once("close", () => resolve(filepath));
+  });
+}
+
+const BASE_URL = "https://some-place.com";
+
+[...Array(1)].map((_, pictureNum) => {
+  const fileName = `${pictureNum + 1}.jpg`;
+
+  const webUrl = `${BASE_URL}/${fileName}`;
+  const downloadFilename = path.join(__dirname, `../art/${fileName}____`);
+  downloadImage(webUrl, downloadFilename).then(console.log).catch(console.error);
+});
+```
