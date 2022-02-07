@@ -233,8 +233,6 @@ ogImage:
 ```js
 expect(getAllByRole('row')[3]).toContainTextContent(/45/)
 fireEvent.click(within(getAllByRole('row')[2]).getByText('Delete'))
-
-
 ```
 
 - Testing code that request data from `msw`
@@ -260,7 +258,7 @@ fireEvent.click(within(getAllByRole('row')[2]).getByText('Delete'))
       })
   }  
   
-  
+ 
   import { rest } from 'msw'
   import server from '@/src/mocks/server'
 
@@ -291,82 +289,81 @@ fireEvent.click(within(getAllByRole('row')[2]).getByText('Delete'))
   })
   ```
 
-- 
-  - The Page Component (Connected to Redux)
-    ```js
-    import React from 'react'
-    import { useDispatch, useSelector } from 'react-redux'
 
-    import { selectSampleData, getSampleData } from '__state/slices/sample'
+ - The Page Component (Connected to Redux)
+  ```js
+  import React from 'react'
+  import { useDispatch, useSelector } from 'react-redux'
 
-    export default function LandingPage() {
-      const dispatch = useDispatch()
-      React.useEffect(() => {
-        dispatch(getSampleData())
-      }, [dispatch])
+  import { selectSampleData, getSampleData } from '__state/slices/sample'
 
-      const sampleData = useSelector(selectSampleData)
-
-      return (
-        <div>
-          <ul>
-            {sampleData?.map(({ id, items }) => (
-              <li key={id}>{items}</li>
-            ))}
-          </ul>
-        </div>
-      )
-    }
-    ```
-  - The test code
-    ```js
-    import { waitFor } from '@testing-library/react'
-    import { rest } from 'msw'
-    import React from 'react'
-
-    import sampleData from '@/src/mocks/data/sampleData.js'
-    import { URLS } from '@/src/mocks/handlers/sample'
-    import server from '@/src/mocks/server'
-    import { renderWithStore } from '@/src/mocks/testing/MockApp'
-
-    import LandingPage from './LandingPage'
-
-    const { useDispatch } = require('react-redux')
-    const { getSampleData } = require('@/src/state/slices/sample')
-
-    export const MockPage = () => {
-      const dispatch = useDispatch()
+  export default function LandingPage() {
+    const dispatch = useDispatch()
+    React.useEffect(() => {
       dispatch(getSampleData())
-      return <LandingPage />
-    }
+    }, [dispatch])
 
-    describe('LandingPage', () => {
-      it('should render the page component', async () => {
-        server.use(
-          rest.get(URLS, (req, res, ctx) => {
-            return res(ctx.status(200), ctx.json(sampleData))
-          })
-        )
+    const sampleData = useSelector(selectSampleData)
 
-        const { asFragment, getByText } = await renderWithStore(<MockPage />)
+    return (
+      <div>
+        <ul>
+          {sampleData?.map(({ id, items }) => (
+            <li key={id}>{items}</li>
+          ))}
+        </ul>
+      </div>
+    )
+  }
+  ```
+- The test code
+  ```js
+  import { waitFor } from '@testing-library/react'
+  import { rest } from 'msw'
+  import React from 'react'
 
-        await waitFor(() => {
-          const rowCount = getByText(/Something Rad/i)
-          expect(rowCount).toBeTruthy()
+  import sampleData from '@/src/mocks/data/sampleData.js'
+  import { URLS } from '@/src/mocks/handlers/sample'
+  import server from '@/src/mocks/server'
+  import { renderWithStore } from '@/src/mocks/testing/MockApp'
+
+  import LandingPage from './LandingPage'
+
+  const { useDispatch } = require('react-redux')
+  const { getSampleData } = require('@/src/state/slices/sample')
+
+  export const MockPage = () => {
+    const dispatch = useDispatch()
+    dispatch(getSampleData())
+    return <LandingPage />
+  }
+
+  describe('LandingPage', () => {
+    it('should render the page component', async () => {
+      server.use(
+        rest.get(URLS, (req, res, ctx) => {
+          return res(ctx.status(200), ctx.json(sampleData))
         })
+      )
 
-        expect(asFragment()).toMatchSnapshot()
+      const { asFragment, getByText } = await renderWithStore(<MockPage />)
+
+      await waitFor(() => {
+        const rowCount = getByText(/Something Rad/i)
+        expect(rowCount).toBeTruthy()
       })
+
+      expect(asFragment()).toMatchSnapshot()
     })
-    ```
+  })
+  ```
 
 - Mocking a `useSelector`
   ```js
-  import SomeComponent from '../SomeComponent'
-  import { screen, fireEvent, render } from '@testing-library/react'
+  import { render } from '@testing-library/react'
   import * as reactRedux from 'react-redux'
 
-  describe('test some redux', () => {
+  describe('TEST LIST ITEMS', () => {
     const useSelectorMock = jest.spyOn(reactRedux, 'useSelector')
     const useDispatchMock = jest.spyOn(reactRedux, 'useDispatch')
 
@@ -375,31 +372,28 @@ fireEvent.click(within(getAllByRole('row')[2]).getByText('Delete'))
       useDispatchMock.mockClear()
     })
 
-    it('does something', () => {
-      const mockData = {hell: 'o'}
-      useSelectorMock.mockReturnValue(mockData)
+    it('HAVE 0 ITEMS', () => {
+      const mockStateSlice = {}
+      useSelectorMock.mockReturnValue(mockStateSlice)
 
-      const { getByLabelText } = render(<SomeComponent />)
-      const usernameSection = getByLabelText('User name')
-      expect(usernameSection).toBeTruthy()
+      const { container } = render(<MyComponent />)
+      expect(container.firstChild).toBeNull()
+
+      const { getAllByRole } = render(<MyComponent />)
+      const alerts = getAllByRole('list item')
+      expect(alerts).toBeNull()
     })
 
-    it('does something', () => {
-      const dummyDispatch = jest.fn()
-      useDispatchMock.mockReturnValue(dummyDispatch)
+    it('HAVE 1 ITEMS', () => {
+      const mockStateSlice = {
+        0: { username: 'user1' },
+      }
+      useSelectorMock.mockReturnValue(mockStateSlice)
 
-      render(<SomeComponent />)
-
-      expect(dummyDispatch).not.toHaveBeenCalled()
-      
-      const divElement = screen.getByRole('contentinfo')
-      const buttonElement = screen.getByText('Add count')
-      fireEvent.click(buttonElement)
-
-      expect(dummyDispatch).toHaveBeenCalled()
-      expect(divElement).toHaveTextContent('Username: user-1')
+      const { getAllByRole } = render(<MyComponent />)
+      const alerts = getAllByRole('list item')
+      expect(alerts.length).toBe(1)
     })
-
   })
   ```
 
