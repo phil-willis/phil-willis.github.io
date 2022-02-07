@@ -360,6 +360,48 @@ fireEvent.click(within(getAllByRole('row')[2]).getByText('Delete'))
     })
     ```
 
+- Mocking a `useSelector`
+  ```js
+  import SomeComponent from '../SomeComponent'
+  import { screen, fireEvent, render } from '@testing-library/react'
+  import * as reactRedux from 'react-redux'
+
+  describe('test some redux', () => {
+    const useSelectorMock = jest.spyOn(reactRedux, 'useSelector')
+    const useDispatchMock = jest.spyOn(reactRedux, 'useDispatch')
+
+    beforeEach(() => {
+      useSelectorMock.mockClear()
+      useDispatchMock.mockClear()
+    })
+
+    it('does something', () => {
+      const mockData = {hell: 'o'}
+      useSelectorMock.mockReturnValue(mockData)
+
+      const { getByLabelText } = render(<SomeComponent />)
+      const usernameSection = getByLabelText('User name')
+      expect(usernameSection).toBeTruthy()
+    })
+
+    it('does something', () => {
+      const dummyDispatch = jest.fn()
+      useDispatchMock.mockReturnValue(dummyDispatch)
+
+      render(<SomeComponent />)
+
+      expect(dummyDispatch).not.toHaveBeenCalled()
+      
+      const divElement = screen.getByRole('contentinfo')
+      const buttonElement = screen.getByText('Add count')
+      fireEvent.click(buttonElement)
+
+      expect(dummyDispatch).toHaveBeenCalled()
+      expect(divElement).toHaveTextContent('Username: user-1')
+    })
+
+  })
+  ```
 
 
 
