@@ -71,18 +71,15 @@ ogImage:
   # Delete remote branch
   $ git branch -dr <remote/branch>
   ```
-- Merge & Rebase
+- Rebase & Merge
   ```shell
-  # Merge <branch> into your current HEAD
-  $ git merge <branch>
-  
-  # Rebase (don't rebase published commits
+  # Rebase
   $ git rebase <branch>
-  
-  
   $ git rebase --abort
   $ git rebase --continue
-  $ git merge
+  
+  # Merge <branch> into your current HEAD
+  $ git merge <branch>
   ```
 - Undo
   ```shell
@@ -96,12 +93,13 @@ ogImage:
   ```shell
   $ git stash list
   $ git stash save <message>
-
-  $ git stash -u <message>
+  $ git stash save <message> <-u|--include-untracked> 
 
   $ git stash list
   $ git stash apply stash@{1}
   $ git stash drop stash@{1}
+  
+  $ git stash clear
   ```
 - Unstage 
   ```shell
