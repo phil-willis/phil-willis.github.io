@@ -228,6 +228,29 @@ ogImage:
   // input change val
   fireEvent.change(container.querySelector('input'), {target: { value: 'ahhhh' }})
   ```
+- Test is something isn't there
+  - The standard `getBy` methods throw an error when they can't find an element
+  - So if you want to make an assertion that an element is not present in the DOM, you can use `queryBy` APIs instead:
+    ```js
+    const submitButton = screen.queryByText('submit')
+    expect(submitButton).toBeNull() // it doesn't exist
+    ```
+  - The `queryAll` APIs version return an array of matching nodes. The length of the array can be useful for assertions after elements are added or removed from the DOM.
+    ```js
+    const submitButtons = screen.queryAllByText('submit')
+    expect(submitButtons).toHaveLength(2) // expect 2 elements
+    ```
+  - The `jest-dom` utility library provides the `.toBeInTheDocument()` matcher, which can be used to assert that an element is in the body of the document, or not. This can be more meaningful than asserting a query result is `null`.
+    ```js
+    import '@testing-library/jest-dom/extend-expect'
+    // use `queryBy` to avoid throwing an error with `getBy`
+    const submitButton = screen.queryByText('submit')
+    expect(submitButton).not.toBeInTheDocument()
+    ```
+  - You can also assert that it throws an error
+    ```js
+    expect(() => getByText('your text')).toThrow('Unable to find an element');
+    ```
 
 - Testing tips
 ```js
@@ -832,11 +855,45 @@ fireEvent.click(within(getAllByRole('row')[2]).getByText('Delete'))
   ```
 
 
+- Mocking window
+
+  - mocking window.location
 
 
+- Expect element to have attribute
+  - `toHaveAttribute` is part of `jest-dom` so you need to install it `$ npm install --save-dev @testing-library/jest-dom`
+  - After that you can include at your jest setup file (e.g. ./jest-setup.js) like recommended:
+    ```js
+    // In your own jest-setup.js (or any other name)
+    import '@testing-library/jest-dom'
 
+    // In jest.config.js add (if you haven't already)
+    setupFilesAfterEnv: ['<rootDir>/jest-setup.js']
+    ```
+   - Usage:
+    ```js
+    import React from 'react'
 
+    function SomeComponent() {
+      return (
+        <div>
+          <a href="/some/location" data-testid='nav-link'>navigate somewhere</a>
+        </div>
+      );
+    }
+    ```
+    ```js
+    import { render } from "@testing-library/react";
+    import SomeComponent from "./SomeComponent";
 
+    describe("SomeComponent", () => {
+      it("should have href", () => {
+        const testId = "nav-link";
+        const { getByTestId } = render(<SomeComponent />);
+        expect(getByTestId(testId)).toHaveAttribute("href", "/npe/teams");
+      });
+    });
+    ```
 
 
 
