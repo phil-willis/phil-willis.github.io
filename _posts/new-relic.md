@@ -105,7 +105,9 @@ ogImage:
     region     = "US" # Valid regions are US and EU
   }
 
-
+  ##################################################
+  # Create Alert Policy & Condition
+  ##################################################
   resource "newrelic_alert_policy" "alert_policy" {
     name = "My Web App - Browser Policy"
   }
@@ -153,12 +155,10 @@ ogImage:
     #   threshold_occurrences = "ALL"
     # }
 
-
     ##################################################
     # Fine-tune advanced signal settings
     ##################################################
     aggregation_method = "event_flow" # `Streaming method` [cadence, event_flow, event_timer]
-
 
     ##################################################
     # Section: Additional settings
@@ -166,6 +166,39 @@ ogImage:
     violation_time_limit_seconds = 259200 # (3 days) `Close open violations after:` automatically force-close a long-lasting violation
     description                  = "Alert when there is a 10x the account of JS errors for our client-side application" # `Send a custom violation description`
     runbook_url                  = var.runbook_url
+  }
+  
+  #########################
+  # Send out alerts
+  #########################
+  # Creates an email alert channel.
+  resource "newrelic_alert_channel" "email_channel" {
+    name = "CX - ${var.project_name} - Browser Alert"
+    type = "email"
+    config {
+      recipients              = "phil.willis@nike.com"
+      include_json_attachment = "true"
+    }
+  }
+
+  # Creates a Slack alert channel.
+  resource "newrelic_alert_channel" "slack_channel" {
+    name = "slack-channel-example"
+    type = "slack"
+    config {
+      channel = "#example-channel"
+      url     = "http://example-org.slack.com"
+    }
+  }
+
+  # Applies the created channels above to the alert policy
+  # referenced at the top of the config.
+  resource "newrelic_alert_policy_channel" "foo" {
+    policy_id  = newrelic_alert_policy.alert_policy.id
+    channel_ids = [
+      newrelic_alert_channel.email_channel.id,
+      newrelic_alert_channel.slack_channel.id
+    ]
   }
   ```
   
