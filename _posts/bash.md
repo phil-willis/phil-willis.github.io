@@ -21,6 +21,29 @@ ogImage:
   ```
 
 # Set Environment Variables in Your Bash Shell From a `.env` File
+- The `.env` file is used to pass in environment variables to a script
+- Environment variables allow us to manage the configuration of our applications separately from our codebase. 
+- Separating configurations makes it easier for our application to be deployed in different environments.
+- Environment variables are variables external to our application which reside in the OS or the container where the production application is running. 
+- Because development is mostly done on local machines, environment variables are put either to local environment variables with commands such as set or export, or stored in the local .env file.
+- General rules with `.env` file
+  1. List environment variables on single line with `<KEY>=<VALUE>` format
+  2. Comments `#` needs to be the first character on the line **NOT** after a key/value definition  *NOT THIS* -> `HOST="localhost" # for local development (do not add comments after the key/value definition)`
+  3. Empty lines are skipped
+  4. inner quotes are maintainted
+- `.env` example:
+  ```shell
+  HOST = localhost
+  DATABASE = ydb
+  PORT = 5432
+  ```
+  
+  ```shell
+  HOST="localhost"
+  DATABASE="ydb"
+  PORT=5432
+  ```
+  
 - You can load all the environment variables from a file
   ```shell
   # Show env vars
@@ -33,6 +56,20 @@ ogImage:
   ```shell
   if [ -f .env ]; then export $(cat .env | xargs); fi
   ```
+- Loading `.env` in an JavaScript file with the `dotenv` package
+  ```js
+  require('dotenv').config()
+
+  const hostname = process.env.HOST;
+  const database = process.env.DATABASE;
+  const port = process.env.PORT;
+
+  console.log(hostname);
+  console.log(database);
+  console.log(port);
+  ```
+
+
 
 # Kill process running on a port number
   ```shell
