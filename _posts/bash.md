@@ -56,6 +56,10 @@ ogImage:
   ```shell
   if [ -f .env ]; then export $(cat .env | xargs); fi
   ```
+- Allow for comment lines
+  ```shell
+  if [ -f .env ]; then export $(cat .env | egrep -v "(^#.*|^$)" | xargs); fi
+  ```
 - Loading `.env` in an JavaScript file with the `dotenv` package
   ```js
   require('dotenv').config()
