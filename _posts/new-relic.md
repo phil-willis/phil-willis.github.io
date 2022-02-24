@@ -176,7 +176,7 @@ ogImage:
     name = "CX - ${var.project_name} - Browser Alert"
     type = "email"
     config {
-      recipients              = "phil.willis@nike.com"
+      recipients              = "phil.willis@gmail.com"
       include_json_attachment = "true"
     }
   }
