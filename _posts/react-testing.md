@@ -128,6 +128,7 @@ ogImage:
 
 
 ## Testing with React with @testing-library/react)
+- The `@testing-library` family of packages helps you test UI components in a user-centric way. It's a **DOM testing library**
 - A light-weight solution for testing React components
 - It provides light utility functions on top of react-dom and react-dom/test-utils in a way that encourages better testing practices
 - rendering the component with props (developer user)
@@ -139,15 +140,16 @@ ogImage:
   - anything that the user doesn't see
 - Should deal with DOM nodes rather than component instances
 
+- With @testing-library you use Queries ([getBy*, queryBy*, getAllBy*, queryAllBy*]) the DOM to find elements
 - Allows you ways query the DOM:
-  - getByLabelText
-  - getByPlaceholderText
-  - getByText
-  - getByAltText
-  - getByTitle
-  - getByDisplayValue
-  - getByRole
-  - getByTestId
+  - getBy**LabelText**
+  - getBy**PlaceholderText**
+  - getBy**Text**
+  - getBy**AltText**
+  - getBy**Title**
+  - getBy**DisplayValue**
+  - getBy**Role**
+  - getBy**TestId**
   - container.querySelector() 
   - container.querySelectorAll()
   - debug()
@@ -257,6 +259,21 @@ ogImage:
 expect(getAllByRole('row')[3]).toContainTextContent(/45/)
 fireEvent.click(within(getAllByRole('row')[2]).getByText('Delete'))
 ```
+
+- Test after useEffect() happens at least once
+  - Using async/await and `waitFor` you can test your component after a useEffect has ran
+    ```js
+    import { render, screen, waitFor } from '@testing-library/react'
+
+    describe('MyComponent', () => {
+      test('should have welcome message defined in the useEffect', async () => {
+        await render(<ThemeToggler />)
+        waitFor(() => {
+          expect(screen.getByRole('button')).toBeDefines()
+        })
+      })
+    })
+    ``
 
 - Testing code that request data from `msw`
   ```js
@@ -894,6 +911,113 @@ fireEvent.click(within(getAllByRole('row')[2]).getByText('Delete'))
       });
     });
     ```
+
+- Add custome functions to the Jest Test Suite
+  - Let's say we want to be able to repeat something, we could make a `./test/helpers.ts` file like this:
+    ```
+    import { itRepeats } from "test/helpers";
+
+    describe("my test suite", () => {
+      itRepeats(10, "does something", () => {
+        expect(1).toEqual(1);
+      });
+      // -- or --
+      itRepeats(10)("does something", () => {
+        expect(1).toEqual(1);
+      });
+    });
+    ```
+  - Or you can append to the existing Jest functionality by add this to the `jest.setup.ts` file
+    ```ts:jest.setup.ts
+    test.repeats = async (
+      times: number,
+      name: string,
+      fn?: jest.ProvidesCallback,
+      timeout?: number,
+    ) => {
+      await Promise.all(
+        Array(times)
+          .fill(undefined)
+          .map((_, i) => {
+            return test(name, fn, timeout);
+          }),
+      );
+    };
+    ```
+  - Add `types/jest.d.ts`
+    ```ts
+    /// <reference types="jest" />
+
+    declare namespace jest {
+      interface It {
+        repeats: (
+          times: number,
+          name: string,
+          fn?: ProvidesCallback,
+          timeout?: number,
+        ) => void;
+      }
+    }
+    ```
+  - Then, add the jest.d.ts line to the include property in your tsconfig.json:
+    ```json
+    {
+      ...
+      "include": [
+        "jest.d.ts",
+      ]
+    }
+    ```
+
+
+
+- Mock localStorage
+  ```ts
+
+  const localStorageMock = (() => {
+    let store: { [keey: string]: string } = {}
+    return {
+      getItem: (key: string) => {
+        return store[key]
+      },
+      setItem: (key: string, value: string) => {
+        store[key] = value.toString()
+      },
+      clear: () => {
+        store = {}
+      },
+      removeItem: (key: string) => {
+        delete store[key]
+      },
+    }
+  })()
+
+  describe('localStorage', () => {
+    beforeAll(() => {
+      Object.defineProperty(window, 'localStorage', { value: localStorageMock })
+    })
+    afterEach(() => {
+      jest.restoreAllMocks()
+    })
+
+    test('set value', async () => {
+      localStorage.setItem('hell', 'o')
+      const storageValue = localStorage.getItem('hell')
+      expect(storageValue).toBe('o')
+      expect(storageValue).not.toBe('no')
+    })
+  })
+  ```
+
+
+
+
+
+
+
+
+
+
 
 
 
