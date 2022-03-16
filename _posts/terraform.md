@@ -589,6 +589,16 @@ $ terraform apply -auto-approve
     allow_validation_record_overwrite = true
   }
   ```
+- **NOTE:** *If you want to conditionally use a module*, Terraform 0.13 allows you do add a count to a module. You might want to use this if you only want a module to run in a specific deployment environment
+  ```hcl
+  variable forProd {
+    default = false
+  }
+  resource "resource_type" "resource_name" {
+   count = var.forProd ? 1 : 0
+   ... other resource properties 
+  }
+  ```
 
 
 # Terraform for New Relic Dashboard
