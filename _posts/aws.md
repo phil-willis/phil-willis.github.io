@@ -78,30 +78,6 @@ ogImage:
 - Distribute your static content at AWS edge locations
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 # ACM
 - AWS Certificate Manager is a service provided by Amazon that issues on-demand TLS certificates at no cost. Much like Let’s Encrypt, Amazon controls the Certificate Authority (Amazon Trust Services, LLC) behind the certificates, as well as the accompanying API to manage them.
 - Amazon Certificate Manager (ACM) provides an elegant wayt to convert  a cumbersome multi-step process (the process of provisioning, validating, and configuring Transport Layer Security (TLS) certificates) into a single step
@@ -727,6 +703,36 @@ ogImage:
     # *...
   }
   ```
+- Now you can test it by uploading this below HTML to the bucket in the `eu-west-1` and leave the `us-west-2` empty for now
+  ```html
+  <!doctype html>
+  <html lang="en">
+  <head>
+    <title>eu-west-1</title>
+  </head>
+  <body>
+    <h1>eu-west-1</h1>
+    <img src="image.jpg">
+  </body>
+  </html>
+  ```
+- If you go to the CloudFront URL, you should see a site that says `eu-west-1`
+- Now Add the below html to the `us-west-2` bucket:
+  ```html
+  <!doctype html>
+  <html lang="en">
+  <head>
+    <title>us-west-2</title>
+  </head>
+  <body>
+    <h1>us-west-2</h1>
+    <img src="image.jpg">
+  </body>
+  </html>
+  ```
+- If you refresh your browser you should now see `us-west-2`
+
+
 
 
 
