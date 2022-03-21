@@ -116,8 +116,6 @@ ogImage:
 ![similar-npm-vs-yarn-commands](https://user-images.githubusercontent.com/79557260/138965939-58b9a4d5-2e38-4210-a471-b7f3d8d3ff5c.jpg)
 
 
-
-
 # Creating a npm package
 https://dev.to/joshaguilar/fully-automating-npm-package-releases-3k7ez
 
@@ -156,7 +154,20 @@ https://dev.to/joshaguilar/fully-automating-npm-package-releases-3k7ez
   ```
 
     
-    
+# Controlling the node & npm version on a project with `.nvmrc` file
+- Having different versions of npm can messup the package-lock.json file
+- You just need to make one file and update your package.json file
+  1. Add `.nvmrc` file with the version you want e.g. `v14.17.4` or `v14`
+  2. Add the `engines` object to your package.json file
+    ```json
+    {
+      "engines": {
+        "npm": "6.14.14",
+        "node": "14.17.4"
+      }
+    }
+    ```
+  3. Now you just need to run `$ nvm use` to set the exact node/npm version
     
 # Using Docker to local development
 - Initialize a nodejs 
