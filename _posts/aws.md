@@ -80,6 +80,28 @@ ogImage:
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # ACM
 - AWS Certificate Manager is a service provided by Amazon that issues on-demand TLS certificates at no cost. Much like Let’s Encrypt, Amazon controls the Certificate Authority (Amazon Trust Services, LLC) behind the certificates, as well as the accompanying API to manage them.
 - Amazon Certificate Manager (ACM) provides an elegant wayt to convert  a cumbersome multi-step process (the process of provisioning, validating, and configuring Transport Layer Security (TLS) certificates) into a single step
@@ -483,8 +505,228 @@ ogImage:
 
 
 
+## CloudFront add a secondary failover origin
+- Create a bucket and a CloudFront ditribution:
+  ```hcl
+  variable "primary_bucket_name"{
+    default = "my-awesome-site"
+  }
+
+  variable "s3_origin_id" {
+    default = "myS3Origin"
+  }
+
+  # Primary Origin
+  data "aws_iam_policy_document" "primary_origin_website_s3_policy" {
+    statement {
+      sid       = "bucket_policy_for_primary"
+      actions   = ["s3:GetObject"]
+      effect    = "Allow"
+      resources = ["arn:aws:s3:::${var.primary_bucket_name}/*"]
+
+      principals {
+        type        = "AWS"
+        identifiers = [aws_cloudfront_origin_access_identity.website_origin_access_identity.iam_arn]
+      }
+    }
+  }
+  resource "aws_s3_bucket" "primary_origin" {
+    bucket = var.primary_bucket_name
+    acl    = "private"
+    policy = data.aws_iam_policy_document.primary_origin_website_s3_policy.json
+
+    website {
+      index_document = "index.html"
+      error_document = "404.html"
+    }
+
+    tags = {}
+
+    force_destroy = true
+  }
 
 
+
+  # CloudFront (With single origin)
+  resource "aws_cloudfront_origin_access_identity" "website_origin_access_identity" {
+    comment = "site ${terraform.workspace} Access Identity"
+  }
+
+  resource "aws_cloudfront_distribution" "s3_distribution" {
+    origin {
+      domain_name = aws_s3_bucket.primary_origin.bucket_regional_domain_name
+      origin_id   = var.s3_origin_id
+
+      s3_origin_config {
+        origin_access_identity = aws_cloudfront_origin_access_identity.website_origin_access_identity.cloudfront_access_identity_path
+      }
+    }
+
+    enabled             = true
+    is_ipv6_enabled     = true
+    comment             = "Some comment"
+    default_root_object = "index.html"
+
+    logging_config {
+      include_cookies = false
+      bucket          = "mylogs.s3.amazonaws.com"
+      prefix          = "myprefix"
+    }
+
+    aliases = ["mysite.example.com", "yoursite.example.com"]
+
+    default_cache_behavior {
+      allowed_methods  = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
+      cached_methods   = ["GET", "HEAD"]
+      target_origin_id = var.s3_origin_id
+
+      forwarded_values {
+        query_string = false
+
+        cookies {
+          forward = "none"
+        }
+      }
+
+      viewer_protocol_policy = "allow-all"
+      min_ttl                = 0
+      default_ttl            = 3600
+      max_ttl                = 86400
+    }
+
+    # Cache behavior with precedence 0
+    ordered_cache_behavior {
+      path_pattern = "/index.html"
+      allowed_methods  = ["GET", "HEAD", "OPTIONS"]
+      cached_methods   = ["GET", "HEAD", "OPTIONS"]
+      target_origin_id = var.s3_origin_id
+
+      forwarded_values {
+        query_string = "true"
+        cookies {
+          forward = "none"
+        }
+      }
+
+      min_ttl                = 0
+      default_ttl            = 86400
+      max_ttl                = 31536000
+      compress               = true
+      viewer_protocol_policy = "redirect-to-https"
+    }
+
+    price_class = "PriceClass_200"
+
+    restrictions {
+      geo_restriction {
+        restriction_type = "none"
+      }
+    }
+
+    tags = {
+      Environment = "production"
+    }
+
+    viewer_certificate {
+      cloudfront_default_certificate = true
+    }
+  }
+  ```
+- Now add a second bucket in another region and update your CloudFront config block to allow for secondary origin
+  ```hcl
+  # Add a bucket in another region
+  provider "aws" {
+    region = "eu-west-1"
+    alias  = "failover_region"
+  }
+
+  variable "secondary_bucket_name"{
+    default = "my-awesome-site-failover"
+  }
+
+  # Secondary Bucket
+  data "aws_iam_policy_document" "secondary_origin_website_s3_policy" {
+    provider = aws.failover_region
+
+    statement {
+      sid       = "bucket_policy_for_secondary"
+      actions   = ["s3:GetObject"]
+      effect    = "Allow"
+      resources = ["arn:aws:s3:::${var.secondary_bucket_name}/*"]
+
+      principals {
+        type        = "AWS"
+        identifiers = [aws_cloudfront_origin_access_identity.website_origin_access_identity.iam_arn]
+      }
+    }
+  }
+  resource "aws_s3_bucket" "secondary_origin" {
+    provider = aws.failover_region
+
+    bucket = var.secondary_bucket_name
+    acl    = "private"
+    policy = data.aws_iam_policy_document.secondary_origin_website_s3_policy.json
+
+    website {
+      index_document = "index.html"
+      error_document = "404.html"
+    }
+
+    tags = {}
+
+    force_destroy = true
+  }
+
+
+  # Update your cloudfront distribution
+  resource "aws_cloudfront_distribution" "s3_distribution" {
+    # Add an `origin group`
+    origin_group {
+      origin_id = "OriginWithFailover"
+
+      failover_criteria {
+        status_codes = [403, 404, 500, 502]
+      }
+
+      # *NOTE: this order matters! (first one will be the primary)
+      member {
+        origin_id = "primaryS3"
+      }
+
+      member {
+        origin_id = "failoverS3"
+      }
+    }
+
+    # Add a second origin
+    origin {
+      domain_name = aws_s3_bucket.secondary_origin.bucket_regional_domain_name
+      origin_id   = "failoverS3"
+
+      s3_origin_config {
+        origin_access_identity = aws_cloudfront_origin_access_identity.website_origin_access_identity.cloudfront_access_identity_path
+      }
+    }
+
+    default_cache_behavior {
+      target_origin_id = "OriginWithFailover"
+
+      allowed_methods = ["GET", "HEAD", "OPTIONS"]
+      cached_methods  = ["GET", "HEAD"]
+      # *...
+    }
+
+    ordered_cache_behavior {
+      target_origin_id = "OriginWithFailover"
+
+      allowed_methods = ["GET", "HEAD", "OPTIONS"] # Note 
+      cached_methods  = ["GET", "HEAD"]
+      # *...
+    }
+
+    # *...
+  }
+  ```
 
 
 
