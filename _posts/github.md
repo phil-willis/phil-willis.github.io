@@ -361,7 +361,26 @@ $ git commit
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## Github Actions
+- Terms: `Events`, `Jobs`, `Runners`, `Steps`, `Actions`
 - Workflow files use YAML syntax, and must have either a .yml or .yaml file extension.
 - You must store workflow files in the `.github/workflows` directory of your repository.
 - `Github Actions` works off of [triggers](https://docs.github.com/en/actions/reference/events-that-trigger-workflows)
@@ -906,7 +925,14 @@ $ git commit
 
 
 
-
+## Self-hosted Github Actions runner
+- [Blog post on self-hosted runners](https://github.blog/2019-11-05-self-hosted-runners-for-github-actions-is-now-in-beta/)
+- If you don't make a self-hosted runner you are using a shared infrastructure on Github
+- Advantages of a self-hosted runner:
+  - Your environment, your tools
+  - Any size machine or configuration
+  - Secure access & networking
+  - Large workload support
 
 
 
