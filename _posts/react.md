@@ -338,7 +338,7 @@ ogImage:
   ```json
   {
     "scripts": {
-      "start": "snowpack dev",
+      "start": "snowpack dev --port 8080",
       "build": "snowpack build"
     },
   }
