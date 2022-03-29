@@ -612,33 +612,100 @@ https://auth0.com/docs/tokens/json-web-tokens/json-web-token-claims#reserved-cla
 
 
 # Download images from the web
+- Downloading an image is different then download data, you gotta use streams
+  ```js
+  const fs = require("fs");
+  const path = require("path");
+  const Axios = require("axios");
 
-```js
-const fs = require("fs");
-const path = require("path");
-const Axios = require("axios");
+  async function downloadImage(url, filepath) {
+    const response = await Axios({
+      url,
+      method: "GET",
+      responseType: "stream",
+    });
+    return new Promise((resolve, reject) => {
+      response.data
+        .pipe(fs.createWriteStream(filepath))
+        .on("error", reject)
+        .once("close", () => resolve(filepath));
+    });
+  }
 
-async function downloadImage(url, filepath) {
-  const response = await Axios({
-    url,
-    method: "GET",
-    responseType: "stream",
+  const BASE_URL = "https://some-place.com";
+
+  [...Array(1)].map((_, pictureNum) => {
+    const fileName = `${pictureNum + 1}.jpg`;
+
+    const webUrl = `${BASE_URL}/${fileName}`;
+    const downloadFilename = path.join(__dirname, `../art/${fileName}____`);
+    downloadImage(webUrl, downloadFilename).then(console.log).catch(console.error);
   });
-  return new Promise((resolve, reject) => {
-    response.data
-      .pipe(fs.createWriteStream(filepath))
-      .on("error", reject)
-      .once("close", () => resolve(filepath));
-  });
-}
+  ```
 
-const BASE_URL = "https://some-place.com";
+    
+    
+    
+    
+    
+    
+    
+    
+    
 
-[...Array(1)].map((_, pictureNum) => {
-  const fileName = `${pictureNum + 1}.jpg`;
+    
+    
+    
+    
+# Little bit of JS
+    
+## Commonjs and ESM
+- Commonjs is becomming the old way we work with JavaScript
+  ```js
+  const funcOne = ()=> console.log("commonjs func one")
+  module.exports = funcOne
+  ```
+- Commonjs exporting multiple functions in one file
+  ```js
+  const funcOne = ()=> console.log("commonjs func 1") 
+  const funcTown = ()=> console.log("commonjs funcky town!")
+  module.exports = { funcOne, funcTown }
+  ```
+- Commonjs using those files
+  ```js
+  const something = require('./filename');    
+  const { funcOne, funcTown } = require('./filename2');
+  ```
+- ESM 
+  ```js
+  const funcOne = ()=> console.log("commonjs func 1") 
+  export default funcOne
+  ```
+  ```js
+  export const funcOne = ()=> console.log("commonjs func 1") 
+  export const funcTown = ()=> console.log("commonjs funcky town!")
+  ```
+  ```js
+  import something from './filename'; // Default export
+  import { funcOne, funcTown } from './filename2'; // Named exports
+  ```
 
-  const webUrl = `${BASE_URL}/${fileName}`;
-  const downloadFilename = path.join(__dirname, `../art/${fileName}____`);
-  downloadImage(webUrl, downloadFilename).then(console.log).catch(console.error);
-});
-```
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
