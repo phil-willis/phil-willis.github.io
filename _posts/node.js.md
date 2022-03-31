@@ -659,7 +659,12 @@ https://auth0.com/docs/tokens/json-web-tokens/json-web-token-claims#reserved-cla
     
 # Little bit of JS
     
-## Commonjs and ESM
+## Commonjs & ESM
+- In May, 2020, Node.js v12.17.0 made ESM support available to all Node.js applications (without experimental flags).
+- Common.js can't run in the browser directly it needs a bundler, ES Modules can run in newer browsers and the bundler is optional
+- You are most likely using ESM when working with web development
+- 
+    
 - Commonjs is becomming the old way we work with JavaScript
   ```js
   const funcOne = ()=> console.log("commonjs func one")
@@ -691,11 +696,51 @@ https://auth0.com/docs/tokens/json-web-tokens/json-web-token-claims#reserved-cla
   ```
 
 
-    
-    
-    
-    
-    
+## ESM in the browser
+- So with [modern browsers](https://caniuse.com/?search=esm) all you have to do in have an attribute on your `<script>` tag called `type="module"` and you should now be able to use `import` & `export` in that script file/online without needing a bundler!
+- What a package only exports to CommonJS?? well this is where `esinstall` comes in.
+- `esinstall` is a development tool that converts any JavaScript package into a single ES6-module-friendly file that you can check into your codebase and import. 
+- You can run this conversion just once on install, so there’s no need to set up file watching or other unnecessary tooling.
+- To set it up, update our package.json like so:
+  ```json
+  {
+    "name": "some-awesome-project",
+    "scripts": {
+      "postinstall": "node convert-to-esm.mjs"
+    },
+    "dependencies": {
+      "some-commonjs-package": "^1.2.3"
+    },
+    "devDependencies": {
+      "esinstall": "^1.1.7"
+    },
+    "esinstall": {
+      "install": [
+        "some-commonjs-package"
+      ]
+    }
+  }
+  ```
+- This package.json update does a couple of things:
+    - Declares `esinstall` as a dev dependency
+    - Add a `esinstall` block for listing all packages we want convert from CommonJS to ESM
+    - Defines a `postinstall` script that will run after we install anything with `$ npm install | $ yarn`
+- Now the code for the `postinstall` npm script:
+    ```js
+    import { install } from 'esinstall';
+    import { readFile } from 'fs/promises';
+
+    const json = JSON.parse(
+      await readFile(
+        new URL('./package.json', import.meta.url)
+      )
+    );
+    const moduleList = json.esinstall.install;
+    const installOptions = json.esinstall.installOptions;
+
+    await install(moduleList, installOptions);
+    ```
+- Now all you have to do is run `$ npm install || $ yarn `
     
     
     
