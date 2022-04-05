@@ -19,11 +19,20 @@ ogImage:
   $ npm init
   $ npm init -y
   $ npm install <PACKAGE_NAME> |  npm i <PACKAGE_NAME>
+
+  $ npm view <PACKAGE_NAME>
+  $ npm view <PACKAGE_NAME> versions
+
   $ npm install -g <SOME_GLOBAL_PACKAGE>
   $ npm uninstall <PACKAGE_NAME> | npm un <PACKAGE_NAME>
+
   $ npm update <PACKAGE_NAME> | npm up <PACKAGE_NAME>
   $ npm update
   $ npm audit
+
+  $ npm version
+  $ npm publish
+
   
   # Run a npm script
   $ npm run <NPM_SCRIPT_NAME>
@@ -42,6 +51,9 @@ ogImage:
   
   # Symlink a package folder, to used it locally without publishing it 
   $ npm link
+
+  # Updates all dependencies in project.
+  npm update
   ```
 
 
@@ -60,6 +72,8 @@ ogImage:
   - `devDependencies` sets a list of npm packages installed as development dependencies
   - `engines` sets which versions of Node.js this package/app works on
   - `browserslist` is used to tell which browsers (and their versions) you want to support
+- npm scripts, you can add whatever kinda of script in the `"scripts"` object.
+- Each script name has a `pre` & `post` hook that runs before or after that script. For example if you have a npm script that is called `build`, you can also have a `prebuild` and a `postbuild` script that you can define and when you run `$ npm run build | $ yarn build` it will preform: `prebuild`, then `build`, then `postbuild`
 -  In package.json you can set which versions you want to upgrade to (patch or minor), using the semver notation, for example:
   ```html
   exact package version               1.13.0 => 1.13.0
@@ -156,19 +170,37 @@ https://dev.to/joshaguilar/fully-automating-npm-package-releases-3k7ez
     
 # Controlling the node & npm version on a project with `.nvmrc` file
 - Having different versions of npm can messup the package-lock.json file
-- You just need to make one file and update your package.json file
-  1. Add `.nvmrc` file with the version you want e.g. `v14.17.4` or `v14`
-  2. Add the `engines` object to your package.json file
+- You need to make 2 changes to lock in the version
+  1. Add `.nvmrc` file with the version you want e.g. ` v14.19.1` or `v14`. This will allow you to switch to the right nodejs version by running `$ nvm use`. If you don't have nvm installed go [here](https://github.com/nvm-sh/nvm) to install it.
+    ```text
+    v14.19.1
+    ```
+  2. Add the `engines` object to your package.json file. This will prevent you to use a different version of nodejs.
     ```json
     {
       "engines": {
-        "npm": "6.14.14",
-        "node": "14.17.4"
+        "node": "v14.19.1",
+        "npm": "8.5.5",
       }
     }
     ```
   3. Now you just need to run `$ nvm use` to set the exact node/npm version
     
+# Force Yarn and disallow NPM
+    ```json
+    {
+      "engines": {
+        "node": ">=14.0.0 <=15.0.0",
+        "npm": "please-use-yarn",
+        "yarn": ">=1.22.18"
+      }
+    }
+    ```
+
+
+
+
+
 # Using Docker to local development
 - Initialize a nodejs 
   ```shell
