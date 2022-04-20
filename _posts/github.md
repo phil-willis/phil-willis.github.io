@@ -125,6 +125,20 @@ ogImage:
   # Now if you update github
   $ git push origin +<BRANCH_NAME> --force # make sure that you have `+` in front of the branch name
   ```
+- Deleting remote commit & tags
+  ```shell
+  # Move the head back 2 commits
+  $ git reset --hard HEAD~2
+  # This will wipe out the last 2 commit (THIS IS VERY DESTRUCTIVE, use with caution)
+  $ git push origin -f
+
+  # Delete the local tags
+  $ git tag -d <>
+  # Delete the tags 
+  $ git push --delete origin v0.1
+  ```
+
+  
 - Merging vs. Rebase
   - For integrating changes from another branch
   - Both `Merging` & `Rebase` is a process of integrating changes from one branch to another
@@ -232,6 +246,33 @@ $ git commit
       └── deploy.yaml
   ```
 - `.github/workflows/` is where you put your Github actions yaml files
+
+
+
+
+- Controlling branches
+  - settings > Branches > "Protect matching branches"
+    - you can define how many approvers you need 
+  - 
+
+
+- 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
