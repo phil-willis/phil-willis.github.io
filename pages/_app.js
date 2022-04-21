@@ -12,7 +12,6 @@ import 'prismjs/components/prism-typescript'
 import 'prismjs/components/prism-docker'
 import 'prismjs/components/prism-jsx'
 import 'prismjs/components/prism-typescript'
-import 'prismjs/components/prism-sql'
 import 'prismjs/components/prism-stylus'
 
 import '../styles/code-highlight.css'

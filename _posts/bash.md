@@ -92,6 +92,92 @@ ogImage:
   ```
 
 
+# Terminal Colors
+- Set/Reset
+  ```basic
+  0: Reset/remove all modifier, foreground and background attributes: echo -e "\e[0mNormal Text"
+  1: Bold/Bright: echo -e "Normal \e[1mBold"
+  2: Dim: echo -e "Normal \e[2mDim"
+  4: Underlined: echo -e "Normal \e[4mUnderlined"
+  5: Blink (doesn't work in most terminals except XTerm): echo -e "Normal \e[5mBlink"
+  7: Reverse/Invert: echo -e "Normal \e[7minverted"
+  8: Hidden (useful for sensitive info): echo -e "Normal \e[8mHidden Input"
+  21: Reset/Remove bold/bright: echo -e "Normal \e[1mBold \e[21mNormal"
+  22: Reset/Remove dim: echo -e "Normal \e[2mDim \e[22mNormal"
+  24: Reset/Remove underline: echo -e "Normal \e[4mUnderlined \e[24mNormal"
+  25: Reset/Remove blink: echo -e "Normal \e[5mBlink \e[25mNormal"
+  27: Reset/Remove reverse/invert: echo -e "Normal \e[7minverted \e[27mNormal"
+  28: Reset/Remove hidden: echo -e "Normal \e[8mHidden \e[28mNormal"
+  ```
+- Foreground
+  ```basic
+  39: Default (usually green, white or light gray): echo -e "Default \e[39mDefault"
+  30: Black: echo -e "Default \e[30mBlack" (best combined with a background colour: echo -e "Default \e[30;107mBlack on white")
+  31: Red (don't use with green background)
+  32: Green
+  33: Yellow
+  34: Blue
+  35: Magenta/Purple
+  36: Cyan
+  37: Light Gray
+  90: Dark Gray
+  91: Light Red
+  92: Light Green
+  93: Light Yellow
+  94: Light Blue
+  95: Light Magenta/Pink
+  96: Light Cyan
+  97: White
+  ```
+- Background
+  ```basic
+  49: Default background color (usually black or blue)
+  40: Black
+  41: Red
+  42: Green
+  43: Yellow
+  44: Blue
+  45: Magenta/Purple
+  46: Cyan
+  47: Light Gray (don't use with white foreground)
+  100: Dark Gray (don't use with black foreground)
+  101: Light Red
+  102: Light Green (don't use with white foreground)
+  103: Light Yellow (don't use with white foreground)
+  104: Light Blue (don't use with light yellow foreground)
+  105: Light Magenta/Pink (don't use with light foreground)
+  106: Light Cyan (don't use with white foreground)
+  107: White (don't use with light foreground)
+  ```
+- Example
+  ```shell
+  # Colors
+  Red=$'\e[1;41m'
+  Green=$'\e[1;42m'
+  Blue=$'\e[1;34m'
+  clear_color=$'\e[1;49m'
+
+  echo " $Blue[this should be blue] $clear_color this should be default color"
+  echo " $Red[this should be red] $clear_color this should be default color"
+  ```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # `jq` for parsing JSON data 
 - `jq`is a lightweight and flexible command-line JSON processor.
@@ -187,6 +273,22 @@ $ aws route53 get-hosted-zone --id $hz
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
  
 # npm's `ZX` to create JS script
 - The `ZX` package provides useful wrappers around `child_process`, escapes arguments and gives sensible defaults.
@@ -259,6 +361,31 @@ $ aws route53 get-hosted-zone --id $hz
   })
   console.log(shoes)
   ```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
