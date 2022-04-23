@@ -418,18 +418,66 @@ $ git commit
 
 
 ## Github Actions
-- Terms: `Events`, `Jobs`, `Runners`, `Steps`, `Actions`
+- Github Actions allows you to automate workflows that happen in your github repository base on event triggers you define in a YAML file
+- You must store workflow files in the `.github/workflows` directory of your repository, currently you cannot have nested folder under `workflows`.
 - Workflow files use YAML syntax, and must have either a .yml or .yaml file extension.
-- You must store workflow files in the `.github/workflows` directory of your repository.
-- `Github Actions` works off of [triggers](https://docs.github.com/en/actions/reference/events-that-trigger-workflows)
-- Common webhook events: push, release, pull_request, create, delete, issues
+- `Github Actions` works off of [event triggers](https://docs.github.com/en/actions/reference/events-that-trigger-workflows) & defined with the `on: ` block in your YAML file
+- Available `events trigger` workflows:
+  ```yaml
+  branch_protection_rule
+  check_run
+  check_suite
+  create
+  delete
+  deployment
+  deployment_status
+  discussion
+  discussion_comment
+  fork
+  gollum
+  issue_comment
+  issues
+  label
+  milestone
+  page_build
+  project
+  project_card
+  project_column
+  public
+  pull_request
+  pull_request_comment (use issue_comment)
+  pull_request_review
+  pull_request_review_comment
+  pull_request_target
+  push
+  registry_package
+  release
+  repository_dispatch
+  schedule
+  ```
+- Common webhook events: `push`, `release`, `pull_request`
 - There is also `schedule`, `workflow_dispatch`, & `repository_dispatch`
+- Terms: `Events`, `Jobs`, `Runners`, `Steps`, `Actions`
+
+### Hello world of Github Action
 - There are 3 main pieces to the actions yaml file:
   1. `name` (whatever name you want to call this workflow, this will show up in the GUI)
   2. `on` (The trigger, it can be a string or an array of strings)
   3. `jobs`
 
-- Defining the trigger `on`
+- Create a file in your repo called `.github/workflows/hello.yml`
+  ```yml
+  name: Hello world
+  on:
+    push:
+  jobs:
+    hello_world:
+      runs-on: ubuntu-latest
+      steps:
+        - run: echo "hello world"
+  ```
+
+- Different ways to define your `event triggers`. Use the `on: `
   ```yaml
   # Triggered when code is pushed to any branch in a repository
   on: push
@@ -444,6 +492,32 @@ $ git commit
         - main
   ```
 
+### Github Actions runners
+- GitHub offers hosted virtual machines to run workflows or you can provide your own 
+- GitHub offers runners with Linux, Windows, and macOS operating systems.
+- When you use a GitHub-hosted runner, machine maintenance and upgrades are taken care of for you. You can run workflows directly on the virtual machine or in a Docker container.
+- **Github hosted runner**:
+  ```yaml
+  # ...
+  jobs:
+    some_job:
+      runs-on: ubuntu-latest
+  ```
+- [docs](https://docs.github.com/en/actions/using-github-hosted-runners/)
+
+- **Self-hosted runners**
+- You can also host your own `self-hosted runners`, more [here](https://docs.github.com/en/actions/hosting-your-own-runners/)
+- Self-hosted runners using the `runs-on`
+- You can host your own runners and customize the environment used to run jobs in your GitHub Actions workflows.
+  ```yaml
+  # ...
+  jobs:
+    some_job:
+      runs-on: self-hosted
+  ```
+
+
+
 ### Working with env variables
 - You can set environment variables for each job 
 - You define the variables under the job with an `env`
@@ -453,7 +527,7 @@ $ git commit
   name: CANNOT DO THIS
   jobs:
     build:
-      runs-on: self-hosted
+      runs-on: ubuntu-latest
       env:
         WORKSPACE: dev
         PROJECT_NAME: '....CANNOT-DO-THIS......${{ env.WORKSPACE}}'
@@ -469,7 +543,7 @@ $ git commit
         - 'main'
   jobs:
     build:
-      runs-on: self-hosted
+      runs-on: ubuntu-latest
       env:
         WORKSPACE: dev
         PROJECT_NAME: 'this-rocks'
@@ -515,7 +589,7 @@ $ git commit
 
   jobs:
     build:
-      runs-on: self-hosted
+      runs-on: ubuntu-latest
       steps:
         - uses: actions/checkout@v1
         - name: Run multiple commands
@@ -544,7 +618,7 @@ $ git commit
 
   jobs:
     build:
-      runs-on: self-hosted
+      runs-on: ubuntu-latest
       steps:
         - uses: actions/checkout@v1
         - name: Run multiple commands
@@ -563,7 +637,7 @@ $ git commit
               scripts
               
     using-artifacts:
-      runs-on: self-hosted
+      runs-on: ubuntu-latest
       steps:
         - uses: actions/checkout@v1   # should have access to all the files uploaded with `actions/upload-artifact@v2`
   ```
@@ -583,7 +657,7 @@ $ git commit
 
   jobs:
     first-job-name:
-      runs-on: self-hosted
+      runs-on: ubuntu-latest
       steps:
         - uses: actions/checkout@v1
         - name: Install Dependencies
@@ -601,7 +675,7 @@ $ git commit
               scripts
 
     second-job-name:
-      runs-on: self-hosted
+      runs-on: ubuntu-latest
       needs: first-job-name
       env:
         TEST_USER_USR: ${{ secrets.TEST_USER_USR }}
@@ -679,7 +753,7 @@ $ git commit
 
     jobs:
       scheduler:
-        runs-on: self-hosted
+        runs-on: ubuntu-latest
         steps:
           - uses: actions/checkout@v1
           - name: Install Dependencies
@@ -713,7 +787,7 @@ $ git commit
 
   jobs:
     build:
-      runs-on: self-hosted
+      runs-on: ubuntu-latest
       steps:
         - uses: actions/checkout@v1
         - name: Install Dependencies
@@ -734,7 +808,7 @@ $ git commit
               package.json
               scripts
     deploy:
-      runs-on: self-hosted
+      runs-on: ubuntu-latest
       needs: build
       env:
         MY_S3_WEBSITE_BUCKET_NAME: "some-awesome-website"
@@ -768,7 +842,7 @@ $ git commit
 
   jobs:
     build:
-      runs-on: self-hosted
+      runs-on: ubuntu-latest
       steps:
         - uses: actions/checkout@v1
         - name: Install Dependencies
@@ -790,7 +864,7 @@ $ git commit
               scripts
 
     dev_infrastructure:
-      runs-on: self-hosted
+      runs-on: ubuntu-latest
       env:
         WORKSPACE: dev
         VAR_FILE: './env_configs/dev.tfvars'
@@ -819,7 +893,7 @@ $ git commit
             terraform apply -auto-approve -var-file=${{ env.VAR_FILE }}
 
     deploy_dev:
-      runs-on: self-hosted
+      runs-on: ubuntu-latest
       needs: [ dev_infrastructure, build ]
       steps:
         - name: Fetch Build
@@ -838,7 +912,63 @@ $ git commit
 
 
 
-## Create a custom Github Action Composite Run Steps
+### Composite Actions & Reusable Workflows
+- There are ALOT of overlap between Composite Actions & Reusable Workflows
+- `Composite Action` is presented as a `one-step` (even if it contains multiple steps) when invoked in a workflow
+- `Reusable workflows` can use `secrets`, whereas a composite action can’t. 
+- Both can only take string, number or boolean as a param. Arrays are not allowed.
+- `Reusable workflows` can’t be used with a `matrix` but `composite actions` can
+
+
+#### Github resusable workflow repo
+- You can have reusable workflows in the current repo or in another repo
+  - If in the same repo you have to have them in the `.github/workflows/` directory and not in a nested folder
+  - If in another repo, that repo has to be public or enabled available in your enterprise level and also in a `.github/workflows/` in that other repository
+- All reusable workflows that use `secrets` need to be supplied those values and all `env` values should be pass thru via `inputs`
+
+- Creating a reusable workflow:
+  ```yaml:reuse-me.yml
+  name: Setup
+  on:
+    workflow_call:
+      secrets:
+        SOME_SECRET:
+          required: true
+      inputs:
+        hello_message:
+          required: true
+          description: "A message to be passed in"
+          type: string
+  jobs:
+    setup:
+      env:
+        hello_message_as_env: ${{ inputs.hello_message }}
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v2.4.0
+        - run: echo "input value passed in => ( ${{ inputs.hello_message }})"
+        - run: echo "input as environment variable  $hello_message_as_env"
+        - run: echo "secret value passed in => ( ${{ secrets.SOME_SECRET }}), this should actually mask the actual secrete"
+  ```
+- Using that reusable workflow
+  ```yaml:using-workflows.yml
+  name: Uses reusable workflows
+  on:
+    push:
+      branches:
+        - main
+  jobs:
+    do_something:
+      secrets:
+        SOME_SECRET: ${{ secrets.SECRET_IN_YOU_REPO_SETTINGS }}
+      with:
+        hello_message: this rocks!!
+      uses: ./.github/workflows/reuse-me.yml
+  ```
+
+
+
+#### Create a custom Github Action Composite Run Steps
 - `Composite Run Steps` allows you to reuse parts of your workflows inside other workflows
 - It's a type of actions that allows you to bundle multiple run steps in one single actions and re-use that bundle as a single step in another action
 - You might have seen it in your for from 
@@ -921,7 +1051,7 @@ $ git commit
         - 'main'
   jobs:
     infrastructure:
-      runs-on: self-hosted
+      runs-on: ubuntu-latest
       steps:
         - uses: actions/checkout@v1
         - id: Terraform
@@ -932,7 +1062,15 @@ $ git commit
             terraform_state_bucket: '<MY_TERRAFORM_S3_BUCKET>'
   ```
 
-## Github Action lint on push
+
+
+
+
+
+
+
+
+### Github Action lint on push
   ```yml
   name: CI
 
@@ -973,9 +1111,6 @@ $ git commit
   - Large workload support
 
 
-
-
-## Github resusable workflow repo
 
 
 
