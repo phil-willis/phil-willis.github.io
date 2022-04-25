@@ -164,6 +164,17 @@ ogImage:
 
 
 
+# Rename file extensions
+```shell
+# replace all the `.txt` to `text`
+$ for file in *.txt; do mv "$file" "${file%.txt}.text"; done
+
+# Want to rename all nested folders
+$ for file in **/*.jsx; do mv "$file" "${file%.jsx}.tsx"; done
+```
+
+
+
 
 
 
