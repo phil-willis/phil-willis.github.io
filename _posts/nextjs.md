@@ -106,7 +106,7 @@ $ mkdir components hooks utils
     "semi": false,
     "trailingComma": "all",
     "singleQuote": true,
-    "printWidth": 70
+    "printWidth": 100
   }
   ```
 - `.vscode/settings.json`

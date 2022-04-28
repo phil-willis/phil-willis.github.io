@@ -454,7 +454,7 @@ $ aws route53 get-hosted-zone --id $hz
     "semi": false,
     "trailingComma": "all",
     "singleQuote": true,
-    "printWidth": 70
+    "printWidth": 100
   }
   EOT
 

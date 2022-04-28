@@ -58,7 +58,7 @@ ogImage:
     "semi": false,
     "trailingComma": "all",
     "singleQuote": true,
-    "printWidth": 70
+    "printWidth": 100
   }
   ```
 
@@ -176,7 +176,7 @@ ogImage:
     "semi": false,
     "trailingComma": "all",
     "singleQuote": true,
-    "printWidth": 70
+    "printWidth": 100
   }
   ```
 
