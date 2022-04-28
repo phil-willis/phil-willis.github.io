@@ -201,31 +201,34 @@ $ for file in **/*.jsx; do mv "$file" "${file%.jsx}.tsx"; done
 ## How to filter
 ```shell
 # read a file
-jq '.' package.json
+$ jq '.' package.json
 
 # Get the value of a string
-jq '.name' package.json
+$ jq '.name' package.json
 
 # Get an object
-jq '.scripts' client/input.json
-jq '.scripts + {"hello": "jq"}' client/input.json               # add a new key/value to an object
-jq '.scripts | del(.scripts.test)' client/input.json            # remove a new key/value to an object
-jq '.scripts.start = "webpack-dev-server"' client/input.json    # Update
-jq 'del(.scripts.test)' client/input.json                       # Delete a key/value
-jq '.scripts.start = "webpack-dev-server" | del(.scripts.test)' client/input.json   # Update & Delete 
+$ jq '.scripts' client/input.json
+$ jq '.scripts + {"hello": "jq"}' client/input.json               # add a new key/value to an object
+$ jq '.scripts | del(.scripts.test)' client/input.json            # remove a new key/value to an object
+$ jq '.scripts.start = "webpack-dev-server"' client/input.json    # Update
+$ jq 'del(.scripts.test)' client/input.json                       # Delete a key/value
+$ jq '.scripts.start = "webpack-dev-server" | del(.scripts.test)' client/input.json   # Update & Delete 
 
 # Get an array
-jq '.browserslist.production' client/input.json       # prints an array
-jq '.browserslist.production[]' client/input.json     # returns each element in the array
-jq '.browserslist.production[0]' client/input.json    # get first item in the array
-jq '.browserslist.production[1:2]' client/input.json  # slice
+$ jq '.browserslist.production' client/input.json       # prints an array
+$ jq '.browserslist.production[]' client/input.json     # returns each element in the array
+$ jq '.browserslist.production[0]' client/input.json    # get first item in the array
+$ jq '.browserslist.production[1:2]' client/input.json  # slice
 
-jq '.browserslist.production[] + "SOMETHING NEW"' client/input.json   # add something to each item in array
-jq '["SOMETHING NEW"] + .browserslist.production ' client/input.json  # Add to beginging
-jq '.browserslist.production + ["SOMETHING NEW"]' client/input.json   # Add to end
-jq '.browserslist.production[0] = "yessss"' client/input.json         # Update
-jq 'del(.browserslist.production[0])' client/input.json               # Delete
-jq '.browserslist.production[] | ' client/input.json  
+$ jq '.browserslist.production[] + "SOMETHING NEW"' client/input.json   # add something to each item in array
+$ jq '["SOMETHING NEW"] + .browserslist.production ' client/input.json  # Add to beginging
+$ jq '.browserslist.production + ["SOMETHING NEW"]' client/input.json   # Add to end
+$ jq '.browserslist.production[0] = "yessss"' client/input.json         # Update
+$ jq 'del(.browserslist.production[0])' client/input.json               # Delete
+$ jq '.browserslist.production[] | ' client/input.json  
+
+# Update
+$ echo "`jq '.scripts.dev="tsc -w && nodemon dist"' package.json`" > package.json
 ```
 
 ## Update a JSON file
