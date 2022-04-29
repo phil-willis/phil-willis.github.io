@@ -116,6 +116,18 @@ ogImage:
     ```
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 # Setup TypeScript React
 
 0. Install VSCode extensions
@@ -134,6 +146,13 @@ ogImage:
 
   # Prettier
   $ npm i -D prettier eslint-config-prettier eslint-plugin-prettier
+
+  # OR both at the same time
+  $ npm i -D @typescript-eslint/eslint-plugin @typescript-eslint/parser prettier eslint-config-prettier eslint-plugin-prettier eslint-plugin-jest
+
+  # create the config files
+  $ mkdir .vscode
+  $ touch .vscode/settings.json .eslintrc .prettierrc
   ```
   - `eslint-config-prettier` => turns off all ESLint rules that could conflict with Prettier
   - `eslint-plugin-prettier` => integrates the Prettier rules into ESLint rules.
@@ -209,6 +228,18 @@ ogImage:
       },
     }
     ```
+  - (optional) Extend prettier with import sort order
+    - A prettier plugin to sort import declarations by provided RegEx order.
+      ```
+      $ npm i -D @trivago/prettier-plugin-sort-imports
+      ```
+    - Add this to your `.prettierrc` file
+      ```json
+      {
+        "importOrder": ["^@core/(.*)$", "^@server/(.*)$", "^@ui/(.*)$", "^[./]"],
+        "importOrderSeparation": true,
+      }
+      ```
 
 6. Update the package.json file
   - Add a scripts entry to your package.json
@@ -265,6 +296,114 @@ ogImage:
         return <div>Hello</div>
       }
       ```
+
+
+# Copy/Pasta for all config
+```shell
+# Install packages
+yarn add -D @typescript-eslint/eslint-plugin @typescript-eslint/parser prettier eslint-config-prettier eslint-plugin-prettier @trivago/prettier-plugin-sort-imports
+
+# Create the config files
+mkdir .vscode
+touch .vscode/settings.json .vscode/extensions.json .eslintrc .prettierrc
+
+# vscode settings (allow for on file formatting)
+cat > .vscode/settings.json << 'EOF'
+{
+  // Set prettier to be the default formatter
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+
+  // Don't format any files by default
+  "editor.formatOnSave": false,
+  
+  // Define the file types to do the autoformatting
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+}
+EOF
+
+# vscode extensions (allow for on file formatting)
+cat > .vscode/extensions.json << 'EOF'
+{
+	// See https://go.microsoft.com/fwlink/?LinkId=827846
+	// for the documentation about the extensions.json format
+	"recommendations": [
+		"dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "redhat.vscode-yaml"
+	]
+}
+EOF
+
+# eslint config
+cat > .eslintrc << 'EOF'
+{
+  "extends": [
+    "plugin:@typescript-eslint/recommended",
+    "plugin:prettier/recommended"
+  ],
+  "plugins": ["react", "@typescript-eslint"],
+  "env": {
+    "browser": true,
+    "es6": true
+  },
+  "globals": {
+    "Atomics": "readonly",
+    "SharedArrayBuffer": "readonly"
+  },
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaFeatures": {
+      "jsx": true
+    },
+    "ecmaVersion": 2018,
+    "sourceType": "module",
+    "project": "./tsconfig.json"
+  }
+}
+EOF
+
+# prettier config
+cat > .prettierrc << 'EOF'
+{
+  "semi": false,
+  "trailingComma": "all",
+  "singleQuote": true,
+  "printWidth": 100,
+  "importOrder": ["^@core/(.*)$", "^@server/(.*)$", "^@ui/(.*)$", "^[./]"],
+  "importOrderSeparation": true
+}
+EOF
+
+# if you have js installed, this will add linting script to you package.json
+echo "`jq '.scripts.lint="prettier --write src/**/*.ts{,x}"' package.json`" > package.json
+```
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
