@@ -394,8 +394,38 @@ $ git commit
 
 
 ## Github code owners
+- [docs](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners)
+- People with admin or owner permissions can set up a CODEOWNERS file in a repository.
+- Team must be visible and it must have write permissions regardless if the individuals in that team has admin access
 - GitHub codeowners is implemented as a single file `.github/CODEOWNERS` in your repository
 - Whenever a pull request is opened, GitHub will automatically check all changed files and check each codeowners rule, the owners are added as reviewers.
+- Adding `@user & @teams` should be added on the same line
+- Someone from each line needs to approve the PR to make it valid
+- Order is important, the last matching pattern takes the most precedence.
+  ```shell:.github/CODEOWNERS
+  # Lines starting with '#' are comments.
+  # Each line is a file pattern followed by one or more owners.
+
+  # These owners will be the default owners for everything in the repo.
+  *       @philopian
+
+  # Order is important. The last matching pattern has the most precedence.
+  # So if a pull request only touches javascript files, only these owners
+  # will be requested to review.
+  *.js    @octocat @github/js
+
+  # You can also use email addresses if you prefer.
+  docs/*  docs@example.com
+  ```
+- Syntax exceptions
+  - There are some syntax rules for gitignore files that do not work in CODEOWNERS files:
+  - Escaping a pattern starting with `#` using `\` so it is treated as a pattern and not a comment
+  - Using `!` to negate a pattern
+  - Using `[ ]` to define a character range
+- Add extra layer of code security
+  ![](/assets/blog/github/github-security-1.jpg)
+- With protected branches enabled, a code owner for each owned file has to leave a review before anyone can merge a pull request to that branch.
+  ![](/assets/blog/github/github-security-2.jpg)
 
 
 
@@ -404,10 +434,29 @@ $ git commit
 
 
 
+## Dependabot
+- [Dependabot docs](https://docs.github.com/en/code-security/dependabot/)
+- Dependabot alerts you to keep all your dependencies updated
+- Dependabot can now inform you of version updates
+- To enable version updates, check a `.github/dependabot.yml` configuration file into your repository.
+- Your configuration file tells Dependabot the kind of dependency you want to update (like Go modules or npm packages), where the dependency manifest is located, and how often you want Dependabot to look for updates
+- On the schedule you specify, Dependabot will check if new versions are available. 
+- If updates are available, Dependabot sends pull requests to update your dependency manifest with the new versions.
+- Simple example for nodejs
+  ```yml
+  # Basic dependabot.yml file with
+  # minimum configuration for two package managers
 
-
-
-
+  version: 2
+  updates:
+    # Enable version updates for npm
+    - package-ecosystem: "npm"
+      # Look for `package.json` and `lock` files in the `root` directory
+      directory: "/"
+      # Check the npm registry for updates every day (weekdays)
+      schedule:
+        interval: "daily"
+  ```
 
 
 
@@ -909,6 +958,23 @@ $ git commit
         - name: Deploy
           run: ./pipeline/client-deploy.sh dev
   ```
+
+### Notifiy builds
+- You can notify slack when a job step has happend
+  ```yml
+  name: Notify Slack
+  jobs:
+    say_hello_to_slack:
+      runs-on: ubuntu-latest
+      steps:
+        - run: |
+            echo "Hello ${{ github.event.inputs.name }}!"
+            echo "- in ${{ github.event.inputs.home }}!"
+        - name: Notify Build
+          run: |
+            curl -X POST -H 'Content-type: application/json' --data '{\"text\":\"Hello Slack from '${{github.repository}}'' ${{ secrets.SLACK_HOOK}}
+  ```
+
 
 
 
