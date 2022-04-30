@@ -14,9 +14,9 @@ jobs:
 
       - name: Build 🔨
         run: |
-          npm ci
-          npm run build
-          npm run export
+          yarn
+          yarn build
+          yarn export
 
       - name: No jekyll 🚮
         run: touch out/.nojekyll
