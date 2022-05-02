@@ -258,10 +258,20 @@ $ git commit
 
 
 
-
-
-
-
+# Creating a `.github` repo
+<!-- https://www.freecodecamp.org/news/how-to-use-the-dot-github-repository/ -->
+- GitHub has many special repositories. For instance, you can create a repository that matches your username, add a README file to it, and all the information in that file will be visible on your GitHub profile.
+- You might already be familiar with the `.github` directory you'll find in many repositories. The `.github` directory houses:
+  - `FUNDING.yml` -> Supporting a project
+  - `ISSUE_TEMPLATE` -> Folder that contains a templates of possible issues user can use to open issue (such as if issue is related to documentation, if it's a bug, if user wants new feature etc) P.S. Take a look at tensorflow [ISSUE_TEMPLATE](https://github.com/tensorflow/tensorflow/tree/f3fd82f65724cdba600fdd23d251c2b01152ed3c/.github/ISSUE_TEMPLATE)
+  - `PULL_REQUEST_TEMPLATE.md` -> How to make a pull request to project
+  - `stale.yml` -> Probot configuration to close stale issues. There are many other apps on Github Marketplace that place their configurations inside `.github` folder because they are related to GitHub specifically.
+  - `SECURITY.md` -> How to responsibly report a security vulnerability in project
+  - `workflows` -> Configuration folder containing yaml files for GitHub Actions
+  - `CODEOWNERS` -> Pull request reviewer rules.
+  - `dependabot.yml` -> Configuration options for dependency updates. More info [here](https://docs.github.com/en/code-security/supply-chain-security/keeping-your-dependencies-updated-automatically/configuration-options-for-dependency-updates).
+- But another special repository you can create is the `.github` repository. It acts as a fallback for all of your repositories that don't have an actual .`github` directory with issue templates and other community health files.
+- For example, say I have a repository named `.github` with generic bug report and feature request issue templates. And say I create another repository called `new-project`, **but I don't add a .github directory** with issue templates to it.
 
 
 
