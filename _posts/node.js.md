@@ -347,17 +347,7 @@ ogImage:
   exact version                       ^1.13.0 => 1.*.*
   ```
 - Don't commit your `node_modules` files because the `package.json` is used to fetch and manage the packaged used for the nodejs project
-- You can enforce the nodejs version a repo can use with
-  1. Add in your `package.json` file
-    ```json
-    "engines": {
-      "node": ">=14.0.0 <=15.0.0"
-    }
-    ```
-  2. Add in your `.npmrc` file
-    ```html
-    engine-strict=true
-    ```
+
 ## The `package-lock.json` or `yarn.lock` file 
 - In `version 5`, npm introduced the` package-lock.json` file.
 - The goal of package-lock.json file is to keep track of the exact version of every package that is installed so that a product is 100% reproducible in the same way even if packages are updated by their maintainers.
@@ -366,36 +356,49 @@ ogImage:
 - The `yarn.lock` is the main source of information about the current versions of dependencies in a project if you are using yarn in your project instead of `npm`. 
 
 
-
-
-## Controlling the node & npm version on a project with `.nvmrc` file
-- Having different versions of npm can messup the package-lock.json file
-- You need to make 2 changes to lock in the version
-  1. Add `.nvmrc` file with the version you want e.g. ` v14.19.1` or `v14`. This will allow you to switch to the right nodejs version by running `$ nvm use`. If you don't have nvm installed go [here](https://github.com/nvm-sh/nvm) to install it.
-    ```text
-    v14.19.1
-    ```
-  2. Add the `engines` object to your package.json file. This will prevent you to use a different version of nodejs.
+## Controlling Nodejs version and npm or yarn version
+- You can force which version of Nodejs & npm/yarn version in the `package.json` file however you need to also use a `.npmrc` file with `engine-strict = true` set
+1. Create/update the `.npmrc` file
+  ```text
+  engine-strict = true
+  ```
+2. Update your package.json to have the node & npm/yarn versions
+  - Force to use npm
     ```json
     {
       "engines": {
         "node": "v14.19.1",
         "npm": "8.5.5",
+        "yarn": "please-use-npm"
       }
     }
     ```
-  3. Now you just need to run `$ nvm use` to set the exact node/npm version
-    
-## Force Yarn and disallow NPM
+  - Force yarn
     ```json
     {
       "engines": {
-        "node": ">=14.0.0 <=15.0.0",
+        "node": "v14.18.1",
         "npm": "please-use-yarn",
-        "yarn": ">=1.22.18"
+        "yarn": ">=1.22 <=2"
       }
     }
     ```
+3. (optional) you can also add a `.nvmrc` file to allow you to switch to the right Nodejs version
+  - If you don't have nvm installed go [here](https://github.com/nvm-sh/nvm) to install it.
+  - Create the `.nvmrc` file
+    ```text
+    v16
+    ```
+  - Now you can switch to that Nodejs version with
+    ```shell
+    $ nvm use
+    ```
+4. (optional) If you are using vscode you can add an extension
+  - If you want to automatically switch the version of node when you open up a terminal inside vscode there's an extension for that...
+  - Got to your extensions in vscode and add `vsc-nvm`
+  - id => `henrynguyen5-vsc.vsc-nvm`
+
+
 
 ## Creating a npm package
 - **Sematic versioning**
@@ -416,7 +419,7 @@ ogImage:
 <!-- https://dev.to/joshaguilar/fully-automating-npm-package-releases-3k7e -->
 - A specification for adding human and machine readable meaning to commit messages.
 - It provides a set of rules for creating a commit history that can be easily used by automated tools such as a CI/CD pipeline.
-  ```blank
+  ```text
   <type>(optional scope): <description>
   [optional body]
   [optional footer(s)]
@@ -434,8 +437,15 @@ ogImage:
 2. Add rules to enforce convential commits (husky or commitlint)
 3. Automate with sematic-release
 
-
-
+- branch names:
+  **feat**: A new feature
+  **fix**: A bug fix
+  **docs**: Documentation only changes
+  **style**: Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc)
+  **refactor**: A code change that neither fixes a bug nor adds a feature
+  **perf**: A code change that improves performance
+  **test**: Adding missing or correcting existing tests
+  **chore**: Changes to the build process or auxiliary tools and libraries such as documentation generation
 
 
 
