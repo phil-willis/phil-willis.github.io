@@ -8,6 +8,18 @@ ogImage:
 
 
 
+# Types of testing
+- unit test (test signal piece of logic)
+- integreation test (test mult-components)
+- end-to-end test (like a user your navigate your app)
+- Regression testing
+- Smoke test
+- Sanity testing
+- exploratory testing
+- adhoc testnig
+- visual regression test
+
+
 
 # Setup a site with testing
 - [Vite](https://vitejs.dev/) homepage

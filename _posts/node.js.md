@@ -449,6 +449,26 @@ ogImage:
 
 
 
+## "resolutions" key
+- `resolutions` is simply a map of package names and the exact versions of those packages that should be kept in the dependency tree, i.e. the below configuration will remove all versions of webpack that are not 5.6.0. As long you install webpack@5.6.0 version as a dependency of the project you are working with, this will guarantee that all packages load the same version of webpack.
+  ```json
+  {
+    "dependencies": {
+      "webpack": "5.6.0"
+    },
+    "resolutions": {
+      "webpack": "5.6.0"
+    }
+  }
+  ```
+
+
+
+
+
+
+
+
 
 
 

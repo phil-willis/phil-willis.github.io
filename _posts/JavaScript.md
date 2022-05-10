@@ -491,7 +491,73 @@ ogImage:
 - You kinda don't have to worry about this if you are using a transpiler like babel used to write newer JS which gets converted to ES5 for builds
 
 
+# Conditionally add properties to an object
+- es6 is a better approach. But we can add a bit more sugar, by using the spread operator, and logical AND short circuit evaluation:
+  ```js
+  // Avoid this
+  var olderWay = {};
+  if (true) a.someProp = 5
+  console.log(olderWay);
+
+  // Nicer way
+  const obj = {
+    ...(true) && {someProp: 42},
+    ...(false) && {nonProp: "foo"},
+    ...({}) && {tricky: "hello"},
+  }
+
+  console.log(obj);
+  ```
+
+
+
+
+
+
 ===============================
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 # Web application bundlers
@@ -720,6 +786,28 @@ ogImage:
   svelte
   svelte-ts
   ```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
