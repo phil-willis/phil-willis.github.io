@@ -1045,7 +1045,7 @@ $ git commit
                 curl -X POST -H 'Content-type: application/json' \
                 --data '{"text":"<!here> *${{ env.GITHUB_USERNAME }}* started a new Pull Request for <${{ env.PR_HTML_URL }} | ${{ env.REPO_NAME }}>: ${{ env.PR_TITLE }}"}' \
                 ${{ secrets.SLACK_HOOK }}
-      ```
+        ```
 
 
 ### Composite Actions & Reusable Workflows
