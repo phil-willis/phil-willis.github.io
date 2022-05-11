@@ -476,6 +476,25 @@ $ git commit
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## Github Actions
 - Github Actions allows you to automate workflows that happen in your github repository base on event triggers you define in a YAML file
 - You must store workflow files in the `.github/workflows` directory of your repository, currently you cannot have nested folder under `workflows`.
@@ -613,6 +632,9 @@ $ git commit
             echo "Running on ${{ env.WORKSPACE }}"
             echo "project namet: ${{ env.PROJECT_NAME }}"
             terraform init -backend-config bucket="${{ env.PROJECT_NAME }}"
+        - if: ${{ (env.PROJECT_NAME == 'this-rocks') }} 
+          name: Conditionally run this step
+          run: echo "yeah baby!!"
   ```
 
 ### Default working-directory option
@@ -970,22 +992,60 @@ $ git commit
   ```
 
 ### Notifiy builds
-- You can notify slack when a job step has happend
-  ```yml
-  name: Notify Slack
-  jobs:
-    say_hello_to_slack:
-      runs-on: ubuntu-latest
-      steps:
-        - run: |
-            echo "Hello ${{ github.event.inputs.name }}!"
-            echo "- in ${{ github.event.inputs.home }}!"
-        - name: Notify Build
-          run: |
-            curl -X POST -H 'Content-type: application/json' --data '{\"text\":\"Hello Slack from '${{github.repository}}'' ${{ secrets.SLACK_HOOK}}
-  ```
-
-
+- Create a Slack App & Slack channel to post to:
+  1. Create a slack app https://api.slack.com/apps
+  2. `Create New App` > `From scratch`
+  3. Add features and functionality > Incoming Webhooks > Click the `on` toggle
+    ```shell
+    $ curl -X POST -H 'Content-type: application/json' --data '{"text":"Hello, World!"}' <YOUR_WEBHOOK_URL_HERE>
+    ```
+  4. Copy down the credentials
+  5. Update the `Display Information`
+  6. Create a Slack channel
+  7. Install your app
+    - click the `Request to Install` button
+    - Select the slack channel 
+  8. Go back to the `Add features and functionality` and click the `Incoming Webhook`
+    - After you have connected a slack channel to your app it will give you a curl example 
+- Posting to your channel with a webhook
+  1. Via curl
+  2. Github Action 
+    - Make sure to add an ENV secrets to your github repo's secrets
+    - Basic notify
+      ```yml
+      name: Notify Slack
+      jobs:
+        say_hello_to_slack:
+          runs-on: ubuntu-latest
+          steps:
+            - run: |
+                echo "Hello ${{ github.event.inputs.name }}!"
+                echo "- in ${{ github.event.inputs.home }}!"
+            - name: Notify Build
+              run: |
+                curl -X POST -H 'Content-type: application/json' --data '{\"text\":\"Hello Slack from '${{github.repository}}'' ${{ secrets.SLACK_HOOK}}
+      ```
+    - Notify on PR
+      ```yml
+      name: Notify Slack
+      on:
+        pull_request:
+          types: [ opened, reopened ]
+      jobs:
+        open_pr:
+          runs-on: ubuntu-latest
+          env:
+            GITHUB_USERNAME: ${{ github.event.pull_request.user.login }}
+            PR_HTML_URL: ${{ github.event.pull_request.html_url }}
+            REPO_NAME: ${{ github.event.repository.full_name }}
+            PR_TITLE: ${{ github.event.pull_request.title }}
+          steps:
+            - name: Notify Slack
+              run: |
+                curl -X POST -H 'Content-type: application/json' \
+                --data '{"text":"<!here> *${{ env.GITHUB_USERNAME }}* started a new Pull Request for <${{ env.PR_HTML_URL }} | ${{ env.REPO_NAME }}>: ${{ env.PR_TITLE }}"}' \
+                ${{ secrets.SLACK_HOOK }}
+      ```
 
 
 ### Composite Actions & Reusable Workflows
