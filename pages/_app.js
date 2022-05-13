@@ -13,6 +13,7 @@ import 'prismjs/components/prism-docker'
 import 'prismjs/components/prism-jsx'
 import 'prismjs/components/prism-typescript'
 import 'prismjs/components/prism-stylus'
+import 'prismjs/components/prism-graphql'
 
 import '../styles/code-highlight.css'
 import '../styles/type-styles.css'
