@@ -67,7 +67,10 @@ ogImage:
   $ git pull origin <remote_branch_name>
   $ git push origin <branch_name>
   $ git checkout --track origin/this-rocks
-  
+
+  # Pull branch that isn't checked out
+  $ git fetch origin main:main
+
   # Delete remote branch
   $ git branch -dr <remote/branch>
   ```
