@@ -20,6 +20,11 @@ ogImage:
 - visual regression test
 
 
+- unit-test: test business logic, should be fast and while you develop (Test Driven Development). Use Jest/Vitest + RTL
+- Integration test: 
+end-to-end test should be 100% like a user navigating thru our application. For special cases when the service user doesn’t have access/permission we should document it in the test and note that it will be tested in the integration test.
+integration test (combining multiple components… or at a page level) that can be done with Jest and RTL can/should use mock data. MSW is a great option for this for you can mock out the HTTP requests.
+
 
 # Setup a site with testing
 - [Vite](https://vitejs.dev/) homepage
