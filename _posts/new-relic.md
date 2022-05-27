@@ -55,6 +55,195 @@ ogImage:
 - The `loader_script` is the script tag you need to add to your project
 
 
+# New Relic Dashboards
+- New Relic allows you to create dashboards of widgets so you can visualize your data quickly
+- To get started log into New Relic, select the account you want, then click on the `Dashboards` link in the navbar
+- In order to really use a Dashboard you need to get some data in the system. A quick and easy way is to add a New Relic browser agent to you clientside application. (see above section)
+- Get Started:
+  1. Select an account from the `Accounts` dropdown
+  2. Navigate to the Dashboard section via the NavBar
+    ![new relic dashboard nav link](public/assets/blog/nr/nav-dashboard-localtion.png)
+  3. Create a new dashboard
+    - Click the `+ Create a dashboar`  button in the top right of the screen
+    - then `Create a new dashboard`
+    - Then give you dashboard a name and select your account
+  4. Start adding widgets
+- Dashboard are designed to be a 12 column width
+- New Relic provides a bunch of premade widgets but if you don't find what you need you can always create your own custom one
+- I would highly recommend to use the `Data explorer` & `Query builder` to understand the data that you can work with before creating a widget
+- Types of widgets:
+  - Area chart
+  - Bar chart
+  - Billboard
+  - Bullet chart
+  - Funnel
+  - Heat map
+  - HistogramJSON
+  - Line
+  - Pie chart
+  - Table
+- You can also use Terraform to build & maintain you dashboards
+
+## Custom Widgets
+- ...
+
+
+## Custom Application
+- ...
+
+## Terraform to build Dashboards
+1. Create a New Relic Account Key
+2. Write some terraform
+
+- `./infrastructure/main.tf`
+  ```hcl
+  terraform {
+    backend "s3" {
+      key    = "my-dashboards"
+      region = "us-west-2"
+    }
+
+    required_version = ">= 0.13.5"
+    required_providers {
+      aws = {
+        source  = "hashicorp/aws"
+        version = "~>3.4"
+      }
+      newrelic = {
+        source  = "newrelic/newrelic"
+        version = "~> 2.21.0"
+      }
+    }
+  }
+  ```
+- `./infrastructure/newrelic.tf`
+  ```hcl
+  provider "newrelic" {
+    account_id = var.NR_ACCOUNT_ID
+    api_key    = var.NR_API_KEY
+    region     = "US" # Valid regions are US and EU
+  }
+
+  variable "NR_ACCOUNT_ID" {
+    type = string
+  }
+
+  variable "NR_API_KEY" {
+    type = string
+  }
+  ```
+- `./infrastructure/dashboard.tf`
+  ```hcl
+  variable dashboard_name {
+    default = "My Dashboard"
+  }
+
+  variable dashboard_default_page {
+    default = "Page One"
+  }
+
+  variable nr_browser_app_name {
+    default = "awesome-client-app"
+  }
+
+  resource "newrelic_one_dashboard" "nark_dashboard" {
+    name = var.dashboard_name
+    page {
+      name = var.dashboard_default_page
+
+      # First Row
+      widget_billboard {
+        title  = "Users Visits"
+        row    = 1
+        column = 1
+        width  = 2
+        height = 3
+
+        nrql_query {
+          account_id = var.NR_ACCOUNT_ID # You can use multiple account id
+          query      = "SELECT count(*) FROM JavaScriptError FACET errorClass SINCE 1 week ago WHERE appName = '${var.nr_browser_app_name}'"
+        }
+      }
+      widget_table {
+        title  = "Users"
+        row    = 1
+        column = 3
+        width  = 10
+        height = 3
+
+        nrql_query {
+          account_id = var.NR_ACCOUNT_ID # You can use multiple account id
+          query      = "SELECT count(*) FROM JavaScriptError FACET errorClass SINCE 1 week ago TIMESERIES WHERE appName = '${var.nr_browser_app_name}'"
+        }
+      }
+
+      # Second Row
+      widget_markdown {
+        title  = "Dashboard Note"
+        row    = 4
+        column = 1
+        width  = 12
+        height = 4
+        text = "#You can write some markdown here!!"
+      }
+
+    }
+  }
+  ```
+
+- Create a `.env`
+  ```shell
+  NR_API_KEY="NRAK-******************************"
+  NR_ACCOUNT_ID=########
+  AWS_TERRAFORM_STATE_BUCKET="terraform-remote-config-#########"
+  ````
+
+- Now create a deploy script `./deploy.sh`
+  ```shell
+  # Load .env file if present
+  if [ -f .env ]; then export $(cat .env | xargs); fi
+
+  # Terraform stuff
+  pushd infrastructure 
+  rm -rf .terraform/
+
+  # Init terraform with remote state file
+  echo "Using Terraform state bucket: $AWS_TERRAFORM_STATE_BUCKET"
+  terraform init -backend-config bucket="${AWS_TERRAFORM_STATE_BUCKET}"
+
+  terraform apply -auto-approve \
+    -var="NR_API_KEY=$NR_API_KEY" \
+    -var="NR_ACCOUNT_ID=$NR_ACCOUNT_ID"
+
+  popd
+  ```
+- and a destroy script if you like
+  ```shell
+  # Load .env file if present
+  if [ -f .env ]; then export $(cat .env | xargs); fi
+
+  # Terraform stuff
+  pushd infrastructure 
+  rm -rf .terraform/
+
+  # Init terraform with remote state file
+  echo "Using Terraform state bucket: $AWS_TERRAFORM_STATE_BUCKET"
+  terraform init -backend-config bucket="${AWS_TERRAFORM_STATE_BUCKET}"
+
+  terraform destroy -auto-approve \
+    -var="NR_API_KEY=$NR_API_KEY" \
+    -var="NR_ACCOUNT_ID=$NR_ACCOUNT_ID"
+
+  popd
+  ```
+
+
+
+
+
+
+
+
 
 
 
