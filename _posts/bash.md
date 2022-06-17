@@ -175,7 +175,19 @@ $ for file in **/*.jsx; do mv "$file" "${file%.jsx}.tsx"; done
 
 
 
+# Replace a String With Another String In All Files Using sed and Perl -pie Options
+<!-- https://www.cyberciti.biz/faq/unix-linux-replace-string-words-in-many-files/ -->
 
+```shell
+find='/nfsroot'
+replace='/efsroot'
+sed -i'.backup' "s+${find}+${replace}+g" input.txt
+rm -rf input.txt.backup
+ 
+## or test it on string ##
+string='AWS config for shared storage location: /nfsroot'
+sed "s+${find}+${replace}+g" <<<"$string"
+```
 
 
 

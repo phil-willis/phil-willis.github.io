@@ -567,149 +567,26 @@ ogImage:
   ```
 
 
-## Snowpack
-- [Snowpack](https://www.snowpack.dev/) homepage
-- Snowpack is a faster frontend build tool 
-- what is the learning curve? "Once you try it, it's impossible to go back to anything else."
-- Snowpack doesn't rebundle the entire application, it only 
-- If you are familiar with `webpack`, you would know that while developing you would use the `webpack-dev-server`, everytime you save a file it rebuilds the entire application, rebundles, and serves it to the browser
-- With `Snowpack` the massive benefit is that it bundles and caches all your dependencies and only rebuild/serve the changes that you make to your source code and only the files that you've changed instead of rebundling the entire application
-- It's an insanely fast build tool
-
-- Let get it setup:
-
-1. Install `snowpack` as a dev dependency
+## Vite
+- [Vite](https://vitejs.dev/) homepage
   ```shell
-  $ npm init -y
-  $ npm install --save-dev snowpack
+  $ npm init vite@latest <YOUR_APP_NAME> -- --template react-ts
   ```
-2. Update your `package.json` file
-  ```json
-  {
-    "scripts": {
-      "start": "snowpack dev",
-      "build": "snowpack build"
-    },
-  }
+- Template options:
+  ```shell
+  vanilla
+  vanilla-ts
+  vue
+  vue-ts
+  react
+  react-ts
+  preact
+  preact-ts
+  lit-element
+  lit-element-ts
+  svelte
+  svelte-ts
   ```
-3. Create a `./public/index.html`
-  ```html
-  <!DOCTYPE html>
-  <html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hello Snowpack</title>
-  </head>
-  <body>
-    <h1>Hello snowpack!!</h1>
-  </body>
-  </html>
-  ```
-4. Create a `snowpack.config.js` file
-  ```js
-  // Snowpack Configuration File
-  // See all supported options: https://www.snowpack.dev/reference/configuration
-
-  /** @type {import("snowpack").SnowpackUserConfig } */
-  module.exports = {
-    mount: {
-      public: { url: "/", static: true },
-      src: "/src",
-    }
-  };
-  ```
-5. Run snowpack for the first time
-  - Run:
-    ```shell
-    $ npm start
-    ```
-  - When you run this for the first time it will just reload the changes to the html file cause you haven't referenced a js script yet
-6. Let's add React
-  - **Snowpack will deal with all the babel stuff for you!** so no need to deal with babelrc files
-
-  - Create a `./src/index.js` file
-    ```js
-    console.log('Hello Snowpack')
-    ```
- 
-  - Update the `./public/index.html`
-    ```html
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-      <meta charset="UTF-8">
-      <meta http-equiv="X-UA-Compatible" content="IE=edge">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Hello Snowpack & React</title>
-    </head>
-    <body>
-      <div id="root"></div>
-      <script type="module" src="../src/index.js"></script>
-    </body>
-    </html>
-    ```
-
-7. Convert your `js` to `ts`
-  - Change all your `jsx|js` files inside of the `./src/*` folder
-  - Install some dependencies:
-    ```shell
-    $ npm i -D typescript @types/react @types/react-dom @snowpack/plugin-typescript
-    ```
-  - Add a `./tsconfig.json` file with:
-    ```json
-    {
-      "compilerOptions": {
-        "module": "ESNext",
-        "target": "ESNext",
-        "strict": true,
-        "moduleResolution": "node",
-        "esModuleInterop": true,
-        "jsx": "preserve",
-        "noEmit": true,
-        "skipLibCheck": true,
-        "typeRoots": [
-          "node_modules/@types",
-          "types"
-        ]
-      },
-      "include": [
-        "src",
-        "types"
-      ]
-    }
-    ```
-  - Add some type for images
-    ```js
-    // `./types/images.d.ts`
-    declare module '*.png';
-    declare module '*.jpg';
-    declare module '*.svg';
-    ```
-
-  - Add some file alias to your `./snowpack.config.js` files
-    ```js
-    module.exports = {
-      alias: {
-        "@/components": "./src/components",
-      }
-    };
-    ```
-
-  - Add alias to your `./tsconfig.json` file 
-    ```json
-    {
-      "compilerOptions": {
-        "baseUrl": "./src",
-        "paths": {
-          "@/components/*": ["components/*"]
-        }
-      }
-    }
-    ```
-  - Rerun `$ npm start`
-
 
 
 
@@ -766,40 +643,48 @@ ogImage:
 
 
 
-## Vite
-- [Vite](https://vitejs.dev/) homepage
-  ```shell
-  $ npm init vite@latest <YOUR_APP_NAME> -- --template react-ts
+
+# Web Frameworks
+## Nextjs
+- [docs](https://nextjs.org/)
+
+
+## Gatsby
+- [docs](https://www.gatsbyjs.com/)
+
+
+## Create-React-App
+- [docs](https://create-react-app.dev/)
+
+
+
+
+
+
+# Publishing a JS library
+- CommonJS (cjs) (a.k.a the require('xxx') and module.exports syntax) used to be the standard in which client-side libraries have be build. 
+- ECMAScript modules then shows up on the scenes where the community starts to migrate slowly to native ESM gradually. ESM as better named exports, better static analysis, tree-shaking, browser native support, the future of JavaScript
+
+
+
+  ```js
+  // CJS
+  const someLib = require('./some-lib.js')
+  someLib.doSomething()
   ```
-- Template options:
-  ```shell
-  vanilla
-  vanilla-ts
-  vue
-  vue-ts
-  react
-  react-ts
-  preact
-  preact-ts
-  lit-element
-  lit-element-ts
-  svelte
-  svelte-ts
+
+  ```js
+  // ESM
+  import { doSomething } from './some-lib.mjs'
+  doSomething()
   ```
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+- **Compatibility**, you can’t use ESM packages in CJS. You cannot use the `require` syntax in an ESM file:
+  ```js
+  // ESM file
+  const someLib = require('./some-lib.js') // CANNOT DO THIS
+  ```
+- Though you can just ship pure ESM packages, you may not want to do so right now because the majority of the ecosystem are still on CJS and the migration is not easy. Therefore, ship BOTH!
 
 
 

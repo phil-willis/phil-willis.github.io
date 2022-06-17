@@ -765,6 +765,31 @@ export default function MyParent({ items }) {
 
 
 
+
+
+
+# Advanced React Stuff
+
+## Error Boundaries
+
+## How to use ReactDOM.createPortal()
+- [stackoverflow](https://stackoverflow.com/questions/46393642/how-to-use-reactdom-createportal-in-react-16)
+- [understanding-react-portals](https://blog.bitsrc.io/understanding-react-portals-ab79827732c7)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # State Management
 - State management creates a concrete & predictable data structure for sharing data across components
 - In JS, data from the interactions form state
