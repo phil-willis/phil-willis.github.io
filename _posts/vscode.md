@@ -177,6 +177,22 @@ ogImage:
 
 
 # Extensions
+
+## Create a script that will install a bunch of extensions
+
+```shell
+# Set the vscode extension dir
+code --extensions-dir ~/.vscode/extensions
+
+# Install vscode extensions
+code --install-extension henrynguyen5-vsc.vsc-nvm
+code --install-extension dbaeumer.vscode-eslint
+code --install-extension esbenp.prettier-vscode
+```
+
+
+## Good Extensions
+
 - Monokai Operator
   - [extension link](https://marketplace.visualstudio.com/items?itemName=markfknight.monokai-operator-theme)
 
@@ -281,8 +297,6 @@ ogImage:
   - [extension link](https://marketplace.visualstudio.com/items?itemName=4ops.terraform)
   - Syntax highlighting, Basic syntax validation, & Snippets
 
-- Redux DevTools
-  - [extension link](https://marketplace.visualstudio.com/items?itemName=jingkaizhao.vscode-redux-devtools)
 
 - MDX
   - MDX support
@@ -293,10 +307,6 @@ ogImage:
       "*.md": "mdx"
     },
     ```
-- Manta's Stylus Supremacy
-  - [extension link](https://marketplace.visualstudio.com/items?itemName=thisismanta.stylus-supremacy)
-  - Stylus Supremacy extension helps formatting Stylus files
-  - [docs](https://thisismanta.github.io/stylus-supremacy/#vscode)
 
 - Material Icon Theme
   - [extension link](https://marketplace.visualstudio.com/items?itemName=PKief.material-icon-theme)
