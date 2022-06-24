@@ -464,6 +464,90 @@ ogImage:
 
 
 
+# Monorepo
+ - [Yarn Workspaces](https://www.smashingmagazine.com/2019/07/yarn-workspaces-organize-project-codebase-pro/#react-project-add-workspace-list )
+
+1. Create some files
+- Create some stuff
+  ```shell
+  $ yarn init -y
+  $ mkdir packages
+  $ yarn create vite packages/client
+  $ mkdir server
+  $ touch server/package.json
+  ```
+2. Add some package.json files
+  - `./package.json`
+    ```json
+    {
+      "private": true,
+      "name": "example-monorepo",
+      "workspaces": ["packages/*"],
+      "scripts": {}
+    }
+    ```
+
+  - `./packages/server/package.json`
+    ```json
+    {
+      "name": "server",
+      "version": "1.0.0",
+      "main": "dist/index.js",
+      "types": "dist/index.d.ts",
+      "scripts": {
+        "start": "node dist/index.js",
+        "dev": "ts-node-dev --respawn -- src/index.ts",
+        "build": "tsc"
+      },
+      "dependencies": {
+        "express": "^4.18.1",
+        "ts-node": "^10.8.1",
+        "ts-node-dev": "^2.0.0",
+        "typescript": "^4.7.4"
+      },
+      "devDependencies": {
+        "@types/express": "^4.17.13",
+        "eslint": "^8.18.0",
+        "eslint-config-prettier": "^8.5.0",
+        "eslint-plugin-prettier": "^4.0.0",
+        "prettier": "^2.7.1"
+      }
+    }
+    ```
+3. Add npm scripts to the root package.json to run the nested packages
+
+- `./package.json`
+  ```json
+  {
+    "private": true,
+    "name": "example-monorepo",
+    "workspaces": ["packages/*"],
+    "scripts": {
+      "start:client": "yarn workspace client dev",
+      "start:server": "yarn workspace server dev"
+    }
+  }
+  ```
+- Now install the `concurrently` at the root level
+  ```shell
+  $ yarn add -W concurrently
+  ```
+
+- `./package.json`
+  ```json
+  {
+    "private": true,
+    "name": "example-monorepo",
+    "workspaces": ["packages/*"],
+    "scripts": {
+      "start:client": "yarn workspace client dev",
+      "start:server": "yarn workspace server dev",
+      "start": "concurrently --kill-others-on-fail 'yarn start:server' 'yarn start:client' "
+    }
+  }
+  ```
+
+
 
 
 

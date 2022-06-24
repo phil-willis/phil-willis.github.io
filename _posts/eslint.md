@@ -38,8 +38,14 @@ ogImage:
   - `eslint-config-prettier` => turns off all ESLint rules that could conflict with Prettier
   - `eslint-plugin-prettier` => integrates the Prettier rules into ESLint rules.
 
+3. Add some config files
+  ```shell
+  $ mkdir .vscode
+  $ touch .vscode/settings.json .prettierrc .eslintrc
+  ```
 
-3. Add `.eslintrc` file
+
+4. Add `.eslintrc` file
   - [eslint rules](https://eslint.org/docs/rules/)
   ```json
   {
@@ -51,7 +57,7 @@ ogImage:
   }
   ```
 
-4. Add `.prettierrc` file
+5. Add `.prettierrc` file
   - [Prettier Options](https://prettier.io/docs/en/options.html)
   ```json
   {
@@ -62,7 +68,7 @@ ogImage:
   }
   ```
 
-5. Add vscode settings file
+6. Add vscode settings file
   - Create `.vscode/settings.json`
     ```json
     {
@@ -89,20 +95,20 @@ ogImage:
     }
     ```
 
-6. Update the package.json file
+7. Update the package.json file
   - Add a scripts entry to your package.json
   ```json
   "scripts": {
-    "lint": "prettier --config .prettierrc 'src/**/*.js' --write"
+    "lint": "prettier --config .prettierrc 'src/**/*.{js,jsx}' --write"
   },
   ```
 
-7. Run the linter
+8. Run the linter
   ```sh
   $ npm run lint
   ```
 
-8. (optional) Extend prettier with import sort order
+9. (optional) Extend prettier with import sort order
   - A prettier plugin to sort import declarations by provided RegEx order.
     ```
     $ npm i -D @trivago/prettier-plugin-sort-imports

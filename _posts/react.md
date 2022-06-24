@@ -770,6 +770,57 @@ export default function MyParent({ items }) {
 
 # Advanced React Stuff
 
+## Fetching data
+- Simple data fetching with the native `fetch` api
+  ```js
+  export const useFetch = (url) => {
+    const [isLoading, setIsLoading] = useState(false)
+    const [data, setData] = useState(null)
+
+    if (!url) {
+      console.error('No endpoint provided; could not fetch')
+      setIsLoading(true)
+      setData(null)
+      return
+    }
+
+    async function fetchData() {
+      const response = await fetch(url, headers,body,credentials, method, signal)
+      const json = await response.json()
+      setData(json)
+      setIsLoading(false)
+    }
+
+    useEffect(() => {
+      fetchData()
+    }, [url])
+    return { data, isLoading }
+  }
+  ```
+- Aborting a API request with `AbortController`
+
+```js
+
+const controller = new AbortController()
+const signal = controller.signal
+const abort = controller.abort()
+
+
+
+
+
+
+```
+
+
+
+
+
+
+
+
+
+
 ## Error Boundaries
 
 ## How to use ReactDOM.createPortal()
