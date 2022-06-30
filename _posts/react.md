@@ -56,87 +56,7 @@ ogImage:
 
 
 # Setting up a React application
-- boilerplates (Create-react-app, Next, Vite, Parcel)
-
-
-## Create-React-App
-- Not really a bundler but it does abstract all the webpack stuff for you and it focused on React web applications
-  ```shell
-  $ npx create-react-app <PROJECT_NAME>
-  $ npx create-react-app <PROJECT_NAME> --template typescript
-  ```
-
-
-
-
-
-
-
-
-## Parcel
-- [Parcel](https://parceljs.org/) homepage
-  ```shell
-  $ npm init -y
-  $ npm i parcel-bundler
-  ```
-- Update the `package.json` file
-  ```json
-  {
-    "scripts": {
-      "start": "parcel -p 8080 watch public/index.html",
-      "build": "parcel build public/index.html"
-    }
-  }
-  ```
-- Create a `public/index.html` file
-  ```html
-  <html>
-  <body>
-    <script src="../src/index.js"></script>
-  </body>
-  </html>
-  ```
-- Create a `src/index.html` file
-  ```html
-  console.log("hello Parcel")
-  ```
-- Add Typescript & react
-  ```shell
-  $ npm i react react-dom
-  ```
-- Update a `public/index.html` file
-  ```html
-  <html>
-  <body>
-    <div id="root"></div>
-    <script src="../src/index.tsx"></script>
-  </body>
-  </html>
-  ```
-- Create a `src/index.tsx`
-  ```js
-  import React from 'react'
-  import ReactDOM from 'react-dom'
-
-  console.log('Hello from tsx!')
-
-  ReactDOM.render(
-    <p>Hello</p>,
-    document.getElementById('root'),
-  )
-  ```
-- Create a `tsconfig.json`
-  ```json
-  {
-    "compilerOptions": {
-      "jsx": "react"
-    }
-  }
-  ```
-
-
-
-
+- boilerplates (Create-react-app, Vite, Parcel, Next)
 
 
 
@@ -282,6 +202,76 @@ ogImage:
       ```
 
 
+## Create-React-App
+- Not really a bundler but it does abstract all the webpack stuff for you and it focused on React web applications
+  ```shell
+  $ npx create-react-app <PROJECT_NAME>
+  $ npx create-react-app <PROJECT_NAME> --template typescript
+  ```
+
+
+
+
+## Parcel
+- [Parcel](https://parceljs.org/) homepage
+  ```shell
+  $ npm init -y
+  $ npm i parcel-bundler
+  ```
+- Update the `package.json` file
+  ```json
+  {
+    "scripts": {
+      "start": "parcel -p 8080 watch public/index.html",
+      "build": "parcel build public/index.html"
+    }
+  }
+  ```
+- Create a `public/index.html` file
+  ```html
+  <html>
+  <body>
+    <script src="../src/index.js"></script>
+  </body>
+  </html>
+  ```
+- Create a `src/index.html` file
+  ```html
+  console.log("hello Parcel")
+  ```
+- Add Typescript & react
+  ```shell
+  $ npm i react react-dom
+  ```
+- Update a `public/index.html` file
+  ```html
+  <html>
+  <body>
+    <div id="root"></div>
+    <script src="../src/index.tsx"></script>
+  </body>
+  </html>
+  ```
+- Create a `src/index.tsx`
+  ```js
+  import React from 'react'
+  import ReactDOM from 'react-dom'
+
+  console.log('Hello from tsx!')
+
+  ReactDOM.render(
+    <p>Hello</p>,
+    document.getElementById('root'),
+  )
+  ```
+- Create a `tsconfig.json`
+  ```json
+  {
+    "compilerOptions": {
+      "jsx": "react"
+    }
+  }
+  ```
 
 
 
@@ -299,6 +289,9 @@ ogImage:
 
 
 
+
+
+---
 
 # Hooks
 - Changes the way you write your components
@@ -539,11 +532,6 @@ ogImage:
   ```
 
 
-
-
-
-
-
 ## useMemo
 - Help you optimize computation cost for improved performance
 - Use this hook as an *opt-in* tool for expensive calculations you don't want to happen on every render
@@ -569,8 +557,6 @@ ogImage:
     );
   }
   ```
-
-
 
 
 ## useCallback
@@ -659,12 +645,8 @@ export default function MyParent({ items }) {
   ```
 
 
-
-
-
-
 ## useImperativeHandle
-
+- ...
 
 
 ## useLayoutEffect
@@ -766,6 +748,293 @@ export default function MyParent({ items }) {
 
 
 
+# Creating a component library
+
+1. Scafold the component library
+  ```shell
+  $ yarn create vite
+  $ npm init vite
+
+  # Cleanup (delete the web application)
+  $ rm -rf index.html 
+  $ rm -rf src
+  ```
+
+2. Add some linting
+  ```shell
+  $ mkdir .vscode
+  $ touch .vscode/settings.json .prettierrc .eslintrc
+
+  $ yarn add -D @typescript-eslint/eslint-plugin @typescript-eslint/parser prettier eslint-config-prettier eslint-plugin-prettier @trivago/prettier-plugin-sort-imports
+  ```
+  - `./eslintrc`
+    ```json
+    {
+      "extends": [
+        "plugin:@typescript-eslint/recommended",
+        "plugin:prettier/recommended"
+      ],
+      "plugins": ["react", "@typescript-eslint"],
+      "env": {
+        "browser": true,
+        "es6": true,
+      },
+      "globals": {
+        "Atomics": "readonly",
+        "SharedArrayBuffer": "readonly"
+      },
+      "parser": "@typescript-eslint/parser",
+      "parserOptions": {
+        "ecmaFeatures": {
+          "jsx": true
+        },
+        "ecmaVersion": 2018,
+        "sourceType": "module",
+        "project": "./tsconfig.json"
+      }
+    }
+    ```
+  - `./prettierrc`
+    ```json
+    {
+      "semi": false,
+      "trailingComma": "all",
+      "singleQuote": true,
+      "printWidth": 100,
+      "importOrder": ["^@core/(.*)$", "^@server/(.*)$", "^@ui/(.*)$", "^[./]"],
+      "importOrderSeparation": true
+    }
+    ```
+  - `.vscode/settings.json`
+    ```json
+    {
+      // Set prettier to be the default formatter
+      "editor.defaultFormatter": "esbenp.prettier-vscode",
+
+      // Don't format any files by default
+      "editor.formatOnSave": false,
+      
+      // Define the file types to do the autoformatting
+      "[javascript]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.formatOnSave": true
+      },
+      "[typescript]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.formatOnSave": true
+      },
+      "[typescriptreact]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.formatOnSave": true
+      },
+      "[json]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.formatOnSave": true
+      },
+    }
+    ```
+  - package.json 
+    ```json
+    {
+      "scripts":{
+        "lint": "prettier --write src/**/*.{j,t}s{,x}"
+      }
+    }
+  - Type definitions (create a file called `src/types/static.d.ts`)
+    ```ts
+    /* Use this file to declare any custom file extensions for importing */
+    /* Use this folder to also add/extend a package d.ts file, if needed. */
+
+    /* CSS MODULES */
+    declare module '*.module.css' {
+      const classes: { [key: string]: string }
+      export default classes
+    }
+    declare module '*.module.scss' {
+      const classes: { [key: string]: string }
+      export default classes
+    }
+    declare module '*.module.sass' {
+      const classes: { [key: string]: string }
+      export default classes
+    }
+    declare module '*.module.less' {
+      const classes: { [key: string]: string }
+      export default classes
+    }
+    declare module '*.module.styl' {
+      const classes: { [key: string]: string }
+      export default classes
+    }
+
+    /* CSS */
+    declare module '*.css'
+    declare module '*.scss'
+    declare module '*.sass'
+    declare module '*.less'
+    declare module '*.styl'
+
+    /* IMAGES */
+    declare module '*.svg' {
+      const ref: string
+      export default ref
+    }
+    declare module '*.bmp' {
+      const ref: string
+      export default ref
+    }
+    declare module '*.gif' {
+      const ref: string
+      export default ref
+    }
+    declare module '*.jpg' {
+      const ref: string
+      export default ref
+    }
+    declare module '*.jpeg' {
+      const ref: string
+      export default ref
+    }
+    declare module '*.png' {
+      const ref: string
+      export default ref
+    }
+
+    ```
+3. Configure for component library
+  - Update the `vite.config.ts` file
+    ```ts
+    import react from '@vitejs/plugin-react'
+    import path from 'node:path'
+    import { defineConfig } from 'vite'
+
+    // https://vitejs.dev/config/
+    export default defineConfig({
+      plugins: [react()],
+      build: {
+        sourcemap: true,
+        lib: {
+          entry: path.resolve(__dirname, 'src/main'),
+          name: 'AWESOME',
+          formats: ['esm', 'umd', 'cjs'],
+          fileName: (format) => `index.${format}.js`,
+        },
+        rollupOptions: {
+          external: ['react', 'react-dom'],
+          output: {
+            globals: {
+              react: 'React',
+              'react-dom': 'ReactDOM',
+            },
+            assetFileNames: (assetInfo) => {
+              if (assetInfo.name == 'style.css') return 'styles.css'
+              return assetInfo.name
+            },
+          },
+        },
+      },
+    })
+    ```
+4. Add some files
+- Create a Button component
+  ```shell
+  $ mkdir src
+  $ touch src/main.ts
+  $ mkdir src/components
+  $ mkdir src/components/Button
+  $ touch src/components/Button/Button.tsx src/components/Button/index.ts
+  ```
+
+- `./src/components/Button/index.ts`
+  ```ts
+  export { default } from './Button'
+  ```
+- `./src/components/Button/Button.module.css`
+  ```css
+  .wrapper{
+    border: solid 1px black;
+    border-radius: 4px;
+    background-color: white;
+  }
+  ```
+
+- `./src/components/Button/Button.tsx`
+  ```ts
+  import styles from './Button.module.css'
+
+  type Props = {
+    title: string
+  }
+  export default function Button({ title }: Props) {
+    return <button className={styles.wrapper}>{title}</button>
+  }
+  ```
+- `./src/main.ts`
+  ```ts
+  export { default as Button } from './components/Button'
+  ```
+
+5. Add `file` config block to the `package.json`
+  - If you publish this component library it will only include the package.json & dist folder
+  ```json
+  {
+    "files": [
+      "dist/"
+    ]
+  }
+6. Add Storybook
+  - init storybook
+    ```shell
+    $ npx sb init --builder @storybook/builder-vite
+    ```
+  - Update the package.json
+    ```json
+    {
+      "scripts": {
+        "start": "start-storybook -p 6006",
+        "build": "tsc && vite build",
+        "lint": "prettier --write src/**/*.{j,t}s{,x}",
+        "build-storybook": "build-storybook"
+      }
+    }
+    ```
+7. Add your first story `,.src/components/Button/Button.stories.tsx`
+
+  ```tsx
+  import { ComponentStory, ComponentMeta } from '@storybook/react'
+
+  import { Button } from '../../main'
+
+  export default {
+    title: 'Core/Button',
+    component: Button,
+    argTypes: {
+      backgroundColor: { control: 'color' },
+    },
+  } as ComponentMeta<typeof Button>
+
+  const Template: ComponentStory<typeof Button> = (args) => <Button {...args} />
+
+  export const Primary = Template.bind({})
+  Primary.args = {
+    title: 'hello',
+  }
+  ```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---
 
 
 # Advanced React Stuff

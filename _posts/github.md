@@ -540,6 +540,28 @@ $ git commit
 - There is also `schedule`, `workflow_dispatch`, & `repository_dispatch`
 - Terms: `Events`, `Jobs`, `Runners`, `Steps`, `Actions`
 
+
+### Testing Github Actions on your local machine
+- [nektos/act](https://github.com/nektos/act) and docker
+- This tool requires that you use a `runs-on: ubuntu-latest` and not a `runs-on: self-hosted`
+` ~/.actrc`
+- Spin up a Github Action Docker container
+  ```
+  # Normally
+  $ act
+
+  # M1 chip
+  $ act --container-architecture linux/amd64
+  ```
+
+
+
+
+
+
+
+
+
 ### Hello world of Github Action
 - There are 3 main pieces to the actions yaml file:
   1. `name` (whatever name you want to call this workflow, this will show up in the GUI)
