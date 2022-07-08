@@ -1380,11 +1380,211 @@ const abort = controller.abort()
 
 
 
+## Using React-Query to deal with data from servers
+- React-Query is for fetching data in an React Application
+- Since React is a UI library, there isn't a specific defined pattern for data fetching
+- What we typically do is use `useEffect` & `useState` hooks to maintain component state like loading,error,data
+- When data i used throughout the app we tend to use state management libraries like redux,zustand, or even context for `client state`
+- `State management` libraries are not great at working with asynchromous or server state
+- `Client State` persist in your app memory and accessing it or updating it is synchronous
+- `Server State` persiste remotely and requires asynchonous APIS for fetching or updating the data. What is most challeging with `server state` is caching, deduping multiple request for the same data, updating stale data in the background, performance optimizations... this is where `react-query` comes in
+
+
+
+1. Wrapper your app with the ReactQuery provider
+  ```ts
+  import { QueryClient, QueryClientProvider } from 'react-query'
+  import { ReactQueryDevtools } from 'react-query/devtools'
+
+  import './App.css'
+  import Films from './components/Films'
+
+  const queryClient = new QueryClient()
+
+  export default function App() {
+    return (
+      <div className="App">
+        <QueryClientProvider client={queryClient}>
+          <Films />
+          <ReactQueryDevtools initialIsOpen={false} />
+        </QueryClientProvider>
+      </div>
+    )
+  }
+  ```
+2. Use the `useQuery` hook to fetch data
+  ```ts
+  import { useQuery } from 'react-query'
+
+  import { api } from '../services/api'
+  import fetch from '../util/fetch'
+
+  type Films = {
+    filmId: number
+    episode_id: string
+    title: string
+    release_date: string
+  }
+
+  export default function Films() {
+    const { data, status, error } = useQuery('films', () => fetch(api.films.get))
+
+    if (status === 'loading') {
+      return <p>Loading...</p>
+    }
+    if (status === 'error' || error) {
+      return <p>Error :(</p>
+    }
+
+    return (
+      <div>
+        <h1>Dashboard</h1>
+        {data.results.map((film: Films) => {
+          return (
+            <article key={film.episode_id}>
+              <h6>
+                {film.episode_id}. {film.title}{' '}
+                <em>({new Date(Date.parse(film.release_date)).getFullYear()})</em>
+              </h6>
+            </article>
+          )
+        })}
+      </div>
+    )
+  }
+  ```
 
 
 
 
 
+
+
+
+
+# Mocking 
+
+
+# MSW (Mock Service Workers)
+
+
+1. Create files & directories
+  ```shell
+  $ yarn add msw --dev
+  $ mkdir src/mocks src/mocks/handlers src/mocks/data
+  $ touch src/mocks/index.ts src/mocks/handlers/films.ts src/mocks/data/films.json
+  ```
+2. Create your first mock REST API route
+  - `./src/mocks/index.ts`
+    ```ts
+    import filmHandlers from './handlers/films'
+    export const handlers = [...filmHandlers]
+    ```
+
+  - `./src/mocks/handlers/films.ts`
+    ```ts
+    import { rest } from 'msw'
+
+    import config from '../../config'
+    import filmsData from '../data/films.json'
+
+    export const URLS = `${config.apiUrl}/films`
+
+    const filmHandlers = [
+      rest.get(URLS, (req, res, ctx) => {
+         return res(ctx.delay(1000), ctx.status(200), ctx.json(filmsData))
+      }),
+      // rest.get(`${URLS}/:id`, (req, res, ctx) => {
+      //   return res(ctx.status(200), ctx.json(filmsData))
+      // }),
+      // rest.post(URLS, (req, res, ctx) => {
+      //   return res(ctx.status(200), ctx.json(filmsData))
+      // }),
+      // rest.put(`${URLS}/:id`, (req, res, ctx) => {
+      //   const { body } = req
+      //   return res(ctx.status(200), ctx.json(body))
+      // }),
+      // rest.delete(`${URLS}/:id`, (req, res, ctx) => {
+      //   return res(ctx.status(200), ctx.json(filmsData))
+      // }),
+    ]
+    export default filmHandlers
+    ```
+
+  - `./src/mocks/data/films.json`
+    ```json
+    {
+      "count": 6,
+      "next": null,
+      "previous": null,
+      "results": [
+        {
+          "filmId": 1,
+          "episode_id": 4,
+          "title": "A New Hope",
+          "release_date": "1977-05-25"
+        },
+        {
+          "filmId": 2,
+          "episode_id": 5,
+          "title": "The Empire Strikes Back",
+          "release_date": "1980-05-17"
+        },
+        {
+          "filmId": 3,
+          "episode_id": 6,
+          "title": "Return of the Jedi",
+          "release_date": "1983-05-25"
+        },
+        {
+          "filmId": 4,
+          "episode_id": 1,
+          "title": "The Phantom Menace",
+          "release_date": "1999-05-19"
+        },
+        {
+          "filmId": 5,
+          "episode_id": 2,
+          "title": "Attack of the Clones",
+          "release_date": "2002-05-16"
+        },
+        {
+          "filmId": 6,
+          "episode_id": 3,
+          "title": "Revenge of the Sith",
+          "release_date": "2005-05-19"
+        }
+      ]
+    }
+    ```
+3. Enable the MSW
+  - Create the service worker 
+    ```shell
+    $ npx msw init public --save
+    ```
+  - Init the service worker in the app
+    ```shell
+    $ touch src/mocks/browser.ts
+    ```
+  - Add content to `./src/mocks/browser.ts`
+    ```ts
+    import { setupWorker } from 'msw'
+
+    import { handlers } from './index'
+
+    export const worker = setupWorker(...handlers)
+
+    export function startMockServiceWorkers() {
+      worker.start()
+    }
+    ```
+  - Run the `startMockServiceWorkers()` function in your `./src/main.tsx`
+    ```ts
+    import { startMockServiceWorkers } from './mocks/browser'
+
+    if (window.location.origin.includes('localhost')) startMockServiceWorkers()
+    ```
+4. Restart the local server
 
 
 
