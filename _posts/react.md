@@ -80,7 +80,95 @@ ogImage:
   svelte
   svelte-ts
   ```
-  
+
+- Add file alias
+  - Update your `vite.config.ts` file
+    ```ts
+    import react from '@vitejs/plugin-react'
+    import path from 'path'
+    import { defineConfig } from 'vite'
+
+    export default defineConfig({
+      plugins: [react()],
+
+      // ===== Add this ====
+      resolve: {
+        alias: {
+          '@': path.resolve(__dirname, './src'),
+        },
+      },
+      // ===== Add this ====
+
+      build: { outDir: 'build' },
+    })
+    ```
+  - Update the `tsconfig.json` file so that vscode knows about the alias
+    ```ts
+    {
+      "compilerOptions": {
+        "baseUrl": ".",
+        "paths": {
+          "@/*": ["src/*"]
+        }
+      }
+    }
+    ```
+
+### Vite with Vitest
+- Vitest has basically the same API as Jest however it leverages the same `vite.config.ts` file that you code uses for development and build
+- Benefits are amazing: leverage the same config dev/build/test, it's fast, don't have to worry about babel and all the transpiling files
+
+
+- Update the `vite.config.ts` file
+  ```ts
+  /// <reference types="vite/client" />
+  /// <reference types="vitest" />
+  import react from '@vitejs/plugin-react'
+  import path from 'path'
+  import { defineConfig } from 'vite'
+
+  // https://vitejs.dev/config/
+  export default defineConfig({
+    plugins: [react()],
+    test: {
+      globals: true,
+      environment: 'happy-dom',
+      setupFiles: './src/utils/test-setup.ts',
+      include: ['src/{components,hooks,utils}/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
+    },
+  })
+  ```
+
+- Add some packages:
+  ```shell
+  $ yarn add -D vitest @vitest/ui c8 happy-dom vi-fetch
+  $ yarn add -D @testing-library/react @testing-library/react-hooks @testing-library/user-event @testing-library/jest-dom
+  ```
+- Update your `package.json` npm scripts
+  ```json
+  {
+    "scripts":{
+      "test": "vitest",
+      "test:ui": "vitest --ui",
+      "test:coverage": "vitest run --coverage",
+    }
+  }
+  ```
+- Create a `src/utils/test-setup.ts` file
+  ```ts
+  import '@testing-library/jest-dom'
+  import 'vi-fetch/setup'
+
+  // @ts-ignore
+  globalThis.IS_REACT_ACT_ENVIRONMENT = true
+  ```
+- Create a `src/utils/test-utils.tsx` file
+  ```ts
+  ```
+
+
+
+### Vite with Jest
 - Add some packages:
   ```shell
   $ npm i -D jest ts-jest @testing-library/react @testing-library/jest-dom 
