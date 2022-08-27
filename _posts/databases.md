@@ -547,7 +547,7 @@ SELECT  *, ST_AsText(geom)  FROM places WHERE ST_CONTAINS(
   ```
 - When you use the `firebase emulators:start` when you close the process the data do not persist in order to persist the data you have to tell it to import/export the data add `--import=firebase/backup --export-on-exit=firebase/backup`
 - Make sure you have a `firebase/firestore.rules`, these current rules anyone to read/write to the database to don't publish this
-  ```text
+  ```html
   rules_version = '2';
   service cloud.firestore {
     match /databases/{database}/documents {
@@ -678,9 +678,17 @@ SELECT  *, ST_AsText(geom)  FROM places WHERE ST_CONTAINS(
 
 - Setup
   ```js
+  // Firebase v8
+  /*
   import firebase from 'firebase/app';
   import 'firebase/firestore';
   import * as geofirestore from 'geofirestore';
+  */
+
+  // *NOTE: Firebase v9 ( Currently geofirebase library only works with the Firebase Compat library. Support for the Firebase Modular library is coming down the road.)
+  import firebase from 'firebase/compat/app'
+  import 'firebase/compat/firestore'
+  import * as geofirestore from 'geofirestore'
 
   // Initialize the Firebase SDK
   firebase.initializeApp({
@@ -742,6 +750,17 @@ SELECT  *, ST_AsText(geom)  FROM places WHERE ST_CONTAINS(
   findNearest({ lat: 42.3461, lng: -71.0974 }, 10, ["user3_000", "user1_000"]);
   ```
 
+
+- Query nearest & property value
+
+```ts
+const geocollection: GeoCollectionReference = geofirestore.collection('Users');
+const centerCoords = { lat: 42.3461, lng: -71.0974 }
+const geoQuery = geocollection.near({
+    center: new firebase.firestore.GeoPoint(centerCoords.lat,centerCoords.lng),
+    radius: 10.5
+    }).where('type', '==', 'coffee');
+```
 
 # DynamoDB
 
