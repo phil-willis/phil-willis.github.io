@@ -561,3 +561,15 @@ $ aws route53 get-hosted-zone --id $hz
 
 
 
+
+
+
+# CURL
+- CURL allows you to make http request from the terminal
+  ```shell
+  $ curl https://reqbin.com/echo/get/json
+    -H "Accept: application/json"
+    -H "Authorization: Bearer {token}"
+  ```
+
+

@@ -553,6 +553,48 @@ const status = useFriendStatus(9)   // **inferred type boolean**
 
 
 
+# MSW
+
+
+
+
+
+
+- Adding types to the req/res function
+  ```ts
+  import { rest } from 'msw'
+
+  // Describe the shape of the "req.body".
+  interface UpdatePostRequestBody {
+    title: "string"
+    viewsCount: string
+  }
+
+  // Describe the shape of the mocked response body.
+  interface UpdatePostResponseBody {
+    updatedAt: Date
+  }
+
+  // Describe the shape of the "req.params".
+  interface UpdatePostRequestParams {
+    postId: string
+  }
+
+  rest.update
+    <UpdatePostRequestBody, UpdatePostResponseBody, UpdatePostRequestParams>(
+    '/post/:postId',
+    (req, res, ctx) => {
+      const { postId } = req.params
+      const { title, viewsCount } = req.body
+
+      return res(
+        ctx.json({
+          updatedAt: Date.now()
+        })
+      )
+    })
+  ```
+
 
 
 

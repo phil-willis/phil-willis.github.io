@@ -698,7 +698,7 @@ export default function profile() {
   ```
 
 
-## Creating and Deploying a Static Site to GitHub Pages
+# Creating and Deploying a Static Site to GitHub Pages
 1. Create a static build
   - Add the build script to your package.json file
     ```json

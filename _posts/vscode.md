@@ -121,6 +121,42 @@ ogImage:
     "prettier.printWidth": 120,
     "terminal.integrated.rendererType": "dom",
     "terminal.integrated.shell.osx": "/bin/zsh",
+
+    // Deprecated
+    "terminal.integrated.shell.osx": "/bin/zsh",
+
+    // New way
+    "terminal.integrated.profiles.osx":{
+        "bash": {
+          "path": "bash",
+          "args": [
+            "-l"
+          ],
+          "icon": "terminal-bash"
+        },
+        "zsh": {
+          "path": "zsh",
+          "args": [
+            "-l"
+          ]
+        },
+        "fish": {
+          "path": "fish",
+          "args": [
+            "-l"
+          ]
+        },
+        "tmux": {
+          "path": "tmux",
+          "icon": "terminal-tmux"
+        },
+        "pwsh": {
+          "path": "pwsh",
+          "icon": "terminal-powershell"
+        }
+      },
+
+
     "timeline.excludeSources": [],
     "workbench.colorCustomizations": {},
     "workbench.colorTheme": "Monokai Operator Mono",
