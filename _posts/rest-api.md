@@ -292,9 +292,57 @@ ogImage:
 
 ## REST API Structure
 - Component based REST API structure
-```shell
+- `packages/server/src/<COMPONENT>`
+  ```shell
+  .
+  └── <COMPONENT>
+      ├── controller.ts
+      ├── model.ts
+      ├── routes.ts
+      ├── service.ts
+      ├── store.ts
+      └── validation.ts
+  ```
+
+
+
+
+## MySQL Local Database
+- We're gonna use Docker to create a local version of MySQL
+
+1. Add vscode extension
+2. Update the `./vscode/settings.json` file
+  ```json
+  {
+    "sqltools.connections": [
+      {
+        "mysqlOptions": {
+          "authProtocol": "xprotocol"
+        },
+        "previewLimit": 50,
+        "server": "localhost",
+        "port": 33060,
+        "driver": "MySQL",
+        "name": "MySQL_v8",
+        "database": "rest-me-up",
+        "username": "root",
+        "password": "password",
+        "connectionTimeout": 15
+      }
+    ],
+  }
+  ```
+3. Spin up the Docker container
+4. Use the vscode extension to connect to the databse
 
 ```
+
+
+
+
+
+
+
 
 
 
@@ -421,7 +469,7 @@ ogImage:
 
 
 ## REST API with AWS API Gateway
-
+- This should leverage most of the base structure from the express.js example
 
 
 
