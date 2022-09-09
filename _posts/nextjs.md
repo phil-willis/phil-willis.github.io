@@ -137,14 +137,14 @@ $ mkdir components hooks utils
     },
   }
   ```
-
-```package.json
-{
-  "scripts": {
-     "lint": "prettier --write {components,hooks,pages}/**/*.tsx {components,hooks,pages}/*.tsx utils/**/*.ts"
+- `./package.json`
+  ```json
+  {
+    "scripts": {
+      "lint": "prettier --write {components,hooks,pages}/**/*.tsx {components,hooks,pages}/*.tsx utils/**/*.ts"
+    }
   }
-}
-```
+  ```
 
 
 # Adding Jest & React-Testing-Library

@@ -20,7 +20,7 @@ ogImage:
   $ aws --version
   aws-cli/2.4.5 Python/3.8.8 Darwin/18.7.0 botocore/2.4.5
   ```
-- You can access your AWS services via:
+- You can access your AWS services via ([more on profiles here](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html)):
   1. Named profiles
     - AWS uses `~./aws/credentials` file for accessing your AWS accounts where you can have multiple profiles but you should probably have a `default` profile
       ```shell
@@ -42,10 +42,17 @@ ogImage:
       region=us-east-1
       output=text
       ```
+    - List profiles
+      ```shell
+      $ aws configure list-profiles
+      $ aws configure list
+      ```
+
     - Accessing a specific profile's resources you just have to pass in the `--profile <PROFILE_NAME>`
       ```shell
       $ aws s3 ls --profile default
       ```
+
   2. Environment variables
     - You can also pass in environment variables access key/secrets
       ```shell
@@ -55,11 +62,11 @@ ogImage:
       ```
 - Now, getting your `AWS_ACCESS_KEY_ID` & `AWS_SECRET_ACCESS_KEY` values
   1.  Go to Amazon Web Services console and click on the name of your account (it is located in the top right corner of the console). Then, in the expanded drop-down list, select `Security Credentials`.
-    ![Security Page](public/assets/blog/aws/credentials_1.jpg)
+    ![Security Page](/assets/blog/aws/credentials_1.jpg)
   2. Click the `Access keys (access key ID and secret access key)` accordion title and click `Create New Access Key`
-    ![Security Page](public/assets/blog/aws/credentials_2.jpg)
+    ![Security Page](/assets/blog/aws/credentials_2.jpg)
   3. Click `Show Access Key` to have it displayed on the screen. Note, that you can download it to your machine as a file and open it whenever needed. To download it, just click the `Download Key File` button.
-    ![Security Page](public/assets/blog/aws/credentials_2.jpg)
+    ![Security Page](/assets/blog/aws/credentials_2.jpg)
   4. Now update your `~/.aws/credentials` file with this key pair
     ```shell
     [default]

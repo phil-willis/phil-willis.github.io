@@ -190,6 +190,65 @@ sed "s+${find}+${replace}+g" <<<"$string"
 ```
 
 
+# Passing in argument to a file
+- Create a file
+  ```shell
+  $ echo 'echo $1 $2 $3' > filename.sh
+  $ chmod +x filename.sh
+  $ ./filename.sh argument1 argument2 argument3
+  ```
+- Arguments passed into a bash file start with `$` and the non-zero base list of arguments e.g. `$1` or `$2`
+
+
+
+
+
+
+
+# Functions
+- Create a file
+  ```shell
+  $ touch filename.sh
+  $ sudo chmod +x filename.sh
+  $ ./filename.sh argument1 argument2 argument
+  ```
+
+- Add some stuff in the file
+  ```shell
+  function_name () {
+    commands
+  }
+  ```
+
+- Local and globa variables
+  ```shell
+  var1='A'
+  var2='B'
+
+  my_function () {
+    local var1='C'
+    var2='D'
+    echo "Inside function: var1: $var1, var2: $var2"
+  }
+
+  echo "Before executing function: var1: $var1, var2: $var2"
+
+  my_function
+
+  echo "After executing function: var1: $var1, var2: $var2"
+  ```
+
+- If statements
+
+```shell
+if <test_expression>; then
+  <command-to-execute>
+elif <test_expression>; then
+  <command-to-execute>
+else
+  <command-to-execute>
+fi
+```
 
 
 
@@ -202,7 +261,63 @@ sed "s+${find}+${replace}+g" <<<"$string"
 
 
 
-# `jq` for parsing JSON data 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+===============
+# MacOS 
+
+
+## Disk Utility does not show APFS format? 
+- Try switching "View" in the top left corner of Disk Utility to "Show All Devices" and try again.
+
+
+
+
+
+
+
+===============
+# CURL
+- CURL allows you to make http request from the terminal
+  ```shell
+  $ curl https://reqbin.com/echo/get/json
+    -H "Accept: application/json"
+    -H "Authorization: Bearer {token}"
+  ```
+
+
+
+
+
+
+
+
+
+
+
+
+===============
+# JQ
+## `jq` for parsing JSON data 
 - `jq`is a lightweight and flexible command-line JSON processor.
 - [js](https://stedolan.github.io/jq/)
 - jq is like sed for JSON data - you can use it to slice and filter and map and transform structured data with the same ease that sed, awk, grep and friends let you play with text.
@@ -315,8 +430,9 @@ $ aws route53 get-hosted-zone --id $hz
 
 
 
- 
-# npm's `ZX` to create JS script
+===============
+# ZX
+## npm's `ZX` to create JS script
 - The `ZX` package provides useful wrappers around `child_process`, escapes arguments and gives sensible defaults.
 - What this nodejs package actually do is it allows you to right scripts in JS and use bash sprinkled into it
 
@@ -414,7 +530,8 @@ $ aws route53 get-hosted-zone --id $hz
 
 
 
-
+===============
+# Create a bash script to init an nodejs application
 # Create a global `node init` bash script
 - It get a little tedious to scafold out a quick node application
 - Create a file in `~/.zsh/nodejs.zsh`
@@ -550,26 +667,7 @@ $ aws route53 get-hosted-zone --id $hz
   $ init-nodejs
   ```
 
-# MacOS 
 
 
-
-## Disk Utility does not show APFS format? 
-- Try switching "View" in the top left corner of Disk Utility to "Show All Devices" and try again.
-
-
-
-
-
-
-
-
-# CURL
-- CURL allows you to make http request from the terminal
-  ```shell
-  $ curl https://reqbin.com/echo/get/json
-    -H "Accept: application/json"
-    -H "Authorization: Bearer {token}"
-  ```
 
 

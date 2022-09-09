@@ -62,7 +62,7 @@ ogImage:
 - Get Started:
   1. Select an account from the `Accounts` dropdown
   2. Navigate to the Dashboard section via the NavBar
-    ![new relic dashboard nav link](public/assets/blog/nr/nav-dashboard-localtion.png)
+    ![new relic dashboard nav link](/assets/blog/nr/nav-dashboard-localtion.png)
   3. Create a new dashboard
     - Click the `+ Create a dashboar`  button in the top right of the screen
     - then `Create a new dashboard`

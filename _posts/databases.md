@@ -62,22 +62,28 @@ ogImage:
 
 - Connecting to the `MySQL v8` Database with [`SQLTools` extension](https://marketplace.visualstudio.com/items?itemName=mtxr.sqltools). You will also have to download the Extensions drivers: MySQL
   - *NOTE* we had to make a database `letsgetspatial` manually above
+  - Add the connection config to your `./.vscode/settings.json` file
     ```json
     {
-      "mysqlOptions": {
-        "authProtocol": "xprotocol"
-      },
-      "previewLimit": 50,
-      "server": "localhost",
-      "port": 33060,
-      "driver": "MySQL",
-      "name": "MySQL_v8",
-      "database": "letsgetspatial",
-      "username": "root",
-      "password": "123456789",
-      "connectionTimeout": 15
+      "sqltools.connections": [
+        {
+          "mysqlOptions": {
+            "authProtocol": "xprotocol"
+          },
+          "previewLimit": 50,
+          "server": "localhost",
+          "port": 33060,
+          "driver": "MySQL",
+          "name": "MySQL_v8",
+          "database": "letsgetspatial",
+          "username": "root",
+          "password": "123456789",
+          "connectionTimeout": 15
+        }
+      ],
     }
     ```
+    - ![vscode-sqltools](/assets/blog/database/vscode-sqltools.jpg)
   - Click the `Test Connection` (it kinda appears like a white rectanglar button)
   - Under the `Connection` section in the side panel click this `some-mysql` connection and it will open up a sql window where you can write queries
   - Use `--` to write comments & `-- @block` to write blocks that you can execute only the block
@@ -131,6 +137,7 @@ ogImage:
     volumes:
       my-db:
     ```
+  
   - Now we can run one command to get it all running:
     ```shell
     # build/run contains
@@ -142,6 +149,10 @@ ogImage:
     # Clean up everything
     $ docker-compose down -v --rmi all --remove-orphans
     ```
+  - You can connect to the container directly or connect with the mysql client or use the http://localhost:8080 to get a GUI for full access
+
+  - ![mysql-gui](/assets/blog/database/mysql-gui.jpg)
+
 
 
 ## MySQL SQL Statements
@@ -476,7 +487,7 @@ SELECT  *, ST_AsText(geom)  FROM places WHERE ST_CONTAINS(
 
 
 
-
+====
 # Firebase's Firestore
 - Firebase has 2 flavor of NoSQL Database `Realtime Database` & `Firestore Database`
 - The `Realtime Database` as the original database before Google aquired Firebase and the `Firestore Database` is if the Realtime database & Google had a baby.
@@ -762,6 +773,339 @@ const geoQuery = geocollection.near({
     }).where('type', '==', 'coffee');
 ```
 
+
+
+
+
+
+
+
+
+====
 # DynamoDB
+- DynamoDB is a hosted NoSQL database offered by Amazon Web Services (AWS). It offers:
+  - Reliable performance even as it scales;
+  - Managed experience, so you won't be SSH-ing into servers to upgrade the crypto libraries;
+  - Small, simple API allowing for simple key-value access as well as more advanced query patterns.
+- It works extremely well with Serverless applications (API Gateway & Lambda functions)
+- Dynamodb you work with `tables`, `attributes`, & `items`. Each table needs to have a `Primary Key` which is a special attribute that is unique or a `Primary Key + Sort Key` aka `Composite Primary Key`.
+- `Primary Key` or `Partition Key`is just that, a unique attribute to which you can query on it also allows 
+- The  `Primary Key + Sort Key` is a combination of 2 attributes when used together makes a unique identificator. It allows for id flexibility
+- In addition to `primary key` there's also `Secondary Indexes` where that allows you to query the table data with an alternate key. There are 2 kinds of secondary indexes:
+  - Global Secondary Index: another index partion & sort keys that differ from the primary & sort key
+  - Local Secondary Index: similar partition key but different sort key
+- The basic Dynamodb API consist of:
+  - PutItem (Create)
+  - BatchWriteItem (Create)
+  - GetItem (Read)
+  - BatchGetItem (Read)
+  - Query (Read)
+  - Scan (Read)
+  - UpdateItem (Update)
+  - DeleteItem (Delete)
+  - BatchWriteItem (Delete)
+- `Global tables` provide a solution for deploying a multi-region, multi-master database, without having to build and maintain your own replication solution.
+- `Time To Live (TTL)`, allows you to define when items in a table expire so that they can be automatically deleted from the database.
+- When you create a table in DynamoDB you need to specify the throughput capacity for read/write capacity unit
+  - One read capacity unit represents one strongly consistent read per second, for an item up to 4 KB in size. 
+- When reading the data in the database you can do `scan` or `queries`. A Scan operation reads every item in a table or a secondary index. By default, a Scan operation returns all of the data attributes for every item in the table or index.
+- You can also encrypt the data in the database
+- You can also add automated tools for monitoring with CloudWatch Alarms, Logs, Events
+
+
+## Anatomy of an Item
+- When setting an attribute for a DynamoDB item, you must specify the Data Type (Scalar, Documents, & Sets) of the attribute.
+- [AWS Dynamodb API Attribute Values](https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_AttributeValue.html)
+- Data Types:
+  - **Scalar** Data Types:
+    - `Numbers` (N) − They are limited to 38 digits, and are either positive, negative, or zero.
+    - `String` (S) − They are Unicode using UTF-8, with a minimum length of >0 and maximum of 400KB.
+    - `Binary` (B) − They store any binary data, e.g., encrypted data, images, and compressed text. DynamoDB views its bytes as unsigned.
+    - `Boolean` (BOOL) − They store true or false.
+    - `Null` (NULL) − They represent an unknown or undefined state.
+  - **Document** Data Types:
+    - `List` (L) − It stores ordered value collections, and uses square ([...]) brackets.
+    - `Map` (M) − It stores unordered name-value pair collections, and uses curly ({...}) braces.
+  - **Set** Data Type:
+    - Available Attribute values: B(S|NS|SS)
+    - Must contain elements of the same type whether number, string, or binary. The only limits placed on sets consist of the 400KB item size limit, and each element being unique.
+- Here's an example of the Data Types:
+  ```html
+  {
+      "Name": { "S": "Alex DeBrie" },
+      "Age": { "N": "29" },
+      "Roles": { "L": [{ "S": "Admin" }, { "S": "User" }] }
+  }
+  ```
+- When creating a new table you need: [`AttributeDefinitions`, `KeySchema`, `ProvisionedThroughput`, `TableName`, & `StreamSpecification`]
+
+
+## Defining a table's 
+- [AWS Docs example on how to CRUD a table](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/GettingStarted.CreateTable.html)
+- [Node.js `@aws-sdk/client-dynamodb` reference](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-dynamodb/index.html)
+- When creating a new table you need to define the primary key (partion and/or sort key)
+- Every item in a table is uniquely identified by its primary key.
+- Key schema: (HASH|RANGE) (partition and sort key)
+  ![](/assets/blog/database/aws-table-hash-range.png)
+- `HASH` is for you primary key and `RANGE` is for when you use a composity key
+
+- You can create a data and it's configuration via the AWS Console, aws-cli, or with code
+
+
+### Create a Dynamodb table using `aws-cli`
+  ![aws-console-dynamo](public/assets/blog/database/aws-console-dynamo.jpg)
+
+### Create a Dynamodb table using `aws-cli`
+  - Here's an exmaple using the `aws-cli`
+    ```shell
+    $ aws dynamodb create-table \
+          --profile local-dev \
+          --table-name WeatherForecast \
+          --attribute-definitions \
+              AttributeName=City,AttributeType=S \
+              AttributeName=Date,AttributeType=S \
+          --key-schema AttributeName=City,KeyType=HASH AttributeName=Date,KeyType=RANGE \
+          --provisioned-throughput ReadCapacityUnits=1,WriteCapacityUnits=1 \
+          --endpoint-url http://localhost:8000
+    ```
+### Create a Dynamodb table using javascript
+- *NOTE:* `aws-sdk` is the v2 (~62 MB) is was most people are used to, v3 `@aws-sdk/client-dynamodb` (~4.5 MB) which is more modular which will decrease package size and increase performance. Along with v3 we're gonna use `@aws-sdk/util-dynamodb` to allow for converting from JavaScript object to DynamoDB Record (marshall & unmarshall)
+- Let create a table [aws docs example](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/GettingStarted.CreateTable.html):
+  1. Install npm package
+    ```shell
+    $ yarn init
+    $ yarn add @aws-sdk/client-dynamodb @aws-sdk/lib-dynamodb
+    $ mkdir src src/libs
+    $ touch src/create-table.js src/config.js src/libs/db.js
+    ```
+  2. Create a table with Node.js
+    - `src/config.js` file
+      ```js
+      const configPrimaryKey = {
+        tableName: 'hello-primary-key',
+        attributeDefinition: [
+          {
+            AttributeName: 'id',
+            AttributeType: 'S',
+          },
+        ],
+        keySchema: [
+          {
+            AttributeName: 'id',
+            KeyType: 'HASH',
+          },
+        ],
+        key: {
+          primaryKey: 'id',
+        },
+      }
+
+      const configCompositeKey = {
+        tableName: 'hello-composite-key',
+        attributeDefinition: [
+          {
+            AttributeName: 'Season', // for primary key
+            AttributeType: 'N',
+          },
+          {
+            AttributeName: 'Episode', // for sort key
+            AttributeType: 'N',
+          },
+        ],
+        keySchema: [
+          {
+            AttributeName: 'Season',
+            KeyType: 'HASH', // Primary key
+          },
+          {
+            AttributeName: 'Episode',
+            KeyType: 'RANGE', // Sort key
+          },
+        ],
+      }
+
+      const config = {
+        aws: {
+          clientConfig: {
+            profile: 'local-dev',
+            endpoint: 'http://localhost:8000',
+            region: 'us-west-2',
+          },
+          dynamodb: {
+            configPrimaryKey,
+            configCompositeKey,
+          },
+        },
+      }
+      export default config
+
+      ```
+    - `src/libs/db.js` file
+      ```js
+      import { DynamoDBClient } from '@aws-sdk/client-dynamodb'
+      import {
+        DynamoDBDocumentClient,
+        PutCommand,
+        GetCommand,
+        ScanCommand,
+        QueryCommand,
+        DeleteCommand,
+      } from '@aws-sdk/lib-dynamodb'
+
+      import config from './config.js'
+
+      // Bare-bones DynamoDB Client
+      const client = new DynamoDBClient(config.aws.clientConfig)
+
+      // ======== MARSHALL ==================================
+      const marshallOptions = {
+        // Whether to automatically convert empty strings, blobs, and sets to `null`.
+        convertEmptyValues: false, // false, by default.
+        // Whether to remove undefined values while marshalling.
+        removeUndefinedValues: false, // false, by default.
+        // Whether to convert typeof object to map attribute.
+        convertClassInstanceToMap: false, // false, by default.
+      }
+
+      const unmarshallOptions = {
+        // Whether to return numbers as a string instead of converting them to native JavaScript numbers.
+        wrapNumbers: false, // false, by default.
+      }
+
+      const translateConfig = { marshallOptions, unmarshallOptions }
+      const ddbDocClient = DynamoDBDocumentClient.from(client, translateConfig)
+      // ======== MARSHALL ==================================
+
+      // =========================================
+      export const addUpdateItem = async (Item) => {
+        const { tableName } = config.aws.dynamodb.configPrimaryKey
+        const params = {
+          TableName: tableName,
+          Item,
+        }
+        try {
+          const data = await ddbDocClient.send(new PutCommand(params))
+          console.log(`[Item added] into ${tableName}`, data)
+          return data
+        } catch (err) {
+          console.log('Error', err)
+        }
+      }
+
+      export const getItem = async (id) => {
+        const { tableName } = config.aws.dynamodb.configPrimaryKey
+        const params = {
+          TableName: tableName,
+          Key: { id },
+        }
+        try {
+          const data = await ddbDocClient.send(new GetCommand(params))
+          console.log('Success :', data.Item)
+        } catch (err) {
+          console.log('Error', err)
+        }
+      }
+
+      export const deleteItem = async (id) => {
+        const { tableName } = config.aws.dynamodb.configPrimaryKey
+        const params = {
+          TableName: tableName,
+          Key: { id },
+        }
+        try {
+          const data = await ddbDocClient.send(new DeleteCommand(params))
+          console.log('Success :', data.Item)
+        } catch (err) {
+          console.log('Error', err)
+        }
+      }
+
+      export const getAllItems = async () => {
+        const { tableName } = config.aws.dynamodb.configPrimaryKey
+        const params = {
+          TableName: tableName,
+        }
+        try {
+          const data = await ddbDocClient.send(new ScanCommand(params))
+          console.log('Success :', data.Items)
+        } catch (err) {
+          console.log('Error', err)
+        }
+      }
+      ```
+
+
+## Local development
+- You can run DynamoDB locally with [AWS official docker container](https://hub.docker.com/r/amazon/dynamodb-local/)
+- You will also need the [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html) installed on your computer
+  - Setup your aws config add this to your `~/.aws/credentials` file:
+    ```shell
+    [local-dev]
+    aws_access_key_id = fakeMyKeyId
+    aws_secret_access_key = fakeSecretAccessKey
+    region = ap-southeast-2
+    ```
+  - This will allows us to pick the profile we want for local development
+- [DynamoDB AWS CLI commands here](https://docs.aws.amazon.com/cli/latest/reference/dynamodb/index.html)
+- [NoSQL Workbench](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/workbench.html) for Amazon DynamoDB
+
+
+- Create a `docker-compose.yml` file (In order to make this local-dynamodb work with NoSQL Workbench you have to provide the `-sharedDb` flag). [More on the shared flag here](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DynamoDBLocal.UsageNotes.html) or [stackoverflow](https://stackoverflow.com/questions/63835658/can-not-find-table-using-nosql-workbench-for-dynamodb-when-connecting-to-dynamod)
+  ```yml
+  version: '3'
+  services:
+    local-dynamo:
+      image: amazon/dynamodb-local
+      command: -jar DynamoDBLocal.jar -sharedDb -dbPath .
+      container_name: dynamodb-local
+      ports:
+        - "8000:8000"
+  ```
+- Run the local database!
+  ```shell
+  $ docker-compose up
+  ```
+- Create a table with the Terminal
+  ```shell
+  # Create the DynamoDB table. (make sure to pass in the `--profile`)
+  $ aws dynamodb create-table \
+      --profile local-dev \
+      --table-name WeatherForecast \
+      --attribute-definitions \
+          AttributeName=City,AttributeType=S \
+          AttributeName=Date,AttributeType=S \
+      --key-schema AttributeName=City,KeyType=HASH AttributeName=Date,KeyType=RANGE \
+      --provisioned-throughput ReadCapacityUnits=1,WriteCapacityUnits=1 \
+      --endpoint-url http://localhost:8000
+
+  # list all the tables 
+  $ aws dynamodb list-tables --profile local-dev --endpoint-url http://localhost:8000
+  ```
+
+- NoSQL Workbench Steps:
+  - Create a DB connection
+  -  `Operation builder` > `+ Add connection` > `DynamoDB local` > provide connection name & port
+    ![aws-workbench-db-connection](/assets/blog/database/aws-workbench-db-connection.jpg)
+
+    ![aws-workbench-local-dynamodb-setup-active-connection](/assets/blog/database/aws-workbench-local-dynamodb-setup-active-connection.jpg)
+    ![aws-workbench-local-dynamodb-active-connection](/assets/blog/database/aws-workbench-local-dynamodb-active-connection.jpg)
+
+  - Now you can use the "Data Modeler" to create a model the 
+    ![aws-workbench-create-table](/assets/blog/database/aws-workbench-create-table.jpg)
+
+
+## batch load a json file
+
+```shell
+$ aws dynamodb batch-write-item --request-items file://my-data-seed.json --profile local-dev
+```
+
+
+
+
+
+
+
+
 
 

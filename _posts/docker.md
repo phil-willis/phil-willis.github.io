@@ -29,6 +29,7 @@ ogImage:
     $ docker build -t <IMAGE_NAME> -f Dockerfile .
     $ docker run <IMAGE_NAME> -n <CONTAINER_NAME> -p 8080:8080
     ```
+  - *PORTS*. <Port exposed> : <Port running inside container>
 - Containers
   - A container is a runnable instance of an image.
   - You can have multiple containers that were built from the same image
@@ -173,7 +174,7 @@ ogImage:
 - Run a command to get it running & visit the site at `http://localhost:3000/`
   ```shell
   $ docker-compose up
-  $ docker-compose up  -d 
+  $ docker-compose -f docker-compose.yml up  -d 
   ```
 - Cleanup
   ```shell
@@ -247,6 +248,25 @@ $ docker volume prune
   # docker tag <IMAGE_ID> <TAG_NAME>
   $ docker tag def13b34dc63 jupyter-web-ui-base
   ```
+
+
+
+
+
+
+
+# Docker Hub
+- [Docker hub](https://hub.docker.com/search?q=)
+- ![dockerhub](/assets/blog/docker/dockerhub-nodejs.jpg)
+- If you take a look at the `supported tags` these are all the tags you can base your docker file off of. Most of the time people use the `node:latest` however you can pin it down to a specific version like `node:18` or `node:18-alpine3.15`
+
+
+
+
+
+
+
+
 
 
 

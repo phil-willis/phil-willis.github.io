@@ -108,7 +108,8 @@ ogImage:
     "javascript.updateImportsOnFileMove.enabled": "always",
     "material-icon-theme.files.associations": {
         "*.ts": "typescript",
-        "fileName.ts": "angular"
+        "fileName.ts": "angular",
+        "*.docker-compose.yml": "docker"
     },
     "material-icon-theme.folders.associations": {
         "firebase": "aws",
