@@ -11,7 +11,7 @@ ogImage:
 - [x] MySQL + baked in spatial functions
 - [x] PostgreSQL + PostGIS
 - [x] Firebase
-- [ ] DynamoDB
+- [x] DynamoDB
 - [ ] SQLite + SpatiaLite
 - [ ] MongoDB
 - [ ] CouchDB
@@ -783,6 +783,8 @@ const geoQuery = geocollection.near({
 
 ====
 # DynamoDB
+- [DynamoDB API Reference](https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_Operations_Amazon_DynamoDB.html)
+- [DynamoDB Class list](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DynamoDB.html)
 - DynamoDB is a hosted NoSQL database offered by Amazon Web Services (AWS). It offers:
   - Reliable performance even as it scales;
   - Managed experience, so you won't be SSH-ing into servers to upgrade the crypto libraries;
@@ -845,194 +847,10 @@ const geoQuery = geocollection.near({
 - [Node.js `@aws-sdk/client-dynamodb` reference](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-dynamodb/index.html)
 - When creating a new table you need to define the primary key (partion and/or sort key)
 - Every item in a table is uniquely identified by its primary key.
-- Key schema: (HASH|RANGE) (partition and sort key)
+- Key schema: (HASH|RANGE) (Partition|Sort key)
   ![](/assets/blog/database/aws-table-hash-range.png)
 - `HASH` is for you primary key and `RANGE` is for when you use a composity key
-
 - You can create a data and it's configuration via the AWS Console, aws-cli, or with code
-
-
-### Create a Dynamodb table using `aws-cli`
-  ![aws-console-dynamo](public/assets/blog/database/aws-console-dynamo.jpg)
-
-### Create a Dynamodb table using `aws-cli`
-  - Here's an exmaple using the `aws-cli`
-    ```shell
-    $ aws dynamodb create-table \
-          --profile local-dev \
-          --table-name WeatherForecast \
-          --attribute-definitions \
-              AttributeName=City,AttributeType=S \
-              AttributeName=Date,AttributeType=S \
-          --key-schema AttributeName=City,KeyType=HASH AttributeName=Date,KeyType=RANGE \
-          --provisioned-throughput ReadCapacityUnits=1,WriteCapacityUnits=1 \
-          --endpoint-url http://localhost:8000
-    ```
-### Create a Dynamodb table using javascript
-- *NOTE:* `aws-sdk` is the v2 (~62 MB) is was most people are used to, v3 `@aws-sdk/client-dynamodb` (~4.5 MB) which is more modular which will decrease package size and increase performance. Along with v3 we're gonna use `@aws-sdk/util-dynamodb` to allow for converting from JavaScript object to DynamoDB Record (marshall & unmarshall)
-- Let create a table [aws docs example](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/GettingStarted.CreateTable.html):
-  1. Install npm package
-    ```shell
-    $ yarn init
-    $ yarn add @aws-sdk/client-dynamodb @aws-sdk/lib-dynamodb
-    $ mkdir src src/libs
-    $ touch src/create-table.js src/config.js src/libs/db.js
-    ```
-  2. Create a table with Node.js
-    - `src/config.js` file
-      ```js
-      const configPrimaryKey = {
-        tableName: 'hello-primary-key',
-        attributeDefinition: [
-          {
-            AttributeName: 'id',
-            AttributeType: 'S',
-          },
-        ],
-        keySchema: [
-          {
-            AttributeName: 'id',
-            KeyType: 'HASH',
-          },
-        ],
-        key: {
-          primaryKey: 'id',
-        },
-      }
-
-      const configCompositeKey = {
-        tableName: 'hello-composite-key',
-        attributeDefinition: [
-          {
-            AttributeName: 'Season', // for primary key
-            AttributeType: 'N',
-          },
-          {
-            AttributeName: 'Episode', // for sort key
-            AttributeType: 'N',
-          },
-        ],
-        keySchema: [
-          {
-            AttributeName: 'Season',
-            KeyType: 'HASH', // Primary key
-          },
-          {
-            AttributeName: 'Episode',
-            KeyType: 'RANGE', // Sort key
-          },
-        ],
-      }
-
-      const config = {
-        aws: {
-          clientConfig: {
-            profile: 'local-dev',
-            endpoint: 'http://localhost:8000',
-            region: 'us-west-2',
-          },
-          dynamodb: {
-            configPrimaryKey,
-            configCompositeKey,
-          },
-        },
-      }
-      export default config
-
-      ```
-    - `src/libs/db.js` file
-      ```js
-      import { DynamoDBClient } from '@aws-sdk/client-dynamodb'
-      import {
-        DynamoDBDocumentClient,
-        PutCommand,
-        GetCommand,
-        ScanCommand,
-        QueryCommand,
-        DeleteCommand,
-      } from '@aws-sdk/lib-dynamodb'
-
-      import config from './config.js'
-
-      // Bare-bones DynamoDB Client
-      const client = new DynamoDBClient(config.aws.clientConfig)
-
-      // ======== MARSHALL ==================================
-      const marshallOptions = {
-        // Whether to automatically convert empty strings, blobs, and sets to `null`.
-        convertEmptyValues: false, // false, by default.
-        // Whether to remove undefined values while marshalling.
-        removeUndefinedValues: false, // false, by default.
-        // Whether to convert typeof object to map attribute.
-        convertClassInstanceToMap: false, // false, by default.
-      }
-
-      const unmarshallOptions = {
-        // Whether to return numbers as a string instead of converting them to native JavaScript numbers.
-        wrapNumbers: false, // false, by default.
-      }
-
-      const translateConfig = { marshallOptions, unmarshallOptions }
-      const ddbDocClient = DynamoDBDocumentClient.from(client, translateConfig)
-      // ======== MARSHALL ==================================
-
-      // =========================================
-      export const addUpdateItem = async (Item) => {
-        const { tableName } = config.aws.dynamodb.configPrimaryKey
-        const params = {
-          TableName: tableName,
-          Item,
-        }
-        try {
-          const data = await ddbDocClient.send(new PutCommand(params))
-          console.log(`[Item added] into ${tableName}`, data)
-          return data
-        } catch (err) {
-          console.log('Error', err)
-        }
-      }
-
-      export const getItem = async (id) => {
-        const { tableName } = config.aws.dynamodb.configPrimaryKey
-        const params = {
-          TableName: tableName,
-          Key: { id },
-        }
-        try {
-          const data = await ddbDocClient.send(new GetCommand(params))
-          console.log('Success :', data.Item)
-        } catch (err) {
-          console.log('Error', err)
-        }
-      }
-
-      export const deleteItem = async (id) => {
-        const { tableName } = config.aws.dynamodb.configPrimaryKey
-        const params = {
-          TableName: tableName,
-          Key: { id },
-        }
-        try {
-          const data = await ddbDocClient.send(new DeleteCommand(params))
-          console.log('Success :', data.Item)
-        } catch (err) {
-          console.log('Error', err)
-        }
-      }
-
-      export const getAllItems = async () => {
-        const { tableName } = config.aws.dynamodb.configPrimaryKey
-        const params = {
-          TableName: tableName,
-        }
-        try {
-          const data = await ddbDocClient.send(new ScanCommand(params))
-          console.log('Success :', data.Items)
-        } catch (err) {
-          console.log('Error', err)
-        }
-      }
-      ```
 
 
 ## Local development
@@ -1092,6 +910,399 @@ const geoQuery = geocollection.near({
 
   - Now you can use the "Data Modeler" to create a model the 
     ![aws-workbench-create-table](/assets/blog/database/aws-workbench-create-table.jpg)
+
+
+
+
+## Different ways to create a Dynamodb Table
+### Create a Dynamodb table using `aws-cli`
+  ![aws-console-dynamo](/assets/blog/database/aws-console-dynamo.jpg)
+
+### Create a Dynamodb table using `aws-cli`
+  - Here's an exmaple using the `aws-cli`
+    ```shell
+    $ DYNAMODB_TABLE_NAME="TableWithPartionAndSortKey"
+    $ AWS_PROFILE="local-dev"
+
+    # Just a partion-key
+    $ aws dynamodb create-table \
+          --profile $AWS_PROFILE \
+          --table-name $DYNAMODB_TABLE_NAME \
+          --attribute-definitions \
+              AttributeName=title,AttributeType=S \
+          --key-schema \
+            AttributeName=title,KeyType=HASH \
+          --provisioned-throughput ReadCapacityUnits=1,WriteCapacityUnits=1 \
+          --endpoint-url http://localhost:8000
+    
+    # If you want to use partition & sort key
+    $ aws dynamodb create-table \
+          --profile $AWS_PROFILE \
+          --table-name $DYNAMODB_TABLE_NAME \
+          --attribute-definitions \
+              AttributeName=title,AttributeType=S \
+              AttributeName=date,AttributeType=S \
+          --key-schema \
+            AttributeName=title,KeyType=HASH \
+            AttributeName=date,KeyType=RANGE \
+          --provisioned-throughput ReadCapacityUnits=1,WriteCapacityUnits=1 \
+          --endpoint-url http://localhost:8000
+    $ aws dynamodb list-tables --profile local-dev --endpoint-url http://localhost:8000
+    ```
+
+### Create a Dynamodb with NoSQL Workbench
+- You can connect and use the stand-alone [NoSQL Workbench](https://www.amazonaws.cn/en/dynamodb/nosql-workbench/) application to add/edit/delete tables in multiple accounts
+![aws-nosql-workbench](/assets/blog/database/aws-nosql-workbench.jpg)
+
+### Create a Dynamodb table using javascript
+- *NOTE:* `aws-sdk` is the v2 (~62 MB) (2022-09-11 ~9,816,781 weekly downloads) is was most people current used. v3 `@aws-sdk/client-dynamodb` (~4.5 MB)(2022-09-11 ~471,785 weekly downloads, not really a fair comparison but just wanted to give you a scale) which is more modular which will decrease package size and increase performance. Along with the client package you will want to use `@aws-sdk/lib-dynamodb` to do all the CRUD opperations on your table.
+
+- Let's CRUD a Dynamodb table with the `v2` version `aws-sdk`. *Note:* `aws-sdk` also works with ESM modules.
+  1. Init a project
+    ```shell
+    $ yarn init
+    $ yarn add aws-sdk dotenv
+    $ mkdir src
+    $ touch src/index.js src/db.js src/config.js .env
+    ```
+  2. `.env`
+    ```shell
+    AWS_ACCESS_KEY = "fakeMyKeyId"
+    AWS_SECRET_KEY = "fakeSecretAccessKey"
+    AWS_REGION = "local"
+    ```
+
+  3. `./src/config.js`
+    ```js
+    require("dotenv").config();
+
+    const config = {
+      aws: {
+        config: {
+          region: process.env.AWS_REGION,
+          credentials: {
+            accessKeyId: process.env.AWS_ACCESS_KEY,
+            secretAccessKey: process.env.AWS_SECRET_KEY,
+          },
+          endpoint: "http://localhost:8000",
+        },
+      },
+    };
+    module.exports = config;
+    ```
+
+  4. `./src/db.js`
+    ```js
+    const AWS = require("aws-sdk");
+    const config = require("./config.js");
+
+    AWS.config.update(config.aws.config);
+    const DynamoDB = new AWS.DynamoDB();
+    const TABLE_NAME = "Movies";
+
+    function createTable() {
+      const params = {
+        TableName: TABLE_NAME,
+        KeySchema: [{ AttributeName: "title", KeyType: "HASH" }], // Only using partition-key
+        AttributeDefinitions: [{ AttributeName: "title", AttributeType: "S" }],
+        ProvisionedThroughput: {
+          ReadCapacityUnits: 5,
+          WriteCapacityUnits: 5,
+        },
+      };
+      DynamoDB.createTable(params, (err, data) => {
+        if (err) {
+          console.error("Unable to create table", err);
+        } else {
+          console.log("Created table", data);
+        }
+      });
+    }
+
+    async function addMovie(title, rtScore) {
+      const params = {
+        TableName: TABLE_NAME,
+        Item: {
+          title: { S: title },
+          rtScore: { N: rtScore },
+        },
+      };
+      try {
+        await DynamoDB.putItem(params).promise();
+        console.log(`Added "${title}" with a Rotten Tomatoes Score of ${rtScore}%`);
+      } catch (error) {
+        console.error("Unable to add movie", error);
+        return error;
+      }
+    }
+
+    async function getAllMovies() {
+      const params = {
+        TableName: TABLE_NAME,
+      };
+      try {
+        const data = await DynamoDB.scan(params).promise();
+        return data.Items.map((item) => AWS.DynamoDB.Converter.unmarshall(item));
+      } catch (error) {
+        return error;
+      }
+    }
+
+    async function getMovie(title) {
+      const params = {
+        TableName: TABLE_NAME,
+        Key: {
+          title: { S: title },
+        },
+      };
+      try {
+        const data = await DynamoDB.getItem(params).promise();
+        return AWS.DynamoDB.Converter.unmarshall(data.Item);
+      } catch (error) {
+        return error;
+      }
+    }
+
+    async function updateMovieScore(title, newRtScore) {
+      const params = {
+        TableName: TABLE_NAME,
+        Item: {
+          title: { S: title },
+          rtScore: { N: newRtScore.toString() },
+        },
+      };
+
+      try {
+        await DynamoDB.putItem(params).promise();
+        console.log(`Updated "${title}" with a Rotten Tomatoes Score of ${newRtScore}%`);
+      } catch (error) {
+        console.error("Unable to update movie", error);
+        return error;
+      }
+    }
+
+    async function deleteMovie(title) {
+      const params = {
+        TableName: TABLE_NAME,
+        Key: {
+          title: { S: title },
+        },
+      };
+      try {
+        await DynamoDB.deleteItem(params).promise();
+        console.log(`Deleted ${title}`);
+      } catch (error) {
+        console.error("Unable to find movie", err);
+        return error;
+      }
+    }
+
+    module.exports = {
+      createTable,
+      addMovie,
+      getAllMovies,
+      getMovie,
+      updateMovieScore,
+      deleteMovie,
+    };
+    ```
+  5. Run some commands
+  - Create a table
+    ```shell
+    $ node -e 'require("./src/db.js").createTable()'
+    ```
+
+  - CRUD the table
+    ```shell
+    $ node -e 'require("./src/db.js").addMovie("The Fast and the Furious", "100")'
+    $ node -e 'require("./src/db.js").getAllMovies()'
+    $ node -e 'require("./src/db.js").updateMovieScore("The Fast and the Furious", 53)'
+    $ node -e 'require("./src/db.js").getMovie("The Fast and the Furious")'
+    $ node -e 'require("./src/db.js").deleteMovie("The Fast and the Furious")'
+    $ node -e 'require("./src/db.js").getAllMovies()'
+    ```
+
+
+- Let's create a table with v3[aws docs example](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/GettingStarted.CreateTable.html):
+- *NOTE:* when working with the v3 version you don't have to use DynamoDB Object for the `Item` property for the params, just work with regular JSON
+- *NOTE:* Below example uses aws `profile` instead of `credentials.accessKeyId` & `credentials.AWS_ACCESS_KEY` but profile will also work
+        
+- Let's CRUD a Dynamodb table with the `v3` version `@aws-sdk/lib-dynamodb`.
+  1. Init a project
+    ```shell
+    $ yarn init
+    $ yarn add @aws-sdk/client-dynamodb @aws-sdk/lib-dynamodb dotenv
+    $ mkdir src
+    $ touch src/index.js src/db.js src/config.js .env
+    ```
+  2. `.env`
+    ```shell
+    AWS_PROFILE= "local-dev"
+    AWS_REGION = "local"
+    ```
+
+  3. `./src/config.js`
+    ```js
+    import * as dotenv from "dotenv";
+    dotenv.config();
+
+    const config = {
+      aws: {
+        config: {
+          profile: process.env.AWS_PROFILE,
+          region: process.env.AWS_REGION,
+          endpoint: "http://localhost:8000",
+        },
+      },
+    };
+    export default config;
+    ```
+  3. `src/db.js`
+    ```js
+    import { DynamoDBClient, CreateTableCommand } from "@aws-sdk/client-dynamodb";
+    import { PutCommand, GetCommand, ScanCommand, QueryCommand, DeleteCommand } from "@aws-sdk/lib-dynamodb";
+
+    import config from "./config.js";
+    const TABLE_NAME = "MoviesV3";
+
+    export const DynamoDB = new DynamoDBClient(config.aws.config);
+
+    export const createTable = async () => {
+      const params = {
+        TableName: TABLE_NAME,
+        KeySchema: [{ AttributeName: "title", KeyType: "HASH" }], // Only using partition-key
+        AttributeDefinitions: [{ AttributeName: "title", AttributeType: "S" }],
+        ProvisionedThroughput: {
+          ReadCapacityUnits: 1,
+          WriteCapacityUnits: 1,
+        },
+        StreamSpecification: {
+          StreamEnabled: false,
+        },
+      };
+      try {
+        const data = await DynamoDB.send(new CreateTableCommand(params));
+        console.log("Table Created", data);
+        return data;
+      } catch (err) {
+        console.log("Error", err);
+      }
+    };
+
+    export async function addMovie(title, rtScore) {
+      const params = {
+        TableName: TABLE_NAME,
+        // Don't pass in Dynamodb Object, pass in JSON
+        Item: {
+          title: title,
+          rtScore: rtScore,
+        },
+      };
+      try {
+        const data = await DynamoDB.send(new PutCommand(params));
+        console.log(`Added "${title}" with a Rotten Tomatoes Score of ${rtScore}%`);
+        return data;
+      } catch (error) {
+        console.error("Unable to add movie", error);
+      }
+    }
+
+    export async function getAllMovies() {
+      const params = {
+        TableName: TABLE_NAME,
+      };
+      try {
+        const data = await DynamoDB.send(new ScanCommand(params));
+        console.log("Success :", data.Items);
+      } catch (err) {
+        console.log("Error", err);
+      }
+    }
+
+    export async function getMovie(title) {
+      const params = {
+        TableName: TABLE_NAME,
+        Key: {
+          title,
+        },
+      };
+      try {
+        const data = await DynamoDB.send(new GetCommand(params));
+        console.log("Success :", data.Item);
+      } catch (err) {
+        console.log("Error", err);
+      }
+    }
+
+    export async function updateMovieScore(title, rtScore) {
+      const params = {
+        TableName: TABLE_NAME,
+        Item: {
+          title: title,
+          rtScore: rtScore,
+        },
+      };
+      try {
+        const data = await DynamoDB.send(new PutCommand(params));
+        console.log(`Updated "${title}" with a Rotten Tomatoes Score of ${rtScore}%`);
+        return data;
+      } catch (error) {
+        console.error("Unable to update movie", error);
+      }
+    }
+
+    export async function deleteMovie(title) {
+      const params = {
+        TableName: TABLE_NAME,
+        Key: {
+          title,
+        },
+      };
+      try {
+        await DynamoDB.send(new DeleteCommand(params));
+        console.log("Successfully deleted :", title);
+      } catch (err) {
+        console.log("Error", err);
+      }
+    }
+    ``` 
+  4. CRUD the DB
+    ```shell
+    $ node -e 'import("./src/db.js").then(db => db.createTable())'
+    $ node -e 'import("./src/db.js").then(db => db.addMovie("The Fast and the Furious", 100));'
+    $ node -e 'import("./src/db.js").then(db => db.getAllMovies())'
+    $ node -e 'import("./src/db.js").then(db => db.getMovie("The Fast and the Furious"))'
+    $ node -e 'import("./src/db.js").then(db => db.updateMovieScore("The Fast and the Furious", 53))'
+    $ node -e 'import("./src/db.js").then(db => db.getMovie("The Fast and the Furious"))'
+    $ node -e 'import("./src/db.js").then(db => db.deleteMovie("The Fast and the Furious"))'
+    $ node -e 'import("./src/db.js").then(db => db.getAllMovies())'
+    ```
+
+
+## Query the database
+- All the Dynamodb functions above have been done with the exact partition key, you can query the data in the database especially if you use the `Sort-key`. If you are using the sort-key you can preform stronger queries on that key like greater/less-than/between/begins-with
+
+- Valid equality test for `partition-key` only:
+  ```html
+  partitionKeyName = :partitionkeyval
+  ```
+- Valid `Partition-key` & `Sort-key`
+  ```html
+  partitionKeyName = :partitionkeyval AND sortKeyName = :sortkeyval
+  ```
+
+- Valid comparisons for the sort key condition are as follows:
+  ```html
+  sortKeyName = :sortkeyva
+  sortKeyName < :sortkeyva
+  sortKeyName <= :sortkeyval 
+  sortKeyName > :sortkeyva
+  sortKeyName >= :sortkeyval
+  sortKeyName BETWEEN :sortkeyval1 AND :sortkeyval2 
+  begins_with ( sortKeyName, :sortkeyval )
+  ```
+
+
 
 
 ## batch load a json file
