@@ -289,9 +289,18 @@ fi
 ## Disk Utility does not show APFS format? 
 - Try switching "View" in the top left corner of Disk Utility to "Show All Devices" and try again.
 
+## iPhone backup onto external drive
+- When you backup your iOS device by default it will store the files at `cd ~/Library/Application\ Support/MobileSync/Backup/`. What we can do is create a `symlink` this folder to an external drive so that when you press the `Backup Up Now` button it will back your device to an external drive
 
-
-
+- Steps:
+  1. Symlink the `Backup` folder
+    ```shell
+    $ ln -s /Volumes/<NAME_OF_YOUR_EXTERNAL_DEVICE>/Backups/ios-backup/ ~/Library/Application\ Support/MobileSync/Backup
+    ```
+  2. Plug your iOS device in and click the `Back Up Now` button 
+    ![macos-backup-ios](/assets/blog/macos/macos-backup-ios.jpg)
+  3. Your `~/Library/Application\ Support/MobileSync/` Folder should look like the image below:
+    ![macos-symlink-ios-backup](/assets/blog/macos/macos-symlink-ios-backup.jpg)
 
 
 
