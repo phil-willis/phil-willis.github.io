@@ -1280,6 +1280,7 @@ const geoQuery = geocollection.near({
 
 
 ## Query the database
+- [Dynamodb Query Docs](https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_Query.html)
 - All the Dynamodb functions above have been done with the exact partition key, you can query the data in the database especially if you use the `Sort-key`. If you are using the sort-key you can preform stronger queries on that key like greater/less-than/between/begins-with
 
 - Valid equality test for `partition-key` only:
@@ -1314,7 +1315,16 @@ $ aws dynamodb batch-write-item --request-items file://my-data-seed.json --profi
 
 
 
+## Single table design
+- You can create a single table design using a primary key with a specific pattern.
 
+
+
+
+
+
+
+###
 
 
 
