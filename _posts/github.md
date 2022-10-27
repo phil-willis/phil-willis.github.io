@@ -55,6 +55,13 @@ ogImage:
   $ git branch -d <branch_to_delete>
   ```
   - It's sometimes good to prefix a branch with `feat/`, `fix/`
+
+- Fetch code from a different branch without checking it out and pulling
+  ```shell
+  $ git fetch origin main:main
+  $ git rebase main
+  ```
+
 - Tags
   ```shell
   $ git tag <tag_name>
