@@ -794,7 +794,44 @@ ogImage:
 
 
 
+# Read from termial prompt
+- This is a very simple script that will take the info the user provides in the terminal and prints the results
+  ```js
+  import readline from "readline"
 
+  const question = (rl, question) => {
+    return new Promise((resolve) =>
+      rl.question(question, (answer) => resolve(answer))
+    )
+  }
+
+  const Ask = function (questions) {
+    return new Promise(async (resolve) => {
+      let rl = readline.createInterface({
+        input: process.stdin,
+        output: process.stdout,
+      })
+
+      let results = []
+      for (let i = 0; i < questions.length; i++) {
+        const result = await question(rl, questions[i])
+        results.push(result)
+      }
+      rl.close()
+      resolve(results)
+    })
+  }
+
+  // ==================================
+  const questions = [
+    "Question 1?",
+    "Question 2?",
+    "Question 3?"
+  ]
+  Ask(questions).then((answers) => {
+    console.log(answers)
+  })
+  ```
 
 
 

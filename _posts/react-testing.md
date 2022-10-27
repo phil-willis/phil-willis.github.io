@@ -892,6 +892,51 @@ fireEvent.click(within(getAllByRole('row')[2]).getByText('Delete'))
 - Mocking window
 
   - mocking window.location
+    ```js
+    import { vi } from 'vitest'
+
+    function setGlobalWindowLocation(url, params) {
+      global.window = Object.create(window)
+      Object.defineProperty(window, 'location', {
+        value: {
+          href: url + params,
+          search: params,
+        },
+      })
+    }
+
+    describe('url util', () => {
+      beforeAll(() => {
+        setGlobalWindowLocation('http://localhost:0000', '')
+      })
+      afterEach(() => {
+        setGlobalWindowLocation('http://localhost:0000', '')
+        vi.restoreAllMocks()
+      })
+
+      it('`search` & `href` should work as the browser functions', async () => {
+        const baseUrl = 'http://localhost:0000'
+        const setParams = '?hello=yep'
+        setGlobalWindowLocation(baseUrl, setParams)
+
+        expect(window.location.search).toEqual(setParams)
+        expect(window.location.href).toEqual(baseUrl + setParams)
+      })
+      it('`search` & `href` should work as the browser functions when not url params provided', async () => {
+        const baseUrl = 'http://localhost:0000'
+        const setParams = ''
+        setGlobalWindowLocation(baseUrl, setParams)
+
+        expect(window.location.search).toEqual(setParams)
+        expect(window.location.href).toEqual(baseUrl + setParams)
+      })
+    })
+    ```
+
+
+
+
+
 
 
 - Expect element to have attribute
