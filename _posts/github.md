@@ -450,6 +450,20 @@ $ git commit
 
 
 
+## Fork and create a PR to a public repo
+- If you want to contribute to a repo but your are not a contributor you need to `fork` the repo
+  ![](/assets/blog/github/fork_01.jpg)
+- Your new repo should be:<your-github-namespace>/<forked-repo-name>
+- Clone it and work on it like you would normally ($ git checkout -b some-edits, $ git add, $ git commit, ...)
+- Finally, when you `$ git push`, `git push --set-upstream origin <branch-name>`,  those changes back up to **your fork** of your colleague’s repository.
+- Now the changes are in your forked repo, but you want to add then to your colleagues's repo. All you have to do is submit a pull request with the changes. This happens in the UI
+  ![](/assets/blog/github/fork-git-push-pr.png)
+
+
+
+
+
+
 
 
 

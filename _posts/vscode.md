@@ -278,13 +278,28 @@ code --install-extension esbenp.prettier-vscode
     Content-Type: application/json
     ```
    - Using variables
-    ```hml
+    ```html
     @token = xxx
 
     GET https://api.awesomeness.com HTTP/1.1
     Authorization: Bearer {{token}}
     Content-Type: application/json
     ```
+  - If you really want to get fancy you can create a `.env` file and add some environment variables in it
+
+    ```shell
+    # your .env file
+    secrete="12345shhhhhhhh"
+    ```
+
+    ```html
+    # your `.http` file
+    @secrete = {{$dotenv secrete}}
+    ```
+
+
+
+
 
 - Prettier
   - [extension link](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
