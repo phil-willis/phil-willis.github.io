@@ -334,7 +334,23 @@ $ git merge --squash <FEATURE_BRANCH>
 $ git commit
 ```
 </details>
-==============
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -800,65 +816,39 @@ $ git commit
 - Workflow files use YAML syntax, and must have either a .yml or .yaml file extension.
 - `Github Actions` works off of [event triggers](https://docs.github.com/en/actions/reference/events-that-trigger-workflows) & defined with the `on: ` block in your YAML file
 - Available `events trigger` workflows:
-  ```yaml
-  branch_protection_rule
-  check_run
-  check_suite
-  create
-  delete
-  deployment
-  deployment_status
-  discussion
-  discussion_comment
-  fork
-  gollum
-  issue_comment
-  issues
-  label
-  milestone
-  page_build
-  project
-  project_card
-  project_column
-  public
-  pull_request
-  pull_request_comment (use issue_comment)
-  pull_request_review
-  pull_request_review_comment
-  pull_request_target
-  push
-  registry_package
-  release
-  repository_dispatch
-  schedule
-  ```
+  - branch_protection_rule
+  - check_run
+  - check_suite
+  - create
+  - delete
+  - deployment
+  - deployment_status
+  - discussion
+  - discussion_comment
+  - fork
+  - gollum
+  - issue_comment
+  - issues
+  - label
+  - milestone
+  - page_build
+  - project
+  - project_card
+  - project_column
+  - public
+  - pull_request
+  - pull_request_comment (use issue_comment)
+  - pull_request_review
+  - pull_request_review_comment
+  - pull_request_target
+  - push
+  - registry_package
+  - release
+  - repository_dispatch
+  - schedule
 - Common webhook events: `push`, `release`, `pull_request`
 - There is also `schedule`, `workflow_dispatch`, & `repository_dispatch`
 - Terms: `Events`, `Jobs`, `Runners`, `Steps`, `Actions`
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -883,10 +873,6 @@ $ git commit
     $ act --container-architecture linux/amd64
     ```
 </details>
-
-
-
-
 
 
 
@@ -929,10 +915,6 @@ $ git commit
 
 
 
-
-
-
-
 <details>
 <summary>Hello world of Github Action</summary>
 
@@ -968,10 +950,6 @@ $ git commit
         - main
   ```
 </details>
-
-
-
-
 
 
 
@@ -1023,10 +1001,6 @@ $ git commit
 
 
 
-
-
-
-
 <details>
 <summary>Default working-directory option</summary>
 
@@ -1050,10 +1024,6 @@ $ git commit
           working-directory: scripts
   ```
 </details>
-
-
-
-
 
 
 
@@ -1095,10 +1065,6 @@ $ git commit
 
 
 
-
-
-
-
 <details>
 <summary>Saving temp files for other jobs</summary>
 
@@ -1136,10 +1102,6 @@ jobs:
       - uses: actions/checkout@v1   # should have access to all the files uploaded with `actions/upload-artifact@v2`
 ```
 </details>
-
-
-
-
 
 
 
@@ -1216,10 +1178,6 @@ jobs:
 
 
 
-
-
-
-
 <details>
 <summary>Allow to manually run an Action in the Github web GUI</summary>
 
@@ -1249,10 +1207,6 @@ jobs:
             echo "- in ${{ github.event.inputs.home }}!"
   ```
 </details>
-
-
-
-
 
 
 
@@ -1296,10 +1250,6 @@ jobs:
             branch: main  
   ```
 </details>
-
-
-
-
 
 
 
@@ -1361,10 +1311,6 @@ jobs:
             aws s3 sync . s3://${{ env.MY_S3_WEBSITE_BUCKET_NAME}}
   ```
 </details>
-
-
-
-
 
 
 
@@ -1455,10 +1401,6 @@ jobs:
 
 
 
-
-
-
-
 <details>
 <summary>Slack Notifications</summary>
 
@@ -1521,10 +1463,6 @@ jobs:
 
 
 
-
-
-
-
 <details>
 <summary>Composite Actions & Reusable Workflows</summary>
 
@@ -1581,10 +1519,6 @@ jobs:
       uses: ./.github/workflows/reuse-me.yml
   ```
 </details>
-
-
-
-
 
 
 
@@ -1685,10 +1619,6 @@ jobs:
             terraform_state_bucket: '<MY_TERRAFORM_S3_BUCKET>'
   ```
 </details>
-
-
-
-
 
 
 

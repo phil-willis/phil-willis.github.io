@@ -54,3 +54,19 @@ div[class^="markdown-styles"] ul ol{
   padding: 0px 10px; 
   list-style-type: decimal;
 }
+
+
+.max-w-2xl {
+  max-width: 1200px !important;
+}
+
+
+details[open] summary{
+  background-color: #f15bb5;
+  color: white;
+}
+
+
+details[open] summary h2:first-child {
+
+}
