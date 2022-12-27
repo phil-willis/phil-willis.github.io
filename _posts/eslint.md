@@ -24,8 +24,9 @@ ogImage:
 - But you're gonna probably want to install prettier and other things so i normally don't use ESLint by itself
 
 
-
-# React  (NO TypeScript)
+# Examples of Adding Linting to JavaScript Projects
+<details open>
+<summary>React  (NO TypeScript)/summary>
 - You should really be starting from a React build tool like [Vitejs](https://vitejs.dev/), [Nextjs](https://nextjs.org/docs/getting-started) or CRA [](https://create-react-app.dev/) with TS template
 
 1. Install linting packages
@@ -103,10 +104,12 @@ ogImage:
     },
   }
   ```
+</details>
 
 
+<details>
+<summary>React + TypeScript</summary>
 
-# React + TypeScript
 - You should really be starting from a React build tool like [Vitejs](https://vitejs.dev/), [Nextjs](https://nextjs.org/docs/getting-started) or CRA [](https://create-react-app.dev/) with TS template
 
 1. Install linting packages
@@ -199,8 +202,11 @@ ogImage:
     
   }
   ```
+</details>
 
-# React + Jest
+
+<details>
+<summary>React + Jest</summary>
 - Take a look at [vitest](https://vitest.dev/), it's FAST and uses vitejs's config so you don't have to deal with babel and transpiling, have almost identical API to Jest. PLUS the benefit of using the same config file you use for development so you're not transpiling your code and test differently.
 - BUT... is you're not convinced this is how you add it to your CRA app
 
@@ -227,11 +233,11 @@ ogImage:
     }
   }
   ```
+</details>
 
 
-
-
-# Baseline nodejs linting
+<details>
+<summary>Baseline nodejs linting</summary>
 1. Install linting packages
   ```shell
   $ yarn add -D prettier eslint eslint-config-prettier eslint-plugin-prettier @trivago/prettier-plugin-sort-imports
@@ -343,8 +349,12 @@ ogImage:
   echo "`jq '.main="src/index.js"' package.json`" > package.json
   ```
 
+</details>
 
-# + TypeScript
+
+<details>
+<summary>+ TypeScript</summary>
+
 - **note** So this example... `TS` -> `commonjs`, therefore you need to update the package.json's type to `commonjs` and **not** `module`
 - Add TypeScript
   ```shell
@@ -417,7 +427,7 @@ ogImage:
     console.log(`⚡️[server]: Server is running at http://localhost:${PORT}`)
   })
   ```
-
+</details>
 
 
 
@@ -427,8 +437,6 @@ ogImage:
 ```shell
 $ touch .prettierignore .eslintignore
 ```
-
-
 
 
 # Wanna add Github Action that runs the test in parallel
