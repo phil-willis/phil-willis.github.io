@@ -317,9 +317,43 @@ ogImage:
 
 
 
+## Examples 
+- Example of a simple Button with a mouse clicks
+  ```ts
+  type Props = {
+    label: string
+    onClick?: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void
+    props?: any
+  }
 
+  export default function Button({ label, props, onClick }: Props) {
+    return (
+      <button {...{ props }} onClick={onClick}>
+        {label}
+      </button>
+    )
+  }
+  ```
 
+- Example with props and children
+  ```ts
+  type Props = {
+    title: string
+    subtitle: string
+    props?: any
+    children?: React.ReactNode
+  }
 
+  export default function Hero({ title, subtitle, props, children }: Props) {
+    return (
+      <div {...{ props }}>
+        <h1>{title}</h1>
+        <h3>{subtitle}</h3>
+        {children}
+      </div>
+    )
+  }
+  ```
 
 
 

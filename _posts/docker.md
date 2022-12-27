@@ -261,6 +261,108 @@ $ docker volume prune
 - If you take a look at the `supported tags` these are all the tags you can base your docker file off of. Most of the time people use the `node:latest` however you can pin it down to a specific version like `node:18` or `node:18-alpine3.15`
 
 
+## Publishing a Docker image to DockerHub
+
+
+# Publishing a Docker image to DockerHub
+1. Initialize:
+  ```shell
+  # git
+  $ git init
+  $ echo -e "node_modules\n.env" > .gitignore
+
+  # node
+  $ yarn init -y
+  $ yarn add express
+  $ yarn
+  $ echo "`jq '.scripts.start="node src/index.js"' package.json`" > package.json
+  $ echo "`jq '.scripts.dev="PORT=1234 node src/index.js"' package.json`" > package.json
+  # docker
+  $ echo -e "node_modules\nnpm-debug.log" > .dockerignore
+  ```
+
+2. Create a simple server `./src/index.js`
+  ```js
+  const express = require("express");
+
+  // Constants
+  const PORT = process.env.PORT || 8080;
+  const HOST = "0.0.0.0";
+
+  // App
+  const app = express();
+  app.get("/", (req, res) => {
+    res.send("Hello DockerHub");
+  });
+
+  app.listen(PORT, HOST, () => {
+    console.log(`Running on http://${HOST}:${PORT}`);
+  });
+  ```
+
+3. Create a `./Dockerfile`
+  ```shell
+  FROM node:18
+
+  # Create app directory
+  WORKDIR /usr/src/app
+
+  # Install app dependencies
+  # A wildcard is used to ensure both package.json AND package-lock.json are copied
+  # where available (npm@5+)
+  COPY package*.json ./
+
+  RUN npm install
+  # If you are building your code for production
+  # RUN npm ci --only=production
+
+  # Bundle app source
+  COPY . .
+
+  EXPOSE 8080
+  CMD [ "npm", "start" ]
+  ```
+
+4. Create a `./.env` file for all the variables
+  ```shell
+  DOCKER_APP_VERSION="0.0.1"
+  DOCKER_NAMESPACE="pdotwdot"
+  DOCKER_APP_NAME="simple-express"
+  ```
+
+5. Create a local docker image
+  - Basic Docker commands:
+    ```shell
+    # list all the local containers
+    $ docker ps -a
+
+    # list all the local images
+    $ docker images
+    ```
+  - Build the image locally
+    ```
+    $ export $(grep -v '^#' .env | xargs)
+
+    # $ docker build -t <DOCKER_NAMESPACE>/<DOCKER_APP_NAME>:<DOCKER_APP_VERSION> <FILEPATH>
+    $ DOCKER_IMAGE_NAME="$DOCKER_NAMESPACE/$DOCKER_APP_NAME:$DOCKER_APP_VERSION"
+    $ docker build -t $DOCKER_IMAGE_NAME .
+    ```
+
+6. Run the docker container locally
+  ```shell
+  # docker run -d -p <Host port>:<Docker port> <docker-image-name>
+  $ docker run -d -p 9090:8080 $DOCKER_IMAGE_NAME
+  ```
+7. Deploy to DockerHub
+
+  ```shell
+  $ docker login --username pdotwdot 
+  $ docker push $DOCKER_IMAGE_NAME
+  ```
+
+
+
+
 
 
 

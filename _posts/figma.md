@@ -70,6 +70,8 @@ ogImage:
 ## Minimize all layers
 - You can quickly minimize all the layers in the sidebar with [option][L] command
 
+## Show/hide side panels
+- You can show/hide the side panels with [command][\]
 
 ## One sided borders
 - So currently you cannot add a border (stroke) to just one side of a rectangle
