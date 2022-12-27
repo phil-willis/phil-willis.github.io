@@ -15,6 +15,13 @@ ogImage:
 | Split new terminal     |  [ctl]+[Shift]+[5]             |
 
 
+# vscode macOS finder button
+- [Download link](https://github.com/hamxiaoz/open-folder-with-vs-code)
+
+
+
+
+
 
 # The settings file
 - When you create this setting files in the `.vscode` directory you are adding setting for this local repo and not global vscode settings
