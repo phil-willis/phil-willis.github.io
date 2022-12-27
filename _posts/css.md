@@ -63,3 +63,32 @@ ogImage:
     animation-iteration-count: infinite; /* Will animate forever */
   }
   ```
+
+
+
+
+
+<details>
+<summary>Homebrew Packages</summary>
+
+  - golang
+  - jq
+  - tree
+  - watchman
+  - zsh
+  - zsh-completions
+  - zsh-syntax-highlighting
+  - warrensbox/tap/tfswitch
+  - appcleaner
+  - brave-browser
+  - clipy
+  - cocoapods
+  - docker
+  - figma
+  - google-chrome
+  - hyper
+  - pgadmin4
+  - postman
+  - rectangle
+  - visual-studio-code
+</details>
