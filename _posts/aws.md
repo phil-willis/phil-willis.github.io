@@ -92,10 +92,36 @@ ogImage:
 
 
 # Route53
-
+- Route end users to your site reliably with globally-dispersed Domain Name System (DNS) servers and automatic scaling.
 
 # API Gateway
 - Allows you to make RESTful applications
+- There's 4 types of API Gateway offering:
+  - HTTP API
+  - REST API
+  - REST API (private)
+  - WebSocket API
+
+- `REST APIs `support more features than `HTTP APIs`, while `HTTP APIs` are designed with minimal features so that they can be offered at a lower price. You can read more [here](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-vs-rest.html)
+
+
+- When you add a new endpoint you have to create a `resource` then add the http `methods` you want
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 # Lambda
