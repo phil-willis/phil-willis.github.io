@@ -762,7 +762,14 @@ ogImage:
 
 
 
+# Peer Dependencies
+- When you are developing a custom module you can use `peerDependencies` to ask the user to install a dependency your module needs to work with. For instance if you are making a React component library, you shouldn't bundle as specific version of React in your `depedencies` list you should define it in your `peerDependencies`.
+- Not only will this reduce your bundle size, it will allow the user to use whatever version of React they are currently working on
 
+- The problem with `peerDependencies` is npm and yarn don't install them at all. 
+- This is the right behavior for production purpose but when you are developing you might need to test your module in a host app. 
+- npm and yarn provide a command to achieve it called link that basically creates a symlink into the host app node_modules to your module source folder. 
+- It works fine but you also need to execute tasks in your module that needs these dependencies. For example, you might want to execute tests. Since they aren't present in your module's node_modules you will experience errors.
 
 
 
