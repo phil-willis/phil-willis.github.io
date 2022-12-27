@@ -7,6 +7,109 @@ ogImage:
 ---
 
 # Git
+- Git is a open source Version Control System (VCS). It's the de facto standard. Developed in 2005 by Linus Torvalds, the guy who created the Linux operating system kernel
+- Branches are lightweight and cheap, so it's OK to have many of them
+- Git stores chages in SHA hashes, which work by compressing text files. This makes it a great candidate for working with text-files like software code but not as ideal when it comes to binary
+- You can connect your repository you have locally to a remove shared repository (great example is Github, but there's other ones like Bitbucket). This way you can `push` & `pull` from the remote repository and collaborate with others
+- Think of git or VCS as taking snapshots of your code at a specific place in time. Because you made that snapshot you can return to it at a later date or view how an application has progressed in time
+- Think of it as this, you can always roll back to something you have commited but if you didn't commit it that history is gone
+- Git basically works at a base folder and it tracks all of the files nested within that folder. 
+
+## Installation
+- Git is installed by default on all macOS, however it's quite recomended to use [Homebrew](https://formulae.brew.sh/formula/git#default) if you want to install a different version
+- Windows, navigate to the latest [Git for Windows](https://gitforwindows.org/) installer and download the latest version.
+- Git was originally developed to version the Linux operating system! So, it only makes sense that it is easy to configure to run on Linux. You can install Git on Linux through the package management tool that comes with your distribution. Example using Debian/Ubuntu distro: `$ sudo apt-get update && apt-get install git-all`
+- Now open your terminal and run:
+  ```shell
+  $ git version 
+  ```
+
+## Getting started
+- After you have Git installed you can start using it!
+- Let's setup your profile. Your config can be [system, global, local]
+  - `System`, these are available for every user in the system. Stored in `/etc/gitconfig`
+  - `Global`, available for the current user for all the git projects. Store in `~/.gitconfig` or` ~/.config/git/config`
+  - `Local`, available for the current repository only. Stored in `[gitrepo]/.git/config`
+- Priority: `Local` > `Global` > `System`
+- Example:
+  ```shell
+  Create a local config
+  $ git config --local user.name "Local User"
+
+  # Create a global config
+  $ git config --global user.name "Global User"
+
+  # Create a system config
+  $ sudo git config --system user.name "System User"
+  ```
+- You can always see how you settings are configured
+  ```shell
+  $ cat ~/.gitconfig 
+  ```
+- You might get something like this:
+  ```
+  [init]
+    defaultBranch = main
+  [user]
+    name = Phil Willis
+    email = p******@gmail.com
+  ```
+- Let's initialize it in a folder:
+  ```shell
+  # Make a new folder
+  $ mkdir ~/Documents/hello-git && $_
+
+  # Initialize git
+  $ git init
+  ```
+- You should now have a `.git` folder. (on macOS files that start with a dot are called dotfiles and are hidden by default)
+- When you start you're either going to `$ git init` or `$ git clone git@github.com:<NAME_SPACE>/<PROJECT_NAME>.git`
+
+## Basic commands:
+  ```shell
+  $ git init
+  $ git clone
+
+  $ git fetch
+  $ git fetch origin main:main
+  $ git pull
+  $ git push
+
+  $ git status
+  $ git add
+  $ git commit
+
+  $ git stash list
+  $ git stash save <NOTE>
+  $ git stash save -u <NOTE>
+  $ git stash save --include-untracked <NOTE>
+
+  $ git merge <BRANCH_NAME>
+  $ git rebase <BRANCH_NAME>
+
+  $ git checkout -b <NEW_BRANCH_NAME>
+  $ git checkout <EXISTING_BRANCH_NAME>
+  $ git branch -d <BRANCH_NAME_TO_DELETE>
+
+
+  $ git tag <TAG_NAME>
+  $ git push --tags
+
+  $ git reset HEAD
+  $ git reset -- <SOME_FILENAME>
+  $ git checkout .
+  $ git clean -fd
+
+  $ git merge --squash <BRANCH_NAME>
+
+  $ git log
+
+  $ git diff --staged
+  $ git diff <BRANCH_1> <BRANCH_2>
+  ```
+
+
+
 
 ## Git Commands
 - Create
@@ -17,7 +120,7 @@ ogImage:
   # Create a new repo
   $ git init
   
-  # Create remote repo
+  # Create remote repo (with the Github CLI)
   $ gh repo create cli/my-project
   ```
 
@@ -148,24 +251,26 @@ ogImage:
   $ git push --delete origin v0.1
   ```
 
-  
-- Merging vs. Rebase
-  - For integrating changes from another branch
-  - Both `Merging` & `Rebase` is a process of integrating changes from one branch to another
-  - `Merging` preserves the branch history, it is used to combine public branches
-  - `Rebase` does *not* preserve the branch history, and is used for combining private branches
+## Merging vs. Rebase
+- For integrating changes from another branch
+- TL;DR, use `rebase` when the `main` branch is ahead of your feature branch. Use `merge` to merge PRs into the `main` branch
+- `Rebase` will add all of your branch commits infront of the rebased branch, most of the time the `main` branch
+- `Merge` can override your changes on your feature branch
+- Both `Merging` & `Rebase` is a process of integrating changes from one branch to another
+- `Merging` preserves the branch history, it is used to combine public branches
+- `Rebase` does *not* preserve the branch history, and is used for combining private branches
 
-  - Merging example
-    ```shell
-    $ git checkout main
-    $ git merge branch
-    ```
-  - Rebase example
-    ```shell
-    $ git checkout branch
-    $ git rebase main
-    $ git checkout main
-    ```
+- Merging example
+  ```shell
+  $ git checkout main
+  $ git merge branch
+  ```
+- Rebase example
+  ```shell
+  $ git checkout branch
+  $ git rebase main
+  $ git checkout main
+  ```
 - fast-forward merge
 - Tags
   - On Git, tags are often used in order to tag specific commits that may be more important than others.
@@ -220,8 +325,8 @@ ogImage:
 ## Squash and merge
 
 ```shell
-$ git checkout master
-$ git merge --squash bugfix
+$ git checkout main
+$ git merge --squash <FEATURE_BRANCH>
 $ git commit
 ```
 ==============
@@ -244,9 +349,9 @@ $ git commit
 
 
 # Github 
-- Github is basically Git in the cloud, it allows you to share with others
-- You can make private and public repos
-- In your source code you can add some github config files in the `.github` folder
+- Github is basically Git in the cloud, it allows you to collaborate with others
+- You can make private and public repos in Github
+- In your source code you can add some github config files in the `./.github` folder
 - Some common files are:
   ```
   ├── CODEOWNERS
