@@ -811,23 +811,60 @@ $ git commit
 - There is also `schedule`, `workflow_dispatch`, & `repository_dispatch`
 - Terms: `Events`, `Jobs`, `Runners`, `Steps`, `Actions`
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## Github Actions Examples
+
 
 <details>
 <summary>Testing Github Actions on your local machine</summary>
 
-- [nektos/act](https://github.com/nektos/act) and docker
-- This tool requires that you use a `runs-on: ubuntu-latest` and not a `runs-on: self-hosted`
-` ~/.actrc`
-- Spin up a Github Action Docker container
-  ```
-  # Normally
-  $ act
+  - [nektos/act](https://github.com/nektos/act) and docker
+  - This tool requires that you use a `runs-on: ubuntu-latest` and not a `runs-on: self-hosted`
+  ` ~/.actrc`
+  - Spin up a Github Action Docker container
+    ```
+    # Normally
+    $ act
 
-  # M1 chip
-  $ act --container-architecture linux/amd64
-  ```
+    # M1 chip
+    $ act --container-architecture linux/amd64
+    ```
 </details>
+
+
+
+
+
+
+
 
 <details>
 <summary>Github Actions runners</summary>
@@ -854,7 +891,20 @@ $ git commit
     some_job:
       runs-on: self-hosted
   ```
+
+- [Blog post on self-hosted runners](https://github.blog/2019-11-05-self-hosted-runners-for-github-actions-is-now-in-beta/)
+- If you don't make a self-hosted runner you are using a shared infrastructure on Github
+- Advantages of a self-hosted runner:
+  - Your environment, your tools
+  - Any size machine or configuration
+  - Secure access & networking
+  - Large workload support
 </details>
+
+
+
+
+
 
 
 
@@ -893,6 +943,12 @@ $ git commit
         - main
   ```
 </details>
+
+
+
+
+
+
 
 
 <details>
@@ -946,14 +1002,9 @@ $ git commit
 
 
 
+<details>
+<summary>Default working-directory option</summary>
 
-
-
-
-
-
-
-### Default working-directory option
 - By default the working directory is the root of the checkout repo
 - You can actually set all the jobs to a specific working directory or just a specific job
 - The Github actions have a working-directory option to declare on workflow. It specifies the working directory for all run steps.
@@ -973,8 +1024,18 @@ $ git commit
         run:
           working-directory: scripts
   ```
+</details>
 
-### Have a step run multiple shell commands
+
+
+
+
+
+
+
+<details>
+<summary>Have a step run multiple shell commands</summary>
+
 - Having one step in a job preform multiple command is easy just start with a `|` and all new lines before new commands:
   ```yml
   name: Deploy
@@ -1004,42 +1065,63 @@ $ git commit
               package.json
               scripts
   ```
-### Saving temp files for other jobs
-  ```yml
-  name: Deploy
+</details>
 
-  on:
-    push:
-      branches:
-        - 'main'
 
-  jobs:
-    build:
-      runs-on: ubuntu-latest
-      steps:
-        - uses: actions/checkout@v1
-        - name: Run multiple commands
-          run: |
-            npm run ci
-            npm run lint
-            npm rum build
-        - name: Save Build
-          uses: actions/upload-artifact@v2
-          with:
-            name: build
-            path: |
-              build
-              pipeline
-              package.json
-              scripts
-              
-    using-artifacts:
-      runs-on: ubuntu-latest
-      steps:
-        - uses: actions/checkout@v1   # should have access to all the files uploaded with `actions/upload-artifact@v2`
-  ```
 
-### Job dependencie
+
+
+
+
+
+<details>
+<summary>Saving temp files for other jobs</summary>
+
+```yml
+name: Deploy
+
+on:
+  push:
+    branches:
+      - 'main'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Run multiple commands
+        run: |
+          npm run ci
+          npm run lint
+          npm rum build
+      - name: Save Build
+        uses: actions/upload-artifact@v2
+        with:
+          name: build
+          path: |
+            build
+            pipeline
+            package.json
+            scripts
+            
+  using-artifacts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1   # should have access to all the files uploaded with `actions/upload-artifact@v2`
+```
+</details>
+
+
+
+
+
+
+
+
+<details>
+<summary>Job dependencie</summary>
+
 - (Job Example) One Job depending on the outcome of the other use the `needs` keyword
   ```yml
   name: <Title>
@@ -1104,8 +1186,18 @@ $ git commit
     publish-gpr:
       needs: build
   ```
+</details>
 
-### Allow to manually run an Action in the Github web GUI
+
+
+
+
+
+
+
+<details>
+<summary>Allow to manually run an Action in the Github web GUI</summary>
+
 - Manually run Actions with `workflow_dispatch`
   - You can manually trigger workflow runs. To trigger specific workflows in a repository, use the workflow_dispatch event. 
   - To trigger more than one workflow in a repository and create custom events and event types, use the repository_dispatch event.
@@ -1131,47 +1223,65 @@ $ git commit
             echo "Hello ${{ github.event.inputs.name }}!"
             echo "- in ${{ github.event.inputs.home }}!"
   ```
+</details>
 
 
-### Github action to run a Conjob 
-  - [docs Scheduled events](https://docs.github.com/en/actions/reference/events-that-trigger-workflows#scheduled-events)
-  - If you are running a shell script you have to add change the owner of the script 
-    ```shell
-    $ git add --chmod=+x -- ./scripts/moveFile.sh
-    ```
-  - GitHub automatically creates a `GITHUB_TOKEN` secret to use in your workflow, so you don’t have to worry about creating this. The `GITHUB_TOKEN` secret allows us to authenticate ourselves (in this example is needed to push the changes).
-    ```yml
-    name: Run a scheduler
-
-    on:
-      schedule:
-        - cron:  '0 0 * * 0'  # At 00:00 on Sunday. (https://crontab.guru/)
-      workflow_dispatch:
-
-    jobs:
-      scheduler:
-        runs-on: ubuntu-latest
-        steps:
-          - uses: actions/checkout@v1
-          - name: Install Dependencies
-            run: npm ci
-          - name: Run the npm Script
-            run: npm run generate:report
-          - name: Commit generated report
-            run: |
-              git config --local user.email "action@github.com"
-              git config --local user.name "GitHub Action"
-              git add -A
-              git commit -m "Auto-generated report" -a
-          - name: Push changes
-            uses: ad-m/github-push-action@v0.6.0
-            with:
-              github_token: ${{ secrets.GITHUB_TOKEN }}.  # Github automatically takes care of this you don't have to create one
-              branch: main  
-    ```
 
 
-### Configuring AWS credentials
+
+
+
+
+<details>
+<summary>Run a Conjob </summary>
+
+- [docs Scheduled events](https://docs.github.com/en/actions/reference/events-that-trigger-workflows#scheduled-events)
+- If you are running a shell script you have to add change the owner of the script 
+  ```shell
+  $ git add --chmod=+x -- ./scripts/moveFile.sh
+  ```
+- GitHub automatically creates a `GITHUB_TOKEN` secret to use in your workflow, so you don’t have to worry about creating this. The `GITHUB_TOKEN` secret allows us to authenticate ourselves (in this example is needed to push the changes).
+  ```yml
+  name: Run a scheduler
+
+  on:
+    schedule:
+      - cron:  '0 0 * * 0'  # At 00:00 on Sunday. (https://crontab.guru/)
+    workflow_dispatch:
+
+  jobs:
+    scheduler:
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v1
+        - name: Install Dependencies
+          run: npm ci
+        - name: Run the npm Script
+          run: npm run generate:report
+        - name: Commit generated report
+          run: |
+            git config --local user.email "action@github.com"
+            git config --local user.name "GitHub Action"
+            git add -A
+            git commit -m "Auto-generated report" -a
+        - name: Push changes
+          uses: ad-m/github-push-action@v0.6.0
+          with:
+            github_token: ${{ secrets.GITHUB_TOKEN }}.  # Github automatically takes care of this you don't have to create one
+            branch: main  
+  ```
+</details>
+
+
+
+
+
+
+
+
+<details>
+<summary>Configuring AWS credentials</summary>
+
 - ["Configure AWS Credentials" Action For GitHub Actions](https://github.com/aws-actions/configure-aws-credentials)
 - You will have to add `AWS_ACCESS_KEY_ID` & `AWS_SECRET_ACCESS_KEY` to your github secrets for the repo
   ```yml
@@ -1225,9 +1335,18 @@ $ git commit
           run: |
             aws s3 sync . s3://${{ env.MY_S3_WEBSITE_BUCKET_NAME}}
   ```
+</details>
 
 
-### GithubAction leveraging Terraform
+
+
+
+
+
+
+<details>
+<summary>With Terraform</summary>
+
 - Set up Terraform CLI in your GitHub Actions with [hashicorp/setup-terraform](https://github.com/hashicorp/setup-terraform) 
   ```yml
   name: Deploy
@@ -1306,8 +1425,18 @@ $ git commit
         - name: Deploy
           run: ./pipeline/client-deploy.sh dev
   ```
+</details>
 
-### Notifiy builds
+
+
+
+
+
+
+
+<details>
+<summary>Slack Notifications</summary>
+
 - Create a Slack App & Slack channel to post to:
   1. Create a slack app https://api.slack.com/apps
   2. `Create New App` > `From scratch`
@@ -1362,9 +1491,18 @@ $ git commit
                 --data '{"text":"<!here> *${{ env.GITHUB_USERNAME }}* started a new Pull Request for <${{ env.PR_HTML_URL }} | ${{ env.REPO_NAME }}>: ${{ env.PR_TITLE }}"}' \
                 ${{ secrets.SLACK_HOOK }}
         ```
+</details>
 
 
-### Composite Actions & Reusable Workflows
+
+
+
+
+
+
+<details>
+<summary>Composite Actions & Reusable Workflows</summary>
+
 - There are ALOT of overlap between Composite Actions & Reusable Workflows
 - `Composite Action` is presented as a `one-step` (even if it contains multiple steps) when invoked in a workflow
 - `Reusable workflows` can use `secrets`, whereas a composite action can’t. 
@@ -1417,10 +1555,18 @@ $ git commit
         hello_message: this rocks!!
       uses: ./.github/workflows/reuse-me.yml
   ```
+</details>
 
 
 
-#### Create a custom Github Action Composite Run Steps
+
+
+
+
+
+<details>
+<summary>Create a custom Github Action Composite Run Steps</summary>
+
 - `Composite Run Steps` allows you to reuse parts of your workflows inside other workflows
 - It's a type of actions that allows you to bundle multiple run steps in one single actions and re-use that bundle as a single step in another action
 - You might have seen it in your for from 
@@ -1513,6 +1659,7 @@ $ git commit
             VAR_FILE: './env_configs/dev.tfvars'
             terraform_state_bucket: '<MY_TERRAFORM_S3_BUCKET>'
   ```
+</details>
 
 
 
@@ -1521,46 +1668,41 @@ $ git commit
 
 
 
+<details>
+<summary>Github Action lint on push
+</summary>
 
-### Github Action lint on push
-  ```yml
-  name: CI
+```yml
+name: CI
 
-  on: [push]
+on: [push]
 
-  jobs:
-    build:
-      name: Build
-      runs-on: ubuntu-18.04
-      strategy:
-        matrix:
-          node_version: [14]
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-18.04
+    strategy:
+      matrix:
+        node_version: [14]
 
-      steps:
-        - uses: actions/checkout@v1
-        - name: Use Node.js ${{ matrix.node_version }}
-          uses: actions/setup-node@v1
-          with:
-            node_version: ${{ matrix.node_version }}
+    steps:
+      - uses: actions/checkout@v1
+      - name: Use Node.js ${{ matrix.node_version }}
+        uses: actions/setup-node@v1
+        with:
+          node_version: ${{ matrix.node_version }}
 
-        - name: run CI
-          run: |
-            npm install
-            npm run lint
-            npm run test
-            npm run build
-  ```
+      - name: run CI
+        run: |
+          npm install
+          npm run lint
+          npm run test
+          npm run build
+```
+
+</details>
 
 
-
-### Self-hosted Github Actions runner
-- [Blog post on self-hosted runners](https://github.blog/2019-11-05-self-hosted-runners-for-github-actions-is-now-in-beta/)
-- If you don't make a self-hosted runner you are using a shared infrastructure on Github
-- Advantages of a self-hosted runner:
-  - Your environment, your tools
-  - Any size machine or configuration
-  - Secure access & networking
-  - Large workload support
 
 
 
