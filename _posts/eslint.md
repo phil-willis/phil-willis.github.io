@@ -9,7 +9,7 @@ ogImage:
 
 # JS Linting overview
 
-![prettier-eslint](./assets/blog/eslint/prettier-eslint.jpg)
+![prettier-eslint](/assets/blog/eslint/prettier-eslint.jpg)
 
 - `ESLint` => code smell warnings, defines the code conventions
 - `Prettier` => opinionated code formatting,  performs the auto-formatting based on the ESLint rules
