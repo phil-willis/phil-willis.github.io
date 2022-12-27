@@ -364,16 +364,18 @@ $ git commit
 
 
 
+## Github Topics
+<details>
+<summary>Controlling branches</summary>
 
-- Controlling branches
-  - settings > Branches > "Protect matching branches"
-    - you can define how many approvers you need 
-  - 
+- settings > Branches > "Protect matching branches"
+  - you can define how many approvers you need 
+</details>
 
 
+<details>
+<summary>The `./.github/` folder</summary>
 
-
-# Creating a `.github` repo
 <!-- https://www.freecodecamp.org/news/how-to-use-the-dot-github-repository/ -->
 - GitHub has many special repositories. For instance, you can create a repository that matches your username, add a README file to it, and all the information in that file will be visible on your GitHub profile.
 - You might already be familiar with the `.github` directory you'll find in many repositories. The `.github` directory houses:
@@ -387,18 +389,12 @@ $ git commit
   - `dependabot.yml` -> Configuration options for dependency updates. More info [here](https://docs.github.com/en/code-security/supply-chain-security/keeping-your-dependencies-updated-automatically/configuration-options-for-dependency-updates).
 - But another special repository you can create is the `.github` repository. It acts as a fallback for all of your repositories that don't have an actual .`github` directory with issue templates and other community health files.
 - For example, say I have a repository named `.github` with generic bug report and feature request issue templates. And say I create another repository called `new-project`, **but I don't add a .github directory** with issue templates to it.
+</details>
 
 
+<details>
+<summary>Github CLI Commands</summary>
 
-
-
-
-
-
-
-
-
-## Github CLI Commands
 - Install Github CLI `$ brew install gh`
 - [Github CLI Docs](https://cli.github.com/manual/)
   ```shell
@@ -417,10 +413,13 @@ $ git commit
 
   # Create a repository in an organization
   $ gh repo create cli/my-project
-  ```
+  ```  
+</details>
 
 
-## Setting up multiple SSH keys
+<details>
+<summary>Setting up multiple SSH keys</summary>
+
 - If you have 2+ Github accounts you will have to create a new SSH key for each account
 1. Create an SSH Key
   ```shell
@@ -481,14 +480,22 @@ $ git commit
   # update the second remote origin
   $ git remote set-url origin git@github.com-2:username/<REPO_NAME>.git
   ```
-## If git keeps asking for your pass-phase
+</details>
+
+<details>
+<summary>If git keeps asking for your pass-phase</summary>
+
 - Just edit your `~/.ssh/config` and enable the `UseKeychain` option:
   ```shell
   Host *
       UseKeychain yes
-  ```
-    
-## PR Templates
+  ``` 
+</details>
+
+
+<details>
+<summary>PR Templates</summary>
+
 - All you have to do is create a file `.github/pull_request_template.md`
   ```md
   <!--- Provide Ticket issue as [<number>] and a general summary of your changes in the Title above -->
@@ -516,9 +523,13 @@ $ git commit
   ```
 - Push it up to github
 
+</details>
 
 
-## Github code owners
+
+<details>
+<summary>Github code owners</summary>
+
 - [docs](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners)
 - People with admin or owner permissions can set up a CODEOWNERS file in a repository.
 - Team must be visible and it must have write permissions regardless if the individuals in that team has admin access
@@ -551,11 +562,12 @@ $ git commit
   ![](/assets/blog/github/github-security-1.jpg)
 - With protected branches enabled, a code owner for each owned file has to leave a review before anyone can merge a pull request to that branch.
   ![](/assets/blog/github/github-security-2.jpg)
+</details>
 
 
+<details>
+<summary>Fork and create a PR to a public repo</summary>
 
-
-## Fork and create a PR to a public repo
 - If you want to contribute to a repo but your are not a contributor you need to `fork` the repo
   ![](/assets/blog/github/fork_01.jpg)
 - Your new repo should be:<your-github-namespace>/<forked-repo-name>
@@ -563,17 +575,12 @@ $ git commit
 - Finally, when you `$ git push`, `git push --set-upstream origin <branch-name>`,  those changes back up to **your fork** of your colleague’s repository.
 - Now the changes are in your forked repo, but you want to add then to your colleagues's repo. All you have to do is submit a pull request with the changes. This happens in the UI
   ![](/assets/blog/github/fork-git-push-pr.png)
+</details>
 
 
+<details>
+<summary>Dependabot</summary>
 
-
-
-
-
-
-
-
-## Dependabot
 - [Dependabot docs](https://docs.github.com/en/code-security/dependabot/)
 - Dependabot alerts you to keep all your dependencies updated
 - Dependabot can now inform you of version updates
@@ -596,25 +603,163 @@ $ git commit
       schedule:
         interval: "daily"
   ```
+</details>
 
 
 
 
+<details>
+<summary>Github REST API</summary>
+
+- [REST API Reference](https://docs.github.com/en/rest/reference)
+
+1. Create a `New personal access token`
+  - Go to [Github Developer settings](https://github.com/settings/tokens/new?scopes=repo)
+2. Create a dotenv file in your repo root
+  ```shell
+  # file name: `.env`
+  GH_PERSONAL_ACCESS_TOKEN='<YOUR_ACCESS_TOKEN>'
+  ```
+3. Install `@octokit/rest`
+  ```shell
+  $ npm init -y
+  $ npm i @octokit/rest dotenv
+  ```
+4. Write your code
+  ```js
+  require('dotenv').config()
+  const { Octokit } = require('@octokit/core')
+
+  // ===== SETUP =============
+  // Create a personal access token at https://github.com/settings/tokens/new?scopes=repo
+  const octokit = new Octokit({
+    auth: process.env.GH_PERSONAL_ACCESS_TOKEN,
+  })
+  // ===== SETUP =============
+
+  // One way of getting 
+  async function getRepos(org) {
+    const repos = await octokit.rest.repos.listForOrg({
+      org,
+      sort: 'full_name',
+      per_page: 100,
+      type: 'internal',
+    })
+    return repos.data.map((repo) => repo.name)
+  }
+
+  // Another way to get list of repos
+  async function listRepos(org) {
+    const response = await octokit.request('GET /orgs/{org}/repos', {
+      org,
+      per_page: 100,
+      page: 1,
+    })
+    const repos = response.data.map((item) => item.name)
+    console.log(repos)
+
+    // TODO: if the `response.data.length >= 100` make a call for the next page
+    console.log(response.data.length)
+    return repos
+  }
+
+  // Access files
+  async function getFile(owner, repo, path) {
+    return octokit.rest.repos
+      .getContent({ owner, repo, path })
+      .then((file) => Buffer.from(file.data.content, 'base64').toString('ascii'))
+  }
+
+  async function dependencies(org) {
+    const repos = await getRepos(org)
+    console.log('repos', repos)
+
+    repos.forEach(repo =>{
+      try {
+        const package = JSON.parse(await getFile(org, repo, 'package.json'))
+        if (package.dependencies) console.log(package.dependencies)
+        if (package.devDependencies) console.log(package.devDependencies)
+      } catch (err) {}
+    })
+  }
+
+  const orgName = '...'
+  dependencies(orgName)
+  ```  
+</details>
+
+
+<details>
+<summary>Github Pages</summary>
+
+- You can build a static site and have it hosted on GitHub Pages with a few configurations to the codebase and the github repository’s settings. 
+- This example expects that you are using npm for your development/deployment
+
+## Setup Github Pages
+1. Create a new repo in Github
+  - Make sure that it's a `Public` repo
+
+2. Install the [gh-pages](https://www.npmjs.com/package/gh-pages) npm package
+  - Install gh-pages:
+    ```sh
+    $ npm install gh-pages --save-dev
+    ```
+  - Add a build/deploy script to your `package.json`
+    ```js
+    "scripts": {
+      "build": "some-build-script",
+      "predeploy": "rm -rf ./public",
+      "deploy": "npm run build && gh-pages -d public"
+    }
+    ```
+  - The `-d public` you're telling `gh-pages` where the build source code lives
+  - When you run npm run deploy all contents of the `public` folder will be moved to your repository’s gh-pages branch. 
+  - **note**: *With npm scripts if you prefix the scripts key name with `pre` it will run before the command and `post` it will run after*
+
+3. Update setting for GithubPages 
+  - You must select which branch will be deployed from your repository settings in GitHub for GitHub Pages to function. 
+  - The nice thing about the `gh-pages` npm package is that it will create a `gh-pages` branch and wire it up for you
+  - Navigate to your repo then click [`Settings` > Scroll down to the `GitHub Pages` Section]
+  ![](/assets/blog/gh-pages-screenshot.png)
+  - It's ok to keep the path as `/ (root)` because the when you run `gh-pages -d public` it take the contents of the `public` folder and saves it to the root of the `gh-pages` branch
+
+
+4. Publishing to GitHub Pages
+- All you need to do to publish to githubpages is to run the npm `deploy` script
+  ```sh
+  $ npm run deploy
+  ```
+- Your static page should live: https://`<GITHUB_USERNAME>`.github.io/`<REPO_NAME>`/.
+- *You might have to clear your cache to see the new changes*
+
+## Publish with Github Actions
+1. create a personal access token
+  - click the avatar > profile > `Developer settings` > `Personal access token` or https://github.com/settings/tokens
+  - note: `<repo_name> for github actions`
+  - check the `repo` section
+  - **DON'T FORGET TO COPY THE TOKEN**
+2. In your repo settings paste the `ACCESS_TOKEN`
+</details>
 
 
 
+<details>
+<summary>Github GRAPH QL</summary>
 
-
-
-
-
-
-
-
-
-
-
-
+- [docs](https://github.com/octokit/graphql.js)
+- Playing with the GraphQL Explorer
+  1. Got to the online [Graph QL explorer](https://docs.github.com/en/graphql/overview/explorer)
+  2. Click the `Sign in with Github` button (Authorize GraphQL API Explorer) if it's your first time
+  3. In the GraphiQL click the `Explorer` button to see your options 
+- example:
+  ```
+  query { 
+    viewer { 
+      login
+    }
+  }
+  ```
+</details>
 
 
 
@@ -666,8 +811,11 @@ $ git commit
 - There is also `schedule`, `workflow_dispatch`, & `repository_dispatch`
 - Terms: `Events`, `Jobs`, `Runners`, `Steps`, `Actions`
 
+## Github Actions Examples
 
-### Testing Github Actions on your local machine
+<details>
+<summary>Testing Github Actions on your local machine</summary>
+
 - [nektos/act](https://github.com/nektos/act) and docker
 - This tool requires that you use a `runs-on: ubuntu-latest` and not a `runs-on: self-hosted`
 ` ~/.actrc`
@@ -679,16 +827,40 @@ $ git commit
   # M1 chip
   $ act --container-architecture linux/amd64
   ```
+</details>
+
+<details>
+<summary>Github Actions runners</summary>
+
+- GitHub offers hosted virtual machines to run workflows or you can provide your own 
+- GitHub offers runners with Linux, Windows, and macOS operating systems.
+- When you use a GitHub-hosted runner, machine maintenance and upgrades are taken care of for you. You can run workflows directly on the virtual machine or in a Docker container.
+- **Github hosted runner**:
+  ```yaml
+  # ...
+  jobs:
+    some_job:
+      runs-on: ubuntu-latest
+  ```
+- [docs](https://docs.github.com/en/actions/using-github-hosted-runners/)
+
+- **Self-hosted runners**
+- You can also host your own `self-hosted runners`, more [here](https://docs.github.com/en/actions/hosting-your-own-runners/)
+- Self-hosted runners using the `runs-on`
+- You can host your own runners and customize the environment used to run jobs in your GitHub Actions workflows.
+  ```yaml
+  # ...
+  jobs:
+    some_job:
+      runs-on: self-hosted
+  ```
+</details>
 
 
 
+<details>
+<summary>Hello world of Github Action</summary>
 
-
-
-
-
-
-### Hello world of Github Action
 - There are 3 main pieces to the actions yaml file:
   1. `name` (whatever name you want to call this workflow, this will show up in the GUI)
   2. `on` (The trigger, it can be a string or an array of strings)
@@ -720,34 +892,12 @@ $ git commit
       branches-ignore:
         - main
   ```
-
-### Github Actions runners
-- GitHub offers hosted virtual machines to run workflows or you can provide your own 
-- GitHub offers runners with Linux, Windows, and macOS operating systems.
-- When you use a GitHub-hosted runner, machine maintenance and upgrades are taken care of for you. You can run workflows directly on the virtual machine or in a Docker container.
-- **Github hosted runner**:
-  ```yaml
-  # ...
-  jobs:
-    some_job:
-      runs-on: ubuntu-latest
-  ```
-- [docs](https://docs.github.com/en/actions/using-github-hosted-runners/)
-
-- **Self-hosted runners**
-- You can also host your own `self-hosted runners`, more [here](https://docs.github.com/en/actions/hosting-your-own-runners/)
-- Self-hosted runners using the `runs-on`
-- You can host your own runners and customize the environment used to run jobs in your GitHub Actions workflows.
-  ```yaml
-  # ...
-  jobs:
-    some_job:
-      runs-on: self-hosted
-  ```
+</details>
 
 
+<details>
+<summary>Working with env variables</summary>
 
-### Working with env variables
 - You can set environment variables for each job 
 - You define the variables under the job with an `env`
 - They cannot be a composite of other `env` defined that the same level, you cannot do
@@ -787,6 +937,21 @@ $ git commit
           name: Conditionally run this step
           run: echo "yeah baby!!"
   ```
+</details>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ### Default working-directory option
 - By default the working directory is the root of the checkout repo
@@ -1388,7 +1553,7 @@ $ git commit
 
 
 
-## Self-hosted Github Actions runner
+### Self-hosted Github Actions runner
 - [Blog post on self-hosted runners](https://github.blog/2019-11-05-self-hosted-runners-for-github-actions-is-now-in-beta/)
 - If you don't make a self-hosted runner you are using a shared infrastructure on Github
 - Advantages of a self-hosted runner:
@@ -1404,164 +1569,6 @@ $ git commit
 
 
 
-
-
-
-
-
-
-## Github Pages
-- You can build a static site and have it hosted on GitHub Pages with a few configurations to the codebase and the github repository’s settings. 
-- This example expects that you are using npm for your development/deployment
-
-1. Create a new repo in Github
-  - Make sure that it's a `Public` repo
-
-2. Install the [gh-pages](https://www.npmjs.com/package/gh-pages) npm package
-  - Install gh-pages:
-    ```sh
-    $ npm install gh-pages --save-dev
-    ```
-  - Add a build/deploy script to your `package.json`
-    ```js
-    "scripts": {
-      "build": "some-build-script",
-      "predeploy": "rm -rf ./public",
-      "deploy": "npm run build && gh-pages -d public"
-    }
-    ```
-  - The `-d public` you're telling `gh-pages` where the build source code lives
-  - When you run npm run deploy all contents of the `public` folder will be moved to your repository’s gh-pages branch. 
-  - **note**: *With npm scripts if you prefix the scripts key name with `pre` it will run before the command and `post` it will run after*
-
-3. Update setting for GithubPages 
-  - You must select which branch will be deployed from your repository settings in GitHub for GitHub Pages to function. 
-  - The nice thing about the `gh-pages` npm package is that it will create a `gh-pages` branch and wire it up for you
-  - Navigate to your repo then click [`Settings` > Scroll down to the `GitHub Pages` Section]
-  ![](/assets/blog/gh-pages-screenshot.png)
-  - It's ok to keep the path as `/ (root)` because the when you run `gh-pages -d public` it take the contents of the `public` folder and saves it to the root of the `gh-pages` branch
-
-
-4. Publishing to GitHub Pages
-- All you need to do to publish to githubpages is to run the npm `deploy` script
-  ```sh
-  $ npm run deploy
-  ```
-- Your static page should live: https://`<GITHUB_USERNAME>`.github.io/`<REPO_NAME>`/.
-- *You might have to clear your cache to see the new changes*
-
-
-
-### Publish with Github Actions
-1. create a personal access token
-  - click the avatar > profile > `Developer settings` > `Personal access token` or https://github.com/settings/tokens
-  - note: `<repo_name> for github actions`
-  - check the `repo` section
-  - **DON'T FORGET TO COPY THE TOKEN**
-2. In your repo settings paste the `ACCESS_TOKEN`
-  - 
-
-
-
-
-
-
-
-
-
-# Github REST API
-- [REST API Reference](https://docs.github.com/en/rest/reference)
-
-
-1. Create a `New personal access token`
-  - Go to [Github Developer settings](https://github.com/settings/tokens/new?scopes=repo)
-2. Create a dotenv file in your repo root
-  ```shell
-  # file name: `.env`
-  GH_PERSONAL_ACCESS_TOKEN='<YOUR_ACCESS_TOKEN>'
-  ```
-3. Install `@octokit/rest`
-  ```shell
-  $ npm init -y
-  $ npm i @octokit/rest dotenv
-  ```
-4. Write your code
-  ```js
-  require('dotenv').config()
-  const { Octokit } = require('@octokit/core')
-
-  // ===== SETUP =============
-  // Create a personal access token at https://github.com/settings/tokens/new?scopes=repo
-  const octokit = new Octokit({
-    auth: process.env.GH_PERSONAL_ACCESS_TOKEN,
-  })
-  // ===== SETUP =============
-
-  // One way of getting 
-  async function getRepos(org) {
-    const repos = await octokit.rest.repos.listForOrg({
-      org,
-      sort: 'full_name',
-      per_page: 100,
-      type: 'internal',
-    })
-    return repos.data.map((repo) => repo.name)
-  }
-
-  // Another way to get list of repos
-  async function listRepos(org) {
-    const response = await octokit.request('GET /orgs/{org}/repos', {
-      org,
-      per_page: 100,
-      page: 1,
-    })
-    const repos = response.data.map((item) => item.name)
-    console.log(repos)
-
-    // TODO: if the `response.data.length >= 100` make a call for the next page
-    console.log(response.data.length)
-    return repos
-  }
-
-  // Access files
-  async function getFile(owner, repo, path) {
-    return octokit.rest.repos
-      .getContent({ owner, repo, path })
-      .then((file) => Buffer.from(file.data.content, 'base64').toString('ascii'))
-  }
-
-  async function dependencies(org) {
-    const repos = await getRepos(org)
-    console.log('repos', repos)
-
-    repos.forEach(repo =>{
-      try {
-        const package = JSON.parse(await getFile(org, repo, 'package.json'))
-        if (package.dependencies) console.log(package.dependencies)
-        if (package.devDependencies) console.log(package.devDependencies)
-      } catch (err) {}
-    })
-  }
-
-  const orgName = '...'
-  dependencies(orgName)
-  ```
-
-
-# Github GRAPH QL
-- [docs](https://github.com/octokit/graphql.js)
-- Playing with the GraphQL Explorer
-  1. Got to the online [Graph QL explorer](https://docs.github.com/en/graphql/overview/explorer)
-  2. Click the `Sign in with Github` button (Authorize GraphQL API Explorer) if it's your first time
-  3. In the GraphiQL click the `Explorer` button to see your options 
-- example:
-  ```
-  query { 
-    viewer { 
-      login
-    }
-  }
-  ```
 
 
 
