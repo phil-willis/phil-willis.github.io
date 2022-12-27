@@ -26,7 +26,8 @@ ogImage:
 
 # Examples of Adding Linting to JavaScript Projects
 <details open>
-<summary>React  (NO TypeScript)/summary>
+<summary>React  (NO TypeScript)</summary>
+
 - You should really be starting from a React build tool like [Vitejs](https://vitejs.dev/), [Nextjs](https://nextjs.org/docs/getting-started) or CRA [](https://create-react-app.dev/) with TS template
 
 1. Install linting packages
@@ -45,7 +46,7 @@ ogImage:
   # Add a lint script to the package.json file  
   echo "`jq '.scripts.lint="prettier --config .prettierrc 'src/\*\*/\*.\{js,jsx\}' --write"' package.json`" > package.json
   ```
-2. `./.eslintrc` file
+2. The `./.eslintrc` file
   ```json
   {
     "extends": ["plugin:prettier/recommended"],
@@ -68,7 +69,7 @@ ogImage:
   }
 
   ```
-3. `./.prettierrc` file
+3. The `./.prettierrc` file
   ```json
   {
     "semi": false,
@@ -79,7 +80,7 @@ ogImage:
     "importOrderSeparation": true
   }
   ```
-4. `./.vscode/settings.json` file
+4. The `./.vscode/settings.json` file
   ```json
   {
     // Set prettier to be the default formatter
@@ -128,7 +129,7 @@ ogImage:
   # Add a lint script to the package.json file  
   echo "`jq '.scripts.lint="prettier --config .prettierrc 'src/\*\*/\*.\{ts,tsx,js,jsx\}' --write"' package.json`" > package.json
   ```
-2. `./.eslintrc` file
+2. The `./.eslintrc` file
   ```json
   {
     "extends": [
@@ -155,7 +156,7 @@ ogImage:
     }
   }
   ```
-3. `./.prettierrc` file
+3. The `./.prettierrc` file
   ```json
   {
     "semi": false,
@@ -166,7 +167,7 @@ ogImage:
     "importOrderSeparation": true
   }
   ```
-4. `./.vscode/settings.json` file
+4. The `./.vscode/settings.json` file
   ```json
   {
     // Set prettier to be the default formatter
@@ -207,6 +208,7 @@ ogImage:
 
 <details>
 <summary>React + Jest</summary>
+
 - Take a look at [vitest](https://vitest.dev/), it's FAST and uses vitejs's config so you don't have to deal with babel and transpiling, have almost identical API to Jest. PLUS the benefit of using the same config file you use for development so you're not transpiling your code and test differently.
 - BUT... is you're not convinced this is how you add it to your CRA app
 
@@ -238,6 +240,7 @@ ogImage:
 
 <details>
 <summary>Baseline nodejs linting</summary>
+
 1. Install linting packages
   ```shell
   $ yarn add -D prettier eslint eslint-config-prettier eslint-plugin-prettier @trivago/prettier-plugin-sort-imports
@@ -348,7 +351,6 @@ ogImage:
   $ mkdir src && touch src/index.js
   echo "`jq '.main="src/index.js"' package.json`" > package.json
   ```
-
 </details>
 
 
