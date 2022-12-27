@@ -68,5 +68,5 @@ details[open] summary{
 
 
 details[open] summary h2:first-child {
-
+  margin-top: 0;
 }

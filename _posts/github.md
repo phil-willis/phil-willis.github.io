@@ -382,25 +382,21 @@ $ git commit
       └── deploy.yaml
   ```
 - `.github/workflows/` is where you put your Github actions yaml files
-
-
-
-## Simple branch workflow
+- Simple branch workflow
 - lightweight, branch flow that support collaboration
-1. Branch off of `main` and make your changes in parallel
-  - If the `main` branch has updates you want to `rebase` with main so that your changes remain in front
-2. When you `feature`/`bug-fix`/`enhancement` is done, make a `PR` (Pull Request) against the remote `main` branch
-3. Other collaborators can add their review and comments. More commit can happen as a result of conversation
-4. Once approved the PR can be merged (always `squash & merge`)
-5. You can delete your `feature`/`bug-fix`/`enhancement` branch
-
-## Where to improve?
-- Add branch protection to `main` to prevent commits directly to the `main` branch
-- Can add Continuous Integration 
-- We can add Continuous Deployment (on push or ) to a staging or production environment such as AWS/GCP/Azure
-- We can customize our Github flow with Github Actions
-  - on push -> lint, unit-test, integration test, e2e
-  - you can listen to event that happen to a repo, a schedule time, or event that happen outside of Github
+  1. Branch off of `main` and make your changes in parallel
+    - If the `main` branch has updates you want to `rebase` with main so that your changes remain in front
+  2. When you `feature`/`bug-fix`/`enhancement` is done, make a `PR` (Pull Request) against the remote `main` branch
+  3. Other collaborators can add their review and comments. More commit can happen as a result of conversation
+  4. Once approved the PR can be merged (always `squash & merge`)
+  5. You can delete your `feature`/`bug-fix`/`enhancement` branch
+- Where one can improve?
+  - Add branch protection to `main` to prevent commits directly to the `main` branch
+  - Can add Continuous Integration 
+  - We can add Continuous Deployment (on push or ) to a staging or production environment such as AWS/GCP/Azure
+  - We can customize our Github flow with Github Actions
+    - on push -> lint, unit-test, integration test, e2e
+    - you can listen to event that happen to a repo, a schedule time, or event that happen outside of Github
 
 
 
