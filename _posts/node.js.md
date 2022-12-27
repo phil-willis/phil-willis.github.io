@@ -722,21 +722,6 @@ ogImage:
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 # ESM import/export files
 - If you have a folder structure of and your `MyComponent` has a `default export`
   ├── MyComponent.stories.jsx
@@ -770,32 +755,6 @@ ogImage:
 - This is the right behavior for production purpose but when you are developing you might need to test your module in a host app. 
 - npm and yarn provide a command to achieve it called link that basically creates a symlink into the host app node_modules to your module source folder. 
 - It works fine but you also need to execute tasks in your module that needs these dependencies. For example, you might want to execute tests. Since they aren't present in your module's node_modules you will experience errors.
-
-
-
-
-
-
-
-
-
-
-
-
-    
-    
-    
-    
-    
-
-
-
-
-
-
-
-
-
 
 
 

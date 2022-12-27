@@ -6,180 +6,136 @@ ogImage:
   url: '/assets/covers/eslint.jpg'
 ---
 
+
+# JS Linting overview
+
+![prettier-eslint](./assets/blog/eslint/prettier-eslint.jpg)
+
+- `ESLint` => code smell warnings, defines the code conventions
+- `Prettier` => opinionated code formatting,  performs the auto-formatting based on the ESLint rules
+
+
+
 # Install ESLint
 - The quickest way to add eslint to a project
   ```shell
   $ npx eslint --init
   ```
+- But you're gonna probably want to install prettier and other things so i normally don't use ESLint by itself
 
 
-# Setup JavaScript React
-- ESLint => code smell warnings
-- Prettier => opinionated code formatting
 
-- ESLint defines the code conventions
-- Prettier performs the auto-formatting based on the ESLint rules
+# React  (NO TypeScript)
+- You should really be starting from a React build tool like [Vitejs](https://vitejs.dev/), [Nextjs](https://nextjs.org/docs/getting-started) or CRA [](https://create-react-app.dev/) with TS template
 
-
-0. Install VSCode extensions
-  - [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint)
-  - [Prettier - Code formatter](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
-
-1. Create a react app
-  ```sh
-  $ npx create-react-app APP_NAME
-  ```
-
-2. Install additional packages
-  ```sh
-  $ npm i -D @types/react @types/react-dom
-  $ npm i -D prettier \                   # Prettier itself
-             eslint \                     # Eslint itself
-             eslint-config-prettier \     # Eslint config for prettier, it will extend the style guide to match prettier
-             eslint-plugin-prettier       # Eslint plugin for prettier, it will raise eslint errors about formatting
-  ```
-  - `eslint-config-prettier` => turns off all ESLint rules that could conflict with Prettier
-  - `eslint-plugin-prettier` => integrates the Prettier rules into ESLint rules.
-
-3. Add some config files
+1. Install linting packages
   ```shell
+  # Start from one of these
+  yarn create vite --template react-ts
+  yarn create next-app --typescript
+  yarn create react-app my-app --typescript
+
+  # Add some linting packages
+  yarn add -D eslint-config-prettier eslint-plugin-prettier prettier @trivago/prettier-plugin-sort-imports
+
   $ mkdir .vscode
-  $ touch .vscode/settings.json .prettierrc .eslintrc
+  $ touch .vscode/settings.json .prettierrc .eslintrc 
+
+  # Add a lint script to the package.json file  
+  echo "`jq '.scripts.lint="prettier --config .prettierrc 'src/\*\*/\*.\{js,jsx\}' --write"' package.json`" > package.json
   ```
-
-
-4. Add `.eslintrc` file
-  - [eslint rules](https://eslint.org/docs/rules/)
+2. `./.eslintrc` file
   ```json
   {
-    "extends": [ "react-app", "prettier"],
-    "plugins": ["prettier"],
-    "rules": {
-      "prettier/prettier": ["error"]
+    "extends": ["plugin:prettier/recommended"],
+    "plugins": ["react"],
+    "env": {
+      "browser": true,
+      "es6": true
     },
+    "globals": {
+      "Atomics": "readonly",
+      "SharedArrayBuffer": "readonly"
+    },
+    "parserOptions": {
+      "ecmaFeatures": {
+        "jsx": true
+      },
+      "ecmaVersion": 2018,
+      "sourceType": "module"
+    }
   }
-  ```
 
-5. Add `.prettierrc` file
-  - [Prettier Options](https://prettier.io/docs/en/options.html)
+  ```
+3. `./.prettierrc` file
   ```json
   {
     "semi": false,
     "trailingComma": "all",
     "singleQuote": true,
-    "printWidth": 100
+    "printWidth": 100,
+    "importOrder": ["^@core/(.*)$", "^@server/(.*)$", "^@ui/(.*)$", "^[./]"],
+    "importOrderSeparation": true
+  }
+  ```
+4. `./.vscode/settings.json` file
+  ```json
+  {
+    // Set prettier to be the default formatter
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+
+    // Don't format any files by default
+    "editor.formatOnSave": false,
+    
+    "[json]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode",
+      "editor.formatOnSave": true
+    },
+
+    // JavaScript stuff
+    "[javascript]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode",
+      "editor.formatOnSave": true
+    },
+    "[javascriptreact]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode",
+      "editor.formatOnSave": true
+    },
   }
   ```
 
-6. Add vscode settings file
-  - Create `.vscode/settings.json`
-    ```json
-    {
-      // Set prettier to be the default formatter
-      "editor.defaultFormatter": "esbenp.prettier-vscode",
-
-      // Don't format any files by default
-      "editor.formatOnSave": false,
-      
-      // Define the file types to do the autoformatting
-      "[javascript]": {
-        "editor.defaultFormatter": "esbenp.prettier-vscode",
-        "editor.formatOnSave": true
-      },
-      "[javascriptreact]": {
-        "editor.defaultFormatter": "esbenp.prettier-vscode",
-        "editor.formatOnSave": true
-      },
-      "[json]": {
-        "editor.defaultFormatter": "esbenp.prettier-vscode",
-        "editor.formatOnSave": true
-      }
-      
-    }
-    ```
-
-7. Update the package.json file
-  - Add a scripts entry to your package.json
-  ```json
-  "scripts": {
-    "lint": "prettier --config .prettierrc 'src/**/*.{js,jsx}' --write"
-  },
-  ```
-
-8. Run the linter
-  ```sh
-  $ npm run lint
-  ```
-
-9. (optional) Extend prettier with import sort order
-  - A prettier plugin to sort import declarations by provided RegEx order.
-    ```
-    $ npm i -D @trivago/prettier-plugin-sort-imports
-    ```
-  - Add this to your `.prettierrc` file
-    ```json
-    {
-      "importOrder": ["^@core/(.*)$", "^@server/(.*)$", "^@ui/(.*)$", "^[./]"],
-      "importOrderSeparation": true,
-    }
-    ```
 
 
+# React + TypeScript
+- You should really be starting from a React build tool like [Vitejs](https://vitejs.dev/), [Nextjs](https://nextjs.org/docs/getting-started) or CRA [](https://create-react-app.dev/) with TS template
 
-
-
-
-
-
-
-
-
-
-
-
-# Setup TypeScript React
-
-0. Install VSCode extensions
-  - [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint)
-  - [Prettier - Code formatter](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
-
-1. Create a react app
+1. Install linting packages
   ```shell
-  $ npx create-react-app <APP_NAME> --template typescript
-  ```
+  # Start from one of these
+  yarn create vite --template react-ts
+  yarn create next-app --typescript
+  yarn create react-app my-app --typescript
 
-2. Install additional packages
-  ```shell
-  # ESLint
-  $ npm i -D @typescript-eslint/eslint-plugin @typescript-eslint/parser eslint-plugin-jest
+  # Add some linting packages
+  yarn add -D @typescript-eslint/eslint-plugin @typescript-eslint/parser eslint-config-prettier eslint-plugin-prettier prettier @trivago/prettier-plugin-sort-imports
 
-  # Prettier
-  $ npm i -D prettier eslint-config-prettier eslint-plugin-prettier
-
-  # OR both at the same time
-  $ npm i -D @typescript-eslint/eslint-plugin @typescript-eslint/parser prettier eslint-config-prettier eslint-plugin-prettier eslint-plugin-jest
-
-  # create the config files
   $ mkdir .vscode
-  $ touch .vscode/settings.json .eslintrc .prettierrc
-  ```
-  - `eslint-config-prettier` => turns off all ESLint rules that could conflict with Prettier
-  - `eslint-plugin-prettier` => integrates the Prettier rules into ESLint rules.
+  $ touch .vscode/settings.json .prettierrc .eslintrc 
 
-3. Add `.eslintrc` file
-  - [eslint rules](https://eslint.org/docs/rules/)
+  # Add a lint script to the package.json file  
+  echo "`jq '.scripts.lint="prettier --config .prettierrc 'src/\*\*/\*.\{ts,tsx,js,jsx\}' --write"' package.json`" > package.json
+  ```
+2. `./.eslintrc` file
   ```json
   {
     "extends": [
       "plugin:@typescript-eslint/recommended",
-      "plugin:jest/recommended",
       "plugin:prettier/recommended"
     ],
-    "plugins": ["react", "@typescript-eslint", "jest"],
+    "plugins": ["react", "@typescript-eslint"],
     "env": {
       "browser": true,
       "es6": true,
-      "jest": true
     },
     "globals": {
       "Atomics": "readonly",
@@ -196,77 +152,288 @@ ogImage:
     }
   }
   ```
-
-4. Add `.prettierrc` file
-  - [Prettier Options](https://prettier.io/docs/en/options.html)
+3. `./.prettierrc` file
   ```json
   {
     "semi": false,
     "trailingComma": "all",
     "singleQuote": true,
-    "printWidth": 100
+    "printWidth": 100,
+    "importOrder": ["^@core/(.*)$", "^@server/(.*)$", "^@ui/(.*)$", "^[./]"],
+    "importOrderSeparation": true
   }
   ```
-
-5. Add vscode settings file
-  - Create `.vscode/settings.json`
-    ```json
-    {
-      // Set prettier to be the default formatter
-      "editor.defaultFormatter": "esbenp.prettier-vscode",
-
-      // Don't format any files by default
-      "editor.formatOnSave": false,
-      
-      // Define the file types to do the autoformatting
-      "[javascript]": {
-        "editor.defaultFormatter": "esbenp.prettier-vscode",
-        "editor.formatOnSave": true
-      },
-      "[typescript]": {
-        "editor.defaultFormatter": "esbenp.prettier-vscode",
-        "editor.formatOnSave": true
-      },
-      "[typescriptreact]": {
-        "editor.defaultFormatter": "esbenp.prettier-vscode",
-        "editor.formatOnSave": true
-      },
-      "[json]": {
-        "editor.defaultFormatter": "esbenp.prettier-vscode",
-        "editor.formatOnSave": true
-      },
-    }
-    ```
-  - (optional) Extend prettier with import sort order
-    - A prettier plugin to sort import declarations by provided RegEx order.
-      ```
-      $ npm i -D @trivago/prettier-plugin-sort-imports
-      ```
-    - Add this to your `.prettierrc` file
-      ```json
-      {
-        "importOrder": ["^@core/(.*)$", "^@server/(.*)$", "^@ui/(.*)$", "^[./]"],
-        "importOrderSeparation": true,
-      }
-      ```
-
-6. Update the package.json file
-  - Add a scripts entry to your package.json
+4. `./.vscode/settings.json` file
   ```json
   {
-     "scripts": {
-      "lint": "prettier --write src/**/*.ts{,x}"
+    // Set prettier to be the default formatter
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+
+    // Don't format any files by default
+    "editor.formatOnSave": false,
+    
+    "[json]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode",
+      "editor.formatOnSave": true
+    },
+
+    // JavaScript stuff
+    "[javascript]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode",
+      "editor.formatOnSave": true
+    },
+    "[javascriptreact]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode",
+      "editor.formatOnSave": true
+    },
+
+    // TypeScript stuff if you need it
+    "[typescript]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode",
+      "editor.formatOnSave": true
+    },
+    "[typescriptreact]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode",
+      "editor.formatOnSave": true
+    },
+    
+  }
+  ```
+
+# React + Jest
+- Take a look at [vitest](https://vitest.dev/), it's FAST and uses vitejs's config so you don't have to deal with babel and transpiling, have almost identical API to Jest. PLUS the benefit of using the same config file you use for development so you're not transpiling your code and test differently.
+- BUT... is you're not convinced this is how you add it to your CRA app
+
+1. Add the jest linter
+  ```shell
+  yarn add -D eslint-plugin-jest
+  ```
+2. update the config file
+  ```json
+  {
+    "extends": [
+      "plugin:jest/recommended",
+      "plugin:prettier/recommended"
+    ],
+    "plugins": ["react", "jest"],
+    "env": {
+      "browser": true,
+      "es6": true,
+      "jest": true
+    },
+    "globals": {
+      "Atomics": "readonly",
+      "SharedArrayBuffer": "readonly"
     }
   }
   ```
 
-7. Run the linter
-  ```sh
-  $ npm run lint
+
+
+
+# Baseline nodejs linting
+1. Install linting packages
+  ```shell
+  $ yarn add -D prettier eslint eslint-config-prettier eslint-plugin-prettier @trivago/prettier-plugin-sort-imports
+
+  $ mkdir .vscode
+  $ touch .vscode/settings.json .prettierrc .eslintrc 
+  ```
+2. `./.eslintrc` file
+  ```json
+  {
+    "extends": [ "prettier"],
+    "plugins": ["prettier"],
+    "rules": {
+      "prettier/prettier": ["error"]
+    },
+  }
+  ```
+3. `./.prettierrc` file
+  ```json
+  {
+    "semi": false,
+    "trailingComma": "all",
+    "singleQuote": true,
+    "printWidth": 100,
+    "importOrder": ["^@core/(.*)$", "^@server/(.*)$", "^@ui/(.*)$", "^[./]"],
+    "importOrderSeparation": true
+  }
+  ```
+4. `./.vscode/settings.json` file
+  ```json
+  {
+    // Set prettier to be the default formatter
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+
+    // Don't format any files by default
+    "editor.formatOnSave": false,
+    
+    "[json]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode",
+      "editor.formatOnSave": true
+    },
+
+    // JavaScript stuff
+    "[javascript]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode",
+      "editor.formatOnSave": true
+    },
+    "[javascriptreact]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode",
+      "editor.formatOnSave": true
+    },
+
+    // TypeScript stuff if you need it
+    "[typescript]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode",
+      "editor.formatOnSave": true
+    },
+    "[typescriptreact]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode",
+      "editor.formatOnSave": true
+    },
+    
+  }
   ```
 
-9. Github Action 
-  - `ci.yml`
+6. Choose between `CommonJS` or `ESM`
+  - Since 2009 when Kevin Dangoor changed the world of web development, CommonJS format that came with Node.js by default. aka `require()`
+  - Nodejs version >= 12.0.0 supports ESM
+  - Babel & webpack allows us to write ESM style JavaScript that then gets transpiled to older version of JavaScript that the browser can consume
+  - one way to work with commonjs/esm is to use `.js`/.`mjs`, (i'm not really a fan on this)
+  - You need to update the `./package.json` & `.eslintrc` file to have `"type" : "module"`
+  - **CommonJS**:
+    ```shell
+    echo "`jq '.type="commonjs"' package.json`" > package.json
+    echo "`jq '.type="commonjs"' .eslintrc`" > .eslintrc
+    ```
+  - **ESM**:
+    ```shell
+    echo "`jq '.type="module"' package.json`" > package.json
+    echo "`jq '.type="module"' .eslintrc`" > .eslintrc
+    ```
+  - Simple **CommonJS** expressjs example:
+    ```js
+    const express = require('express');
+    const app = express();
+    const port = 3000;
+
+    app.get('/', (req, res) => res.send('Hello World!'))
+    app.listen(PORT, () => {
+      console.log(`⚡️[server]: Server is running at http://localhost:${PORT}`)
+    })
+    ```
+  - Simple **ESM** expressjs example:
+    ```js
+    import express from 'express'
+
+    const app = express()
+    const port = 3000
+
+    app.get('/', (req, res) => res.send('Hello World!'))
+    app.listen(PORT, () => {
+      console.log(`⚡️[server]: Server is running at http://localhost:${PORT}`)
+    })
+    ```
+
+7. Create an index file if you haven't already
+  ```shell
+  $ mkdir src && touch src/index.js
+  echo "`jq '.main="src/index.js"' package.json`" > package.json
+  ```
+
+
+# + TypeScript
+- **note** So this example... `TS` -> `commonjs`, therefore you need to update the package.json's type to `commonjs` and **not** `module`
+- Add TypeScript
+  ```shell
+  $ yarn add -D ts-node ts-node-dev typescript @types/node
+  $ touch tsconfig.json
+  $ mv src/index.js src/index.ts
+  ```
+- Add a `./tsconfig.json`
+  - Compressed JSON config
+    ```json
+    {
+      "compilerOptions": {
+        "target": "es6",
+        "module": "commonjs",
+        "declaration": true,
+        "sourceMap": true,
+        "outDir": "dist",
+        "rootDir": "./src",
+        "strict": true,
+        "esModuleInterop": true
+      }
+    }
+    ```
+  - Or 
+    ```shell
+    $ npx tsc --init
+    ```
+- Add TS Linting
+  ```shell
+  yarn add -D @typescript-eslint/eslint-plugin @typescript-eslint/parser
+
+  # Update the .eslintrc file
+  echo "`jq '.extends=["plugin:@typescript-eslint/recommended","plugin:prettier/recommended"]' .eslintrc `" > .eslintrc 
+  echo "`jq '.plugins=["prettier","@typescript-eslint"]' .eslintrc `" > .eslintrc 
+  echo "`jq '.env.es6=true' .eslintrc `" > .eslintrc 
+  echo "`jq '.parser= "@typescript-eslint/parser"' .eslintrc `" > .eslintrc 
+  echo "`jq '.parserOptions={"ecmaVersion": 2018,"sourceType": "module","project": "./tsconfig.json"}' .eslintrc `" > .eslintrc 
+  ```
+- Update the package.json file
+  ```shell
+  # ***IMPORTANT***
+  echo "`jq '.type="commonjs"' package.json`" > package.json
+
+  # Update the package.json
+  echo "`jq '.main="dist/index.js"' package.json`" > package.json
+  echo "`jq '.types="dist/index.d.ts"' package.json`" > package.json
+
+  # Update the package.json scripts
+  echo "`jq '.scripts.start="node dist/index.js"' package.json`" > package.json
+  echo "`jq '.scripts.dev="ts-node-dev --respawn -- src/index.ts"' package.json`" > package.json
+  echo "`jq '.scripts.build="tsc"' package.json`" > package.json   
+  ```
+- The expressjs should look like this now
+  ```shell
+  yarn add express
+  yarn add -D @types/express
+  ```
+
+  ```ts
+  import express, { Express, Request, Response } from 'express'
+
+  const app: Express = express()
+  const PORT = process.env.PORT || 3000
+
+  app.get('/', (req: Request, res: Response) => {
+    res.send('Express + TypeScript Server')
+  })
+
+  app.listen(PORT, () => {
+    console.log(`⚡️[server]: Server is running at http://localhost:${PORT}`)
+  })
+  ```
+
+
+
+
+
+# Add... ignore linting on files
+
+```shell
+$ touch .prettierignore .eslintignore
+```
+
+
+
+
+# Wanna add Github Action that runs the test in parallel
+
+  - `./github/workflows/test.yml`
   ```yml
   name: CI
 
@@ -294,363 +461,4 @@ ogImage:
             npm run test
             npm run build
   ```
-
-9. Notes
-  - typescript
-    - You will want to define the export of your component with `function App(): JSX.Element{}`
-      ```ts
-      import React from 'react'
-
-      export default function App(): JSX.Element {
-        return <div>Hello</div>
-      }
-      ```
-
-
-# Copy/Pasta for all config
-```shell
-# Install packages
-yarn add -D @typescript-eslint/eslint-plugin @typescript-eslint/parser prettier eslint-config-prettier eslint-plugin-prettier @trivago/prettier-plugin-sort-imports
-
-# Create the config files
-mkdir .vscode
-touch .vscode/settings.json .vscode/extensions.json .eslintrc .prettierrc
-
-# vscode settings (allow for on file formatting)
-cat > .vscode/settings.json << 'EOF'
-{
-  // Set prettier to be the default formatter
-  "editor.defaultFormatter": "esbenp.prettier-vscode",
-
-  // Don't format any files by default
-  "editor.formatOnSave": false,
-  
-  // Define the file types to do the autoformatting
-  "[javascript]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
-    "editor.formatOnSave": true
-  },
-  "[typescript]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
-    "editor.formatOnSave": true
-  },
-  "[typescriptreact]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
-    "editor.formatOnSave": true
-  },
-  "[json]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
-    "editor.formatOnSave": true
-  },
-}
-EOF
-
-# vscode extensions (allow for on file formatting)
-cat > .vscode/extensions.json << 'EOF'
-{
-	// See https://go.microsoft.com/fwlink/?LinkId=827846
-	// for the documentation about the extensions.json format
-	"recommendations": [
-		"dbaeumer.vscode-eslint",
-    "esbenp.prettier-vscode",
-    "redhat.vscode-yaml"
-	]
-}
-EOF
-
-# eslint config
-cat > .eslintrc << 'EOF'
-{
-  "extends": [
-    "plugin:@typescript-eslint/recommended",
-    "plugin:prettier/recommended"
-  ],
-  "plugins": ["react", "@typescript-eslint"],
-  "env": {
-    "browser": true,
-    "es6": true
-  },
-  "globals": {
-    "Atomics": "readonly",
-    "SharedArrayBuffer": "readonly"
-  },
-  "parser": "@typescript-eslint/parser",
-  "parserOptions": {
-    "ecmaFeatures": {
-      "jsx": true
-    },
-    "ecmaVersion": 2018,
-    "sourceType": "module",
-    "project": "./tsconfig.json"
-  }
-}
-EOF
-
-# prettier config
-cat > .prettierrc << 'EOF'
-{
-  "semi": false,
-  "trailingComma": "all",
-  "singleQuote": true,
-  "printWidth": 100,
-  "importOrder": ["^@core/(.*)$", "^@server/(.*)$", "^@ui/(.*)$", "^[./]"],
-  "importOrderSeparation": true
-}
-EOF
-
-# if you have js installed, this will add linting script to you package.json
-echo "`jq '.scripts.lint="prettier --write src/**/*.ts{,x}"' package.json`" > package.json
-```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# Tired of having to add all the linting files
-- Make a shell script!!
-- You can create a stand-alone script file or add it to your `.zshrc` file
-- If you are adding it to your `.zshrc` file make sure that you do a `$ source ~/.zshrc` in your terminal to update
-
-## Add Linting to React App
-  ```shell
-  function add-linting(){
-    npm i -D @types/react @types/react-dom prettier eslint eslint-config-prettier eslint-plugin-prettier
-
-    # Create `.eslintrc` files
-    cat << 'EOT' > .eslintrc
-  {
-    "extends": [ "react-app", "prettier"],
-    "plugins": ["prettier"],
-    "rules": {
-      "prettier/prettier": ["error"]
-    },
-  }
-  EOT
-
-    # Create `.prettierrc` files
-    cat << 'EOT' > .prettierrc
-  {
-    "semi": false,
-    "trailingComma": "all",
-    "singleQuote": true,
-    "printWidth": 100
-  }
-  EOT
-
-    # Create `.vscode/settings.json` files
-    mkdir .vscode
-    cat << 'EOT' > .vscode/settings.json
-  {
-    // Set prettier to be the default formatter
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
-
-    // Don't format any files by default
-    "editor.formatOnSave": false,
-
-    // Define the file types to do the autoformatting
-    "[javascript]": {
-      "editor.defaultFormatter": "esbenp.prettier-vscode",
-      "editor.formatOnSave": true
-    },
-    "[javascriptreact]": {
-      "editor.defaultFormatter": "esbenp.prettier-vscode",
-      "editor.formatOnSave": true
-    },
-    "[json]": {
-      "editor.defaultFormatter": "esbenp.prettier-vscode",
-      "editor.formatOnSave": true
-    }
-
-  }
-  EOT
-
-    # Echo
-    echo "[Add this to your package.json scripts]"
-    echo "\"lint\": \"prettier --config .prettierrc 'src/**/*.js' --write\""
-
-    # DONE
-  }
-  ```
-
-
-## Add Linting to React + Typescript App
-  ```shell
-  function add-linting-ts(){
-    npm i -D @typescript-eslint/eslint-plugin @typescript-eslint/parser eslint-plugin-jest prettier eslint-config-prettier eslint-plugin-prettier
-
-    # Create `.eslintrc` files
-    cat << 'EOT' > .eslintrc
-  {
-    "extends": [
-      "plugin:@typescript-eslint/recommended",
-      "plugin:jest/recommended",
-      "plugin:prettier/recommended"
-    ],
-    "plugins": ["react", "@typescript-eslint", "jest"],
-    "env": {
-      "browser": true,
-      "es6": true,
-      "jest": true
-    },
-    "globals": {
-      "Atomics": "readonly",
-      "SharedArrayBuffer": "readonly"
-    },
-    "parser": "@typescript-eslint/parser",
-    "parserOptions": {
-      "ecmaFeatures": {
-        "jsx": true
-      },
-      "ecmaVersion": 2018,
-      "sourceType": "module",
-      "project": "./tsconfig.json"
-    }
-  }
-  EOT
-
-    # Create `.prettierrc` files
-    cat << 'EOT' > .prettierrc
-  {
-    "semi": false,
-    "trailingComma": "all",
-    "singleQuote": true,
-    "printWidth": 100
-  }
-  EOT
-
-    # Create `.vscode/settings.json` files
-    mkdir .vscode
-    cat << 'EOT' > .vscode/settings.json
-  {
-    // Set prettier to be the default formatter
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
-
-    // Don't format any files by default
-    "editor.formatOnSave": false,
-
-    // Define the file types to do the autoformatting
-    "[javascript]": {
-      "editor.defaultFormatter": "esbenp.prettier-vscode",
-      "editor.formatOnSave": true
-    },
-    "[typescript]": {
-      "editor.defaultFormatter": "esbenp.prettier-vscode",
-      "editor.formatOnSave": true
-    },
-    "[typescriptreact]": {
-      "editor.defaultFormatter": "esbenp.prettier-vscode",
-      "editor.formatOnSave": true
-    },
-    "[json]": {
-      "editor.defaultFormatter": "esbenp.prettier-vscode",
-      "editor.formatOnSave": true
-    },
-  }
-  EOT
-
-    # Echo
-    echo "[Add this to your package.json scripts]"
-    echo "\"lint\": \"prettier --write src/**/*.ts{,x}\""
-
-    # DONE
-  }
-  ```
-  
-
-
-
-
-
-# Another setup example
-- [blog post](https://dev.to/heyitsarpit/eslint-and-prettier-for-react-apps-bonus-next-js-and-typescript-3e46)
-1. Setup 
-  ```shell
-  $ npm i -D eslint \                       # Eslint itself
-            prettier \                     # Prettier itself
-            eslint-plugin-react \          # Eslint plugin for react
-            eslint-plugin-react-hooks \    # Eslint plugin for react hooks, helps you write modern functional react components
-            eslint-config-prettier \       # Eslint config for prettier, it will extend the style guide to match prettier
-            eslint-plugin-prettier \       # Eslint plugin for prettier, it will raise eslint errors about formatting
-            eslint-plugin-jsx-a11y         # Eslint plugin to raise accessibility violation errors
-
-  # Create some config files
-  $ touch .eslintrc.js .prettierrc
-
-  # Create some ignore files
-  $ touch .eslintignore .prettierignore
-  ```
-
-2. Add to the `.eslintrc.js` file
-  ```js
-  module.exports = {
-      root: true,                 // Make sure eslint picks up the config at the root of the directory
-      parserOptions: {
-          ecmaVersion: 2020,      // Use the latest ecmascript standard
-          sourceType: 'module',   // Allows using import/export statements
-          ecmaFeatures: {
-              jsx: true           // Enable JSX since we're using React
-          }
-      },
-      settings: {
-          react: {
-              version: 'detect'   // Automatically detect the react version
-          }
-      },
-      env: {
-          browser: true,          // Enables browser globals like window and document
-          amd: true,              // Enables require() and define() as global variables as per the amd spec.
-          node: true              // Enables Node.js global variables and Node.js scoping.
-      },
-      extends: [
-          'eslint:recommended',
-          'plugin:react/recommended',
-          'plugin:jsx-a11y/recommended',
-          'plugin:prettier/recommended' // Make this the last element so prettier config overrides other formatting rules
-      ],
-      rules: {
-          'prettier/prettier': ['error', {}, { usePrettierrc: true }]  // Use our .prettierrc file as source
-      }
-  };
-  ```
-
-3. Add to the `.prettierrc` file
-  ```json
-  {
-      "semi": true,
-      "tabWidth": 4,
-      "printWidth": 100,
-      "singleQuote": true,
-      "trailingComma": "none",
-      "jsxBracketSameLine": true
-  }
-  ```
-
-4. Update the scripts to your package.json file.
-  ```json
-  {
-    "scripts": {
-      "lint": "eslint --fix .",
-      "format": "prettier --write './**/*.{js,jsx,ts,tsx,css,md,json}' --config ./.prettierrc"
-    }
-  }
-  ```
-
-
-
-
-
-
-
-
-
 
