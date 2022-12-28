@@ -78,3 +78,10 @@ details[open] summary{
 details[open] summary h2:first-child {
   margin-top: 0;
 }
+
+a {
+  text-decoration: underline;
+  text-decoration-color: aquamarine;
+  text-decoration-thickness: 3px;
+  color: #f25bb5;
+}
