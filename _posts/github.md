@@ -724,23 +724,6 @@ $ git commit
   - `Permissions` -> `Secrets` -> `Read`
 
 
-GITHUB_TOKEN Permissions
-  Actions: write
-  Checks: write
-  Contents: write
-  Deployments: write
-  Discussions: write
-  Issues: write
-  Metadata: read
-  Packages: write
-  Pages: write
-  PullRequests: write
-  RepositoryProjects: write
-  SecurityEvents: write
-  Statuses: write
-
-
-
   - **Make sure to copy your personal access token now as you will not be able to see this again.**
 2. In your repo settings -> Secrets -> Actions
   - Add a `New repository secret` as whatever you define the name as in your Github Action file. e.g. `GH_REPO_TOKEN`
