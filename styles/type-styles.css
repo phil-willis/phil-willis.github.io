@@ -61,11 +61,19 @@ div[class^="markdown-styles"] ul ol{
 }
 
 
+details[open]{
+  background-color: #7fffd4;
+}
+
+details[open] .remark-highlight {
+  padding-left: 4px !important;
+  padding-right: 4px !important;
+}
+
 details[open] summary{
   background-color: #f15bb5;
   color: white;
 }
-
 
 details[open] summary h2:first-child {
   margin-top: 0;
