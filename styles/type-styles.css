@@ -84,3 +84,7 @@ a {
   text-decoration-thickness: 3px;
   color: #f25bb5;
 }
+
+summary::marker{
+  color: #f25bb5;
+}
