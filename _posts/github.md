@@ -497,7 +497,7 @@ $ git commit
 
 
 <details>
-<summary>If git keeps asking for your pass-phase</summary>
+<summary>Git nagging about pass-phase</summary>
 
 - Just edit your `~/.ssh/config` and enable the `UseKeychain` option:
   ```shell
@@ -520,7 +520,7 @@ $ git commit
   - `PULL_REQUEST_TEMPLATE.md` -> How to make a pull request to project
   - `stale.yml` -> Probot configuration to close stale issues. There are many other apps on Github Marketplace that place their configurations inside `.github` folder because they are related to GitHub specifically.
   - `SECURITY.md` -> How to responsibly report a security vulnerability in project
-  - `workflows` -> Configuration folder containing yaml files for GitHub Actions
+  - `./workflows/` -> Configuration folder containing yaml files for GitHub Actions
   - `CODEOWNERS` -> Pull request reviewer rules.
   - `dependabot.yml` -> Configuration options for dependency updates. More info [here](https://docs.github.com/en/code-security/supply-chain-security/keeping-your-dependencies-updated-automatically/configuration-options-for-dependency-updates).
 - But another special repository you can create is the `.github` repository. It acts as a fallback for all of your repositories that don't have an actual .`github` directory with issue templates and other community health files.
@@ -690,22 +690,61 @@ $ git commit
   ![](/assets/blog/gh-pages-screenshot.png)
   - It's ok to keep the path as `/ (root)` because the when you run `gh-pages -d public` it take the contents of the `public` folder and saves it to the root of the `gh-pages` branch
 
-
 4. Publishing to GitHub Pages
 - All you need to do to publish to githubpages is to run the npm `deploy` script
   ```sh
   $ npm run deploy
   ```
+- If you are using [Vitejs](https://vitejs.dev/guide/static-deploy.html#github-pages) you're gonna wanna update the vite config
+  ```js
+  export default defineConfig({
+    base: "/YOUR_REPO_NAME/",
+    plugins: [react()],
+    build: {
+      outDir: "build",
+    },
+  });
+  ```
+- If you want the Github Pages to the `https://<GITHUB_USERNAME>.github.io/` you just need to name the repo `<GITHUB_USERNAME>.github.io`. If you don't name your repo `<GITHUB_USERNAME>.github.io`, you can access your Github Page at  `https://<GITHUB_USERNAME>.github.io/`<REPO_NAME>`/.
+
 - Your static page should live: https://`<GITHUB_USERNAME>`.github.io/`<REPO_NAME>`/.
 - *You might have to clear your cache to see the new changes*
 
 ## Publish with Github Actions
-1. create a personal access token
+- GitHub automatically creates a `GITHUB_TOKEN` secret to use in your workflow. You can use the `GITHUB_TOKEN` to authenticate in a workflow run.
+- OR you can create a [Personal Access Token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token)
+
+1. Create a personal access token
   - click the avatar > profile > `Developer settings` > `Personal access token` or https://github.com/settings/tokens
   - note: `<repo_name> for github actions`
-  - check the `repo` section
-  - **DON'T FORGET TO COPY THE TOKEN**
-2. In your repo settings paste the `ACCESS_TOKEN`
+  - `Repository access` -> `Only select repositories` -> select your specific repo
+  - `Permissions` -> `Actions` -> `Read and Write`
+  - `Permissions` -> `Deployments` -> `Read and Write`
+  - `Permissions` -> `Pages` -> `Read and Write`
+  - `Permissions` -> `Secrets` -> `Read`
+
+
+GITHUB_TOKEN Permissions
+  Actions: write
+  Checks: write
+  Contents: write
+  Deployments: write
+  Discussions: write
+  Issues: write
+  Metadata: read
+  Packages: write
+  Pages: write
+  PullRequests: write
+  RepositoryProjects: write
+  SecurityEvents: write
+  Statuses: write
+
+
+
+  - **Make sure to copy your personal access token now as you will not be able to see this again.**
+2. In your repo settings -> Secrets -> Actions
+  - Add a `New repository secret` as whatever you define the name as in your Github Action file. e.g. `GH_REPO_TOKEN`
+  - e.g. in the Actions file `${{ secrets.GH_REPO_TOKEN }}`
 </details>
 
 
