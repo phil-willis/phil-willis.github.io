@@ -7,6 +7,7 @@ const styles = {
     backdropFilter: 'blur(10px)',
     width: '100%',
     left: '0px',
+    zIndex: 1000
   },
   fixedStyles: {
     padding: 0,
