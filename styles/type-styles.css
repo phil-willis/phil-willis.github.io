@@ -66,8 +66,7 @@ details[open]{
 }
 
 details[open] .remark-highlight {
-  padding-left: 4px !important;
-  padding-right: 4px !important;
+  padding: 0 4px 8px 4px !important;
 }
 
 details[open] summary{
