@@ -1,6 +1,5 @@
 ---
 title: 'Databases'
-excerpt: 'a getting started guide for popular databases'
 coverImage: '/assets/covers/database.jpg'
 ogImage:
   url: '/assets/covers/database.jpg'
@@ -8,17 +7,11 @@ ogImage:
 
 
 # Databases 
-- [x] MySQL + baked in spatial functions
-- [x] PostgreSQL + PostGIS
-- [x] Firebase
-- [x] DynamoDB
-- [ ] SQLite + SpatiaLite
-- [ ] MongoDB
-- [ ] CouchDB
 
+<details>
+<summary>MySQL</summary>
 
-# MySQL
-- Basic Docker stuff
+# Basic Docker stuff
   ```shell
   # show all running containers
   $ docker ps
@@ -204,7 +197,32 @@ CREATE TABLE Rooms(
   longitude FLOAT
 );
 ```
+</details>
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<details>
+<summary>MySQL with Spatial Data</summary>
 
 ## MySQL with Spatial Data
 - **MySQL `POINT(lng,lat)`, just like PostGIS maintains (lng,lat), however... the `ST_GeomFromText` like `ST_GeomFromText('POINT(45.5051 -122.6750)', 4326)` DOES `LAT/LNG`??**
@@ -315,15 +333,43 @@ CREATE TABLE Rooms(
   )
   FROM places WHERE ST_CONTAINS(@polygon, coordinates);
   ```
+</details>
 
 
 
-# Postgres & PostGIS
-- The `postgis/postgis` image will have the following extensions installed:
-  - postgis
-  - postgis_topology
-  - fuzzystrmatch
-  - postgis_tiger_geocoder
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<details>
+<summary>Postgres</summary>
 
 ## Docker stuff
 - Create a `docker-compose.yml` file
@@ -414,6 +460,24 @@ postgres=\# \c sales
 postgres=\# \dt
 ```
 
+</details>
+
+
+
+
+
+
+
+<details>
+<summary>Postgres with Spatial Data (via PostGIS)</summary>
+
+# Postgres & PostGIS
+- The `postgis/postgis` image will have the following extensions installed:
+  - postgis
+  - postgis_topology
+  - fuzzystrmatch
+  - postgis_tiger_geocoder
+
 ## Postgres/PostGIS Spatial Table
 
 ```sql
@@ -482,12 +546,33 @@ SELECT  *, ST_AsText(geom)  FROM places WHERE ST_CONTAINS(
   geom
 );
 ```
+</details>
 
 
 
 
 
-====
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<details>
+<summary>Firebase</summary>
+
 # Firebase's Firestore
 - Firebase has 2 flavor of NoSQL Database `Realtime Database` & `Firestore Database`
 - The `Realtime Database` as the original database before Google aquired Firebase and the `Firestore Database` is if the Realtime database & Google had a baby.
@@ -570,8 +655,6 @@ SELECT  *, ST_AsText(geom)  FROM places WHERE ST_CONTAINS(
   ```
 - Almost time to add data... Go to your Firebase project in the Console and click the gear icon in the navbar, `Project settings` > `Service account` > `Generate new private key` copy this key to your source code **MAKE SURE YOU GITIGNORE THIS FILE**, this file provides admin access to your application
 
-
-
 ## Admin verses Firestore/app
 - If you are using firebase on the client use the `firebase/app` package, if you are using Fiebase on the server where you can control your Firebase credentials use `firebase-admin`
 - Exmaple of initializing a Firebase connection on the client:
@@ -597,8 +680,6 @@ SELECT  *, ST_AsText(geom)  FROM places WHERE ST_CONTAINS(
 
   const db = admin.firestore();
   ```
-
-
 
 ## CRUD the Firestore Database
 - [Docs](https://firebase.google.com/docs/firestore/query-data/get-data)
@@ -672,6 +753,22 @@ SELECT  *, ST_AsText(geom)  FROM places WHERE ST_CONTAINS(
     })
     .catch((error) => console.log("Error getting documents: ", error));
   ```
+</details>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<details>
+<summary>Firebase Spatial</summary>
 
 ## Let's make it spatial!
 - You can do geospatial stuff with `firestore` because of geohashing
@@ -772,6 +869,7 @@ const geoQuery = geocollection.near({
     radius: 10.5
     }).where('type', '==', 'coffee');
 ```
+</details>
 
 
 
@@ -781,7 +879,25 @@ const geoQuery = geocollection.near({
 
 
 
-====
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<details>
+<summary>DynamoDB</summary>
+
 # DynamoDB
 - [DynamoDB API Reference](https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_Operations_Amazon_DynamoDB.html)
 - [DynamoDB Class list](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DynamoDB.html)
@@ -1304,8 +1420,6 @@ const geoQuery = geocollection.near({
   ```
 
 
-
-
 ## batch load a json file
 
 ```shell
@@ -1318,15 +1432,105 @@ $ aws dynamodb batch-write-item --request-items file://my-data-seed.json --profi
 ## Single table design
 - You can create a single table design using a primary key with a specific pattern.
 
+</details>
+
+
+
+
+
+<details>
+<summary>Supabase</summary>
+
+# Supabase
+- Supabase is an open source Firebase alternative. Start your project with a Postgres database, Authentication, instant APIs, Edge Functions, Realtime subscriptions, and Storage.
+- It uses Postgres as the database (and it's really easy to add the PostGIS extension!!)
+- You can use the online offering, with a very generous free tier and $25 a month once you have a large user base. see [pricing](https://supabase.com/pricing)
+- You can also `Self host` with [Docker](https://supabase.com/docs/guides/self-hosting/docker)
+- What you might want to do is to user the Docker container for local development then use the online offering for production
+- [Supabase docs](https://supabase.com/docs/reference/javascript/introduction)
+
+
+# Local Development with the Supabase CLI
+- [Local development docs](https://supabase.com/docs/guides/resources/supabase-cli/local-development)
+
+
+
+# Self Hosted Development
+- Checkout the docker directory in the Supabase repo:
+  ```shell
+  # Get the code
+  git clone --depth 1 https://github.com/supabase/supabase
+
+  # Go to the docker folder
+  cd supabase/docker
+
+  # Copy the fake env vars
+  cp .env.example .env
+
+  # Start
+  docker compose up
+  ```
+- Now visit [http://localhost:3000](http://localhost:3000) to start using Supabase Studio.
+- In your clientside app you want to connect to supabase with the `ANON_KEY` & `SERVICE_ROLE_KEY` values in your in the `docker/.env` file.
+
+# The complete Supabase experience
+- Create a project
+- Connect your clientside app to supabase with the `ANON_KEY` & `SERVICE_ROLE_KEY` values 
 
 
 
 
 
 
-###
+
+</details>
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<details>
+<summary>SQLite</summary>
+
+...comming soon
+</details>
+
+
+
+<details>
+<summary>SQLite with Spatial Data</summary>
+
+...comming soon
+</details>
+
+
+
+<details>
+<summary>MongoDB</summary>
+
+...comming soon
+</details>
+
+
+
+<details>
+<summary>CouchDB</summary>
+
+...comming soon
+</details>
 
 
 
