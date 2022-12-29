@@ -1,9 +1,9 @@
 ---
 title: 'html'
 excerpt: ''
-coverImage: '/assets/covers/_blank_.jpg'
+coverImage: '/assets/covers/html.jpg'
 ogImage:
-  url: '/assets/covers/_blank_.jpg'
+  url: '/assets/covers/html.jpg'
 ---
 
 

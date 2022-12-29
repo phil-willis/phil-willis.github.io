@@ -1,9 +1,9 @@
 ---
 title: 'e2e'
 excerpt: ''
-coverImage: '/assets/covers/_blank_.jpg'
+coverImage: '/assets/covers/e2e.jpg'
 ogImage:
-  url: '/assets/covers/_blank_.jpg'
+  url: '/assets/covers/e2e.jpg'
 ---
 
 
