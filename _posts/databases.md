@@ -8,6 +8,13 @@ ogImage:
 
 # Databases 
 
+# SQL
+
+- [Beautiful database diagrams](https://drawsql.app/)
+- [Simple database diagram for twitter](https://drawsql.app/templates/twitter)
+
+
+# Databases
 <details>
 <summary>MySQL</summary>
 
@@ -1438,6 +1445,26 @@ $ aws dynamodb batch-write-item --request-items file://my-data-seed.json --profi
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 <details>
 <summary>Supabase</summary>
 
@@ -1477,9 +1504,45 @@ $ aws dynamodb batch-write-item --request-items file://my-data-seed.json --profi
 - Create a project
 - Connect your clientside app to supabase with the `ANON_KEY` & `SERVICE_ROLE_KEY` values 
 
+## Role level security
+- Normal 3 piece architecture app workflow with [client, server, database]. Where the client can only communicate with the server and ther server can communicate to the database
 
+  ![normal-rest-flow.](/assets/blog/supabase/normal-rest-flow.jpg)
 
+- Supabase is similar to Firebase where the client can communicate directly to the database. Supabase used Row Level Security (RLS) because it's SQL base as for Firebase/Firestore uses Security Rules
 
+  ![rls](/assets/blog/supabase/rls.jpg)
+
+- The access rules are written in the database
+- **NOTE** when you turn on `RLS` to a table, by default the entire table is locked down, you have to add the rules via policies
+1. Add Row Level Security go to `Supabase` -> `Authentication` -> `Policies` -> enable RLS on the table you want
+2. Create a policy
+
+- Anyone can READ
+  ```sql
+  CREATE POLICY "Enable read access for all users" ON "public"."places"
+  AS PERMISSIVE FOR SELECT
+  TO public
+  USING (true)
+  ```
+- INSERT access for authenticated users only
+  ```sql
+  CREATE POLICY "policy_name"
+  ON public.places
+  FOR INSERT 
+  TO authenticated 
+  WITH CHECK (true);
+  ```
+
+- Update access for users based on their email. This policy assumes that your table has a column "email", and allows users to update rows which the "email" column matches their email.
+  ```sql
+  CREATE POLICY "policy_name"
+  ON public.places
+  FOR SELECT USING (
+    auth.uid() = user_id
+  );
+  ```
+- Designing tables
 
 
 
@@ -1488,6 +1551,156 @@ $ aws dynamodb batch-write-item --request-items file://my-data-seed.json --profi
 
 
 
+
+
+<details>
+<summary>Supabase with Spatial Data</summary>
+
+- Since Supabase uses Postgres as the database, it also provides a bunch of extentions you can toggle and PostGIS being one of them!
+- Navigate to extension via `Database` -> `Extenstions` -> toggle the `POSTGIS` extension
+- There are 2 ways you can add spatial data to you database
+  1. via the SQL editor in Supabase
+  2. via your clientside app (you'll have to create a Postgre function for the WKB location format)
+
+# Via the SQL Editor
+  ![sql-editor-postgis](/assets/blog/supabase/sql-editor-postgis.jpg)
+- SQL statements like this
+  ```sql
+  DROP TABLE places;
+
+  CREATE TABLE places (
+    id uuid default uuid_generate_v4() PRIMARY KEY,
+    name text NOT NULL,
+    type varchar
+  );
+  SELECT AddGeometryColumn('places','geom','4326','POINT',2);
+
+  -- Add a spatial index (to drop the index ...`DROP INDEX places_geom_idx;`)
+  CREATE INDEX places_geom_idx ON places USING GIST (geom);
+  ```
+
+  ```sql
+  INSERT INTO places(name, type, geom)
+  VALUES('Portland',  'city', ST_GeomFromText('POINT(-122.6795 45.52054)', 4326) );
+
+  INSERT INTO places(name, type, geom)
+  VALUES('Vancouver', 'city', ST_SetSRID(ST_MakePoint(-123.1207, 49.2827), 4326) );
+
+  INSERT INTO places(name, type, geom)
+  VALUES ('Seattle', 'city', ST_SetSRID(ST_MakePoint(-122.33551, 47.604311),4326));
+
+  INSERT INTO places(name, type, geom)
+  VALUES ('San Francisco', 'city', ST_SetSRID(ST_MakePoint(-122.416534, 37.771800273),4326));
+
+  INSERT INTO places(name, type, geom)
+  VALUES ('Ottawa', 'city', ST_SetSRID(ST_MakePoint(-75.697174, 45.42062),4326));
+  ```
+
+# Via the clientside app
+- First thing is we can't insert geometries unless we have them in WKB format, and we cannot do so from the clientside, so we'll have to create a stored proceedure in the database so the database can create the geometies
+- Create a table
+
+  ```sql
+  DROP TABLE IF EXISTS places;
+
+  CREATE TABLE places (
+    id uuid default uuid_generate_v4() PRIMARY KEY,
+    name varchar,
+    type varchar,
+    address varchar
+  );
+  SELECT AddGeometryColumn ('','places','geom',4326,'POINT',2);
+  ```
+- Create a postgres function
+  ```sql
+  CREATE OR REPLACE FUNCTION addGeomerty (
+    name varchar,
+    type varchar,
+    address varchar,
+    
+    lng float, 
+    lat float
+  )
+  RETURNS SETOF places AS
+  $$
+  DECLARE
+  return_record places%rowtype;
+  BEGIN
+    INSERT INTO places(
+      name,
+      type,
+      address,
+      geom
+    ) 
+    VALUES (
+      name,
+      type,
+      address,
+      ST_SetSRID(ST_MakePoint(lng, lat), 4326)
+    )
+    RETURNING *
+    INTO return_record;
+    RETURN NEXT return_record;
+  END
+  $$
+  LANGUAGE plpgsql;
+  ```
+- Add some data
+  ```sql
+  -- Add some data
+  SELECT addGeomerty('the woodsman','restaurant', '4537 SE Division St, Portland, OR 97206', -122.615385, 45.505403);
+  ```
+
+- Now add some data via the JS clientside
+
+  ```js
+  import { createClient } from '@supabase/supabase-js'
+
+  const supabaseUrl = __api.env.SVELTE_APP_SUPABASE_URL
+  const supabaseAnonKey = __api.env.SVELTE_APP_SUPABASE_ANON_KEY
+
+  export const supabase = createClient(supabaseUrl, supabaseAnonKey)
+
+  async function addPlaces() {
+    const poiHeart = {
+      name: "heart coffee roaster",
+      type: "coffee",
+      address: "2211 E Burnside St, Portland, OR 97214",
+      lng: -122.643183,
+      lat: 45.523097,
+    };
+
+    const poiNever = {
+      name: "Never coffee",
+      type: "coffee",
+      address: "4243 SE Belmont St UNIT 200, Portland, OR 97215",
+      lng: -122.618792,
+      lat: 45.516657,
+    };
+
+    const poiFranks = {
+      name: "Franks noodle house",
+      type: "restaurant",
+      address: "822 NE Broadway, Portland, OR 97232",
+      lng: -122.657005,
+      lat: 45.534821,
+    };
+
+    const { data: dataInsert, error } = await supabase.rpc("addgeomerty", poiHeart);
+    const { data: dataInsert, error } = await supabase.rpc("addgeomerty", poiNever);
+    const { data: dataInsert, error } = await supabase.rpc("addgeomerty", poiFranks);
+  }
+
+  addPlaces()
+  ```
+
+
+
+
+
+
+
+</details>
 
 
 
