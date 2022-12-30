@@ -464,6 +464,48 @@ ogImage:
 
 
 
+
+
+<details>
+<summary>Publishing a JS library</summary>
+
+- CommonJS (cjs) (a.k.a the require('xxx') and module.exports syntax) used to be the standard in which client-side libraries have be build. 
+- ECMAScript modules then shows up on the scenes where the community starts to migrate slowly to native ESM gradually. ESM as better named exports, better static analysis, tree-shaking, browser native support, the future of JavaScript
+
+  ```js
+  // CJS
+  const someLib = require('./some-lib.js')
+  someLib.doSomething()
+  ```
+
+  ```js
+  // ESM
+  import { doSomething } from './some-lib.mjs'
+  doSomething()
+  ```
+
+- **Compatibility**, you can’t use ESM packages in CJS. You cannot use the `require` syntax in an ESM file:
+  ```js
+  // ESM file
+  const someLib = require('./some-lib.js') // CANNOT DO THIS
+  ```
+- Though you can just ship pure ESM packages, you may not want to do so right now because the majority of the ecosystem are still on CJS and the migration is not easy. Therefore, ship BOTH!
+</details>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # Monorepo
  - [Yarn Workspaces](https://www.smashingmagazine.com/2019/07/yarn-workspaces-organize-project-codebase-pro/#react-project-add-workspace-list )
 
