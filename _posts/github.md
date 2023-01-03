@@ -698,11 +698,16 @@ $ git commit
 - If you are using [Vitejs](https://vitejs.dev/guide/static-deploy.html#github-pages) you're gonna wanna update the vite config
   ```js
   export default defineConfig({
-    base: "/YOUR_REPO_NAME/",
     plugins: [react()],
-    build: {
-      outDir: "build",
+    base: "/YOUR_REPO_NAME/",
+    resolve: {
+      alias: {
+        "@": path.resolve(__dirname, "./src"),
+      },
     },
+    build: { outDir: "build" },
+    server: { port: 3030 },
+    preview: { port: 8080 },
   });
   ```
 - If you want the Github Pages to the `https://<GITHUB_USERNAME>.github.io/` you just need to name the repo `<GITHUB_USERNAME>.github.io`. If you don't name your repo `<GITHUB_USERNAME>.github.io`, you can access your Github Page at  `https://<GITHUB_USERNAME>.github.io/`<REPO_NAME>`/.

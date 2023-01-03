@@ -267,12 +267,13 @@ ogImage:
     // https://vitejs.dev/config/
     export default defineConfig({
       plugins: [react()],
-      build: {
-        outDir: 'build',
+      resolve: {
+        alias: {
+          "@": path.resolve(__dirname, "./src"),
+        },
       },
-      server: {
-        port: 8080,
-      },
+      build: { outDir: "build" },
+      server: { port: 8080 }
     })
     ```
 

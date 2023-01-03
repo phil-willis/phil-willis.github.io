@@ -81,6 +81,33 @@ ogImage:
   svelte-ts
   ```
 
+- Control the dev port and build directory
+    ```ts
+    import react from '@vitejs/plugin-react'
+    import path from 'path'
+    import { defineConfig } from 'vite'
+
+    export default defineConfig({
+      plugins: [react()],
+
+      // ===== Add this ====
+      // What you want the build folder to be named
+      build: { outDir: "build" },
+
+      // If you site is not the base path, github pages or nested site
+      base: "/app-base-to-something/",
+
+      // Port for developing
+      server: { port: 3030 },
+
+      // Port for the preview
+      preview: { port: 8080 },
+      // ===== Add this ====
+    })
+    ```
+
+
+
 - Add file alias
   - Update your `vite.config.ts` file
     ```ts
