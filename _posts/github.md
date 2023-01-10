@@ -1030,15 +1030,17 @@ $ git commit
 <details>
 <summary>Testing Github Actions on your local machine</summary>
 
-  - [nektos/act](https://github.com/nektos/act) and docker
-  - This tool requires that you use a `runs-on: ubuntu-latest` and not a `runs-on: self-hosted`
-  ` ~/.actrc`
-  - Spin up a Github Action Docker container
+  - Install `Act` with homebrew
+    ```shell
+    $ brew install act
     ```
-    # Normally
-    $ act
-
-    # M1 chip
+    - [nektos/act](https://github.com/nektos/act) and docker
+    - This tool requires that you use a `runs-on: ubuntu-latest` and not a `runs-on: self-hosted`
+    ` ~/.actrc`
+  - Make sure you have a `./.github/workflows/*.yml` file(s)
+  - Run Github Actions locally
+    ```shell
+    # Make sure that Docker Desktop is opened
     $ act --container-architecture linux/amd64
     ```
 </details>
@@ -1082,6 +1084,58 @@ $ git commit
 </details>
 
 
+
+
+
+
+<details>
+<summary>Github Action - Event triggers</summary>
+
+- Github Actions have a few events that trigger a workflow. Learn more [here](https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows)
+- Here are a list of current events:
+  - `branch_protection_rule`
+  - `check_run`
+  - `check_suite`
+  - `create`
+  - `delete`
+  - `deployment`
+  - `deployment_status`
+  - `discussion`
+  - `discussion_comment`
+  - `fork`
+  - `gollum`
+  - `issue_comment`
+  - `issues`
+  - `label`
+  - `merge_group`
+  - `milestone`
+  - `page_build`
+  - `project`
+  - `project_card`
+  - `project_column`
+  - `public`
+  - `pull_request`
+  - `pull_request_comment (use issue_comment)`
+  - `pull_request_review`
+  - `pull_request_review_comment`
+  - `pull_request_target`
+  - `push`
+  - `registry_package`
+  - `release`
+  - `repository_dispatch`
+  - `schedule`
+  - `status`
+  - `watch`
+  - `workflow_call`
+  - `workflow_dispatch`
+  - `workflow_run`
+- Here is where you write it in yor YAML file
+  ```yml
+  name: Github Actions Event triggers
+  on:
+    push|pull|etc...
+  ```
+</details>
 
 
 <details>
