@@ -545,16 +545,32 @@ $ terraform apply -auto-approve
     - HTTP URLs
     - S3 buckets
     - GCS buckets
-  - example of using modules source
+  - Example of using modules source
     ```hcl
     module "consul" {
       source = "./consul"
     }
     ```
-  - example of using modules source
+  - Example of using modules source
     ```hcl
     module "consul" {
       source = "../module_at_parent_level"
+    }
+    ```
+  - Example of using modules source from Github
+    ```hcl
+    module "consul" {
+      source = "https://github.com/<GITHUB_NAMESPACE>/<REPO_NAME>"
+    }
+    ```
+    ```hcl
+    module "consul" {
+      source = "https://github.com/<GITHUB_NAMESPACE>/<REPO_NAME>?ref=1.2.3"
+    }
+    ```
+    ```hcl
+    module "consul" {
+      source = "https://github.com/<GITHUB_NAMESPACE>/<REPO_NAME>?ref=<SOME_BRANCH_NAME>"
     }
     ```
 
