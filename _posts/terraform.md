@@ -560,17 +560,17 @@ $ terraform apply -auto-approve
   - Example of using modules source from Github
     ```hcl
     module "consul" {
-      source = "https://github.com/<GITHUB_NAMESPACE>/<REPO_NAME>"
+      source = "git::https://github.com/<GITHUB_NAMESPACE>/<REPO_NAME>.git"
     }
     ```
     ```hcl
     module "consul" {
-      source = "https://github.com/<GITHUB_NAMESPACE>/<REPO_NAME>?ref=1.2.3"
+      source = "git::https://github.com/<GITHUB_NAMESPACE>/<REPO_NAME>.git?ref=1.2.3"
     }
     ```
     ```hcl
     module "consul" {
-      source = "https://github.com/<GITHUB_NAMESPACE>/<REPO_NAME>?ref=<SOME_BRANCH_NAME>"
+      source = "git::https://github.com/<GITHUB_NAMESPACE>/<REPO_NAME>.git?ref=<SOME_BRANCH_NAME>"
     }
     ```
 
