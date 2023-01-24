@@ -38,7 +38,7 @@ ogImage:
 
 - REST Client:
   - Make a `*.http` file, here an example:
-    ```
+    ```shell
     @BASE_URL = https://example.com
     @JWT = ...
 
@@ -335,9 +335,6 @@ ogImage:
   ```
 3. Spin up the Docker container
 4. Use the vscode extension to connect to the databse
-
-```
-
 
 
 
