@@ -506,7 +506,7 @@ ogImage:
 
 
 
-# Monorepo
+# Monorepo - yarn
  - [Yarn Workspaces](https://www.smashingmagazine.com/2019/07/yarn-workspaces-organize-project-codebase-pro/#react-project-add-workspace-list )
 
 1. Create some files
@@ -590,7 +590,11 @@ ogImage:
   ```
 
 
-
+# Monorepo with Nx
+```shell
+# $ npx create-nx-workspace@latest <PROJECT_NAME> --preset=npm
+$ npx create-nx-workspace@latest package-base --preset=npm
+```
 
 
 

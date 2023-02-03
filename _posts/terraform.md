@@ -6,7 +6,11 @@ ogImage:
   url: '/assets/covers/terraform.jpg'
 ---
 
-## What is Terraform
+
+
+<details>
+<summary>What is Terraform</summary>
+
 - Terraform is `Infrasture as code`
 - Other "infrasture-as-code" are: chef, puppet, anisble, SaltStack, CloudFoundation
 - The major building pieces to TF are:
@@ -28,7 +32,14 @@ ogImage:
 - dry run `$ terraform plan`
 - **NOTE** Terraform ignores subfolders, in order to use subfolders you have to configure the subfolders to be a `terraform module`, then include those modules in your `main.tf` file
 
-## Install
+</details>
+
+
+
+
+<details>
+<summary>Install</summary>
+
 - You can install TF with homebrew but it's better to install it with `tfswitch` with homebrew
 - [Terraform version manager](https://warrensbox.github.io/terraform-switcher/)
 - this will allow you to switch version very easily
@@ -37,9 +48,15 @@ ogImage:
   $ tfswitch 0.12.4
   $ terraform -v
   ```
+</details>
 
 
-## Save remote-state in S3
+
+
+
+<details>
+<summary>Save remote-state in S3</summary>
+
 - [docs](https://www.terraform.io/docs/backends/types/s3.html)
 - It is highly recommended that you enable Bucket Versioning on the S3 bucket to allow for state recovery in the case of accidental deletions and human error.
 - Paths to the state file inside the bucket: _`<bucket>/<workspace_key_prefix>/<workspace_name>/<key>`_
@@ -99,10 +116,14 @@ ogImage:
     backend "s3" {}
   }
   ```
+</details>
 
 
 
-## Terraform CLI
+
+<details>
+<summary>Terraform CLI</summary>
+
 - [Terraform CLI](https://www.terraform.io/docs/commands/index.html)
 - `$ terraform workspace (list|select|new|delete|show)`
   ```shell
@@ -128,10 +149,25 @@ ogImage:
 
   $ terraform workspace select prod && terraform refresh
   ```
+</details>
 
 
 
-# Terraform Plugins
+
+
+
+
+
+
+
+
+
+
+
+
+<details>
+<summary>Terraform Plugins</summary>
+
 - Terraform relies on plugins called "providers" to interact with remote systems
 - Defining your providers:
   ```hcl
@@ -147,11 +183,18 @@ ogImage:
 - The `required_providers` block must be nested inside the top-level `terraform` block (which can also contain other settings).
 - [main providers](https://registry.terraform.io/namespaces/hashicorp)
   - Lifecycle management of AWS resources, including EC2, Lambda, EKS, ECS, VPC, S3, RDS, DynamoDB, and more. This provider is maintained internally by the HashiCorp AWS Provider team.
-  
+</details>
 
 
 
-## Variable
+
+
+
+
+
+<details>
+<summary>Variable</summary>
+
 - You can define variables and provide `type`, `default` value, `description`
 - Varaibles have to be hard-coded (you cannot interpolating values)
   ```hcl
@@ -263,9 +306,15 @@ ogImage:
     type = string
   }
   ```
+</details>
 
 
-## Locals (Local Value Configuration)
+
+
+
+<details>
+<summary>Locals (Local Value Configuration)</summary>
+
 - locals are like variables that you can pass in ${dynamic} values
 - A local value assigns a name to an expression, so you can use it multiple times within a module without repeating it.
 - DRY principles, allows you to preform logic to create a value where you don't have to write every time
@@ -296,14 +345,17 @@ ogImage:
     # ...
   }
   ```
+</details>
 
 
 
 
 
 
+<details>
+<summary>Provider</summary>
 
-## Provider
+
 - [providers](https://www.terraform.io/docs/providers/index.html)
 - Providers are basically cloud providers as a service
   - IaaS (infrastruture as a Service) like AWS, Azure, GCP
@@ -352,20 +404,41 @@ ogImage:
     }
     ```
   - [using multiple providers](https://www.terraform.io/docs/configuration/providers.html#alias-multiple-provider-instances)
+</details>
 
 
 
 
 
-## Data
+
+
+
+
+
+
+<details>
+<summary>Data</summary>
+
 - Get information on an existing resource
 - aws_route53_zone
 - aws_caller_identity
 - aws_acm_certificate
+</details>
 
 
 
-## Resource
+
+
+
+
+
+
+
+
+
+<details>
+<summary>Resource</summary>
+
 - Create AWS resources:
   - aws_iam_policy_document
   - aws_acm_certificate
@@ -379,11 +452,23 @@ ogImage:
     ```hcl
     count = "${var.env == "prod" ? 1 : 0}"
     ```
+</details>
 
 
 
 
-## Provisioners
+
+
+
+
+
+
+
+
+<details>
+<summary>Provisioners</summary>
+
+
 - used to execute scripts on a local or remote machine as part of the creation or destruction
 - creation-time provisioners
   ```hcl
@@ -420,11 +505,19 @@ ogImage:
     }
   }
   ```
+</details>
 
 
 
 
-## Outputs
+
+
+
+
+<details>
+<summary>Outputs</summary>
+
+
 - You can print out the values that terraform will generate, when you run it with with `$ terraform output` it will output all the variable that is provided from the tfstate file
 - When you make a module you can define the `output` your module provides as getters
 - You can create bash variables from terraform `output`
@@ -443,9 +536,21 @@ ogImage:
   aws s3 sync build/ s3://$bucket_name/ --exclude \"*.DS_Store*\"
   aws s3 cp build/index.html s3://$bucket_name/ --cache-control max-age=0
   ```
+</details>
 
 
-# workspace
+
+
+
+
+
+
+
+
+
+<details>
+<summary>Workspace</summary>
+
 - [docs](https://www.terraform.io/docs/state/workspaces.html)
 - if you don't define a workspace then you only worked on the "default" workspace
 - defines how operations are executed
@@ -466,20 +571,33 @@ ogImage:
   $ ENVIRONMENT=dev
   $ terraform workspace select $ENVIRONMENT
   ```
+</details>
 
 
+
+
+
+
+
+
+<details>
+<summary>Auto approve</summary>
 
 # Terraform auto-approve apply
 ```shell
 $ terraform apply -auto-approve
 ```
+</details>
 
 
 
 
 
 
-## Modules
+<details>
+<summary>Modules</summary>
+
+
 - Terraform ignores subfolders, in order to use subfolders you have to configure the subfolders to be a `terraform module`, then include those modules in your `main.tf` file.
   ```hcl
   module "custom_module" {
@@ -615,9 +733,23 @@ $ terraform apply -auto-approve
    ... other resource properties 
   }
   ```
+</details>
 
 
-# Terraform for New Relic Dashboard
+
+
+
+
+
+
+
+
+
+# Terraform and Providers
+
+<details>
+<summary>Terraform for New Relic Dashboard</summary>
+
 - Assign some variables to the new-relic account id & api-key
   ```hcl
   variable account_id {}
@@ -704,12 +836,19 @@ $ terraform apply -auto-approve
     -var="account_id=$NR_ACCOUNT_NUMBER" \
     -var="api_key=$NR_API_KEY"
   ```
+</details>
 
 
 
 
 
 
+<details>
+<summary>API Gateway</summary>
+
+
+
+</details>
 
 
 
