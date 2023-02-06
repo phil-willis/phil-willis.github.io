@@ -846,6 +846,304 @@ $ terraform apply -auto-approve
 <details>
 <summary>API Gateway</summary>
 
+1. Create a lambda function, `src/index.js`
+  ```js
+  module.exports.handler = async (event) => {
+    console.log('Event: ', event);
+    let responseMessage = 'Hello, World!';
+
+    return {
+      statusCode: 200,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        message: responseMessage,
+      }),
+    }
+  }
+  ```
+2. Create a `.gitignore`
+
+  ```shell
+  # Local .terraform directories
+  **/.terraform/*
+
+  # .tfstate files
+  *.tfstate
+  *.tfstate.*
+
+  # Crash log files
+  crash.log
+
+  # Exclude all .tfvars files, which are likely to contain sentitive data, such as
+  # password, private keys, and other secrets. These should not be part of version 
+  # control as they are data points which are potentially sensitive and subject 
+  # to change depending on the environment.
+  #
+  *.tfvars
+
+  # Ignore override files as they are usually used to override resources locally and so
+  # are not checked in
+  override.tf
+  override.tf.json
+  *_override.tf
+  *_override.tf.json
+
+  # Include override files you do wish to add to version control using negated pattern
+  #
+  # !example_override.tf
+
+  # Include tfplan files to ignore the plan output of command: terraform plan -out=tfplan
+  # example: *tfplan*
+
+  # Ignore CLI configuration files
+  .terraformrc
+  terraform.rc
+  hello-world.zip
+  response.json
+
+  # node packages
+  node_modules
+  ```
+3. Script for running the lambda file locally
+- Create an `test/event.json` file to pass into your lambda
+  ```json
+  {
+    "resource": "/API/PATH",
+    "path": "/API/PATH",
+    "httpMethod": "POST",
+    "headers": {},
+    "multiValueHeaders": {},
+    "queryStringParameters": null,
+    "multiValueQueryStringParameters": null,
+    "pathParameters": null,
+    "stageVariables": null,
+    "requestContext": {
+      "resourceId": "xxxxx",
+      "resourcePath": "/api/endpoint",
+      "httpMethod": "POST",
+      "path": "/env/api/endpoint",
+      "protocol": "HTTP/1.1",
+      "stage": "env",
+      "domainName": "url.us-east-1.amazonaws.com"
+    },
+    "body": "{\n    \"city\": \"Test 1 City\",\n    \"state\": \"NY\",\n    \"zipCode\": \"11549\"\n}",
+    "isBase64Encoded": false
+  }
+  ```
+- Add a script to run the lambda file locally
+  ```json
+  {
+    "scripts": {
+      "lambda:envoke:local": "node -e \"console.log(require('./src/index.js').handler(require('./test/event.json')));\""
+    }
+  }
+  ```
+4. Let's add some terraform files
+- Create  `./terraform/main.tf` and let's add the AWS providers, define the remote config file key
+  ```hcl
+  terraform {
+    backend "s3" {
+      key    = "api-gateway-example"
+      region = "us-west-2"
+    }
+    required_providers {
+      aws = {
+        source  = "hashicorp/aws"
+        version = "~> 4.0.0"
+      }
+      archive = {
+        source  = "hashicorp/archive"
+        version = "~> 2.2.0"
+      }
+    }
+    required_version = "~> 1.0"
+  }
+
+  provider "aws" {
+    region = var.aws_region
+  }
+  ```
+- Create `./terraform/variables.tf`
+  ```hcl
+  variable "aws_region" {
+    description = "AWS region for all resources."
+
+    type    = string
+    default = "us-west-2"
+  }
+
+  variable "project_name" {
+    type = string
+    description = "Project name to be used throughout the application"
+    default = "example-tf-api-gateway"
+  }
+  ```
+5. Manually create an S3 bucket for your terraform state files and call it `terraform-remote-config-<AWS_ACCOUNT_NUMBER>`
+6. Let's run this 
+- **NOTE** you want to make you have your AWS-CLI credential configured ([more here](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-quickstart.html)) so that Terraform can push to the right account.
+- Create a `./deploy.sh` file
+  ```shell
+  set -e
+
+  # Environments
+  case "$1" in
+    dev) 
+      WORKSPACE="dev"
+      ;;
+    prod) 
+      WORKSPACE="prod"
+      ;;
+    *)
+      echo $"Usage: $0 {dev|prod}"
+      exit 1
+  esac
+  echo "Running tf-deploy on ${WORKSPACE}"
+
+  # Terraform state, bucket name
+  AWS_ACCOUNT_ID=$(aws sts get-caller-identity | jq -r '.Account')
+  terraform_state_bucket="terraform-remote-config-$AWS_ACCOUNT_ID"
+  echo "Using Terraform state bucket: $terraform_state_bucket"
+
+  pushd terraform
+
+  # Cleanup .terraform
+  rm -rf .terraform/
+
+  # Deploy terraform
+  terraform init -backend-config bucket="${terraform_state_bucket}"
+
+  # If the workspace does not exist, create it.
+  if ! terraform workspace select ${WORKSPACE}; then
+    terraform workspace new ${WORKSPACE}
+  fi
+  terraform apply -auto-approve
+  popd
+
+  echo "DONE!"
+  ```
+- Run the script
+  ```shell
+  # Allow the deploy script to be run 
+  $ chmod +x deploy.sh
+
+  $ ./deploy.sh
+  ```
+- Now if you go to AWS console and look in your `terraform-remote-config-<AWS_ACCOUNT_NUMBER>` bucket yo should have `./env:/dev/api-gateway-example` file
+- Sweet now we have terraform setup that will update the state file in AWS so others can work on this project instead of the state file only being on your machine,
+
+7. Create and upload Lambda function archive to S3
+  ```hcl
+  resource "aws_s3_bucket" "rest_api_source" {
+    bucket = var.project_name
+
+    tags = {
+      Name        = "My bucket for API Gateway source code"
+      Environment = "Dev"
+    }
+  }
+
+  resource "aws_s3_bucket_acl" "example" {
+    bucket = aws_s3_bucket.rest_api_source.id
+    acl    = "private"
+  }
+
+  data "archive_file" "rest_api_source" {
+    type = "zip"
+
+    source_dir  = "../rest-api/${path.module}/src"
+    output_path = "../rest-api/${path.module}/dist/rest-api-source.zip"
+  }
+
+  resource "aws_s3_object" "rest_api_source" {
+    bucket = aws_s3_bucket.rest_api_source.id
+
+    key    = "rest-api-source.zip"
+    source = data.archive_file.rest_api_source.output_path
+
+    etag = filemd5(data.archive_file.rest_api_source.output_path)
+  }
+  ```
+8. Create the lambda function from the S3 zipped file
+  ```hcl
+  resource "aws_lambda_function" "rest_api" {
+    function_name = var.project_name
+
+    s3_bucket = aws_s3_bucket.rest_api_source.id
+    s3_key    = aws_s3_object.rest_api_source.key
+
+    runtime = "nodejs12.x"
+    handler = "index.handler"
+
+    source_code_hash = data.archive_file.rest_api_source.output_base64sha256
+
+    role = aws_iam_role.lambda_exec.arn
+  }
+
+  resource "aws_cloudwatch_log_group" "rest_api" {
+    name = "/aws/lambda/${aws_lambda_function.rest_api.function_name}"
+
+    retention_in_days = 30
+  }
+
+  resource "aws_iam_role" "lambda_exec" {
+    name = "serverless_lambda"
+
+    assume_role_policy = jsonencode({
+      Version = "2012-10-17"
+      Statement = [{
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Sid    = ""
+        Principal = {
+          Service = "lambda.amazonaws.com"
+        }
+        }
+      ]
+    })
+  }
+
+  resource "aws_iam_role_policy_attachment" "lambda_policy" {
+    role       = aws_iam_role.lambda_exec.name
+    policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+  }
+  ```
+
+
+
+- Custom Authorizer needs to return IAM Policy, [learn more here](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-lambda-authorizer-output.html), for example:
+  ```json
+  {
+    "principalId": "yyyyyyyy", // The principal user identification associated with the token sent by the client.
+    "policyDocument": {
+      "Version": "2012-10-17",
+      "Statement": [
+        {
+          "Action": "execute-api:Invoke",
+          "Effect": "Allow|Deny",
+          "Resource": "arn:aws:execute-api:{regionId}:{accountId}:{apiId}/{stage}/{httpVerb}/[{resource}/[{child-resources}]]"
+        }
+      ]
+    },
+    "context": {
+      "stringKey": "value",
+      "numberKey": "1",
+      "booleanKey": "true"
+    },
+    "usageIdentifierKey": "{api-key}"
+  }
+  ```
+- The `context` object is optional
+- [Policy Generator](https://awspolicygen.s3.amazonaws.com/policygen.html)
+
+
+
+
+
+
+
+
 
 
 </details>
@@ -863,6 +1161,594 @@ $ terraform apply -auto-approve
 
 
 
+
+
+# Terraform (Infrastructure as Code) to build out your services
+- Why? 
+  - To document all the services that are being used
+  - Repeatable & reusable solution
+  - Tare down all the services created with Terraform because TF creates an inventory of all the services in a state file
+
+# Terraform for a client-side static web application
+
+
+## The variable file
+- This file is the only `.tf` file where you need to update values the rest of the `.tf` files are totally project agnostic
+  ```hcl
+  # (./varables.tf)
+  #-------------------------------------------
+  # Required variables (values passed in via command)
+  #-------------------------------------------
+  variable domain_name {}
+  variable hosted_zone_name {}
+  variable env_tags {}
+
+  #-------------------------------------------
+  # TF version & State file config
+  #-------------------------------------------
+  terraform {
+    backend "s3" {
+      key    = "<YOUR_PROJECT_NAME_HERE>" # this will define the TF state file
+      region = "us-west-2"
+    }
+    required_version = ">= 0.13.5"
+    required_providers {
+      aws = {
+        source  = "hashicorp/aws"
+        version = "~>3.4"
+      }
+    }
+  }
+
+  #-------------------------------------------
+  # Default region
+  #-------------------------------------------
+  variable "region" {
+    default = "us-west-2"
+  }
+  provider "aws" {
+    region = var.region
+  }
+
+  #-------------------------------------------
+  # Interpolated Values
+  #-------------------------------------------
+  locals {
+    bucket_name = "${var.domain_name}"
+    domain_name = "${var.domain_name}"
+  }
+
+  #-------------------------------------------
+  # Data
+  #-------------------------------------------
+  data "aws_caller_identity" "current" {}
+  ```
+
+
+## S3
+- Use S3 to store the static web files and a second bucket for logging
+  ```hcl
+  # (./s3.tf)
+  resource "aws_s3_bucket" "site" {
+    bucket = local.bucket_name
+    acl    = "private"
+    policy = data.aws_iam_policy_document.website_s3_policy.json
+
+    website {
+      index_document = "index.html"
+      error_document = "404.html"
+    }
+
+    tags = {
+      Environment = var.env_tags
+      Created_with = "Terraform"
+    }
+  }
+
+  resource "aws_s3_bucket" "log_bucket" {
+    bucket = "${local.bucket_name}-logs"
+    acl    = "log-delivery-write"
+  }
+  ```
+
+## Policies
+- This policie only allows access via CloudFront to serve the webcontent
+  ```hcl
+  # (./policies.tf)
+  data "aws_iam_policy_document" "website_s3_policy" {
+    statement {
+      actions   = ["s3:GetObject"]
+      resources = ["arn:aws:s3:::${local.bucket_name}/*"]
+
+      principals {
+        type        = "AWS"
+        identifiers = ["${aws_cloudfront_origin_access_identity.website_origin_access_identity.iam_arn}"]
+      }
+    }
+  }
+  ```
+## Route53
+- Make sure that you purchase your domain name beforehand because we will need the Hosted Zone Id
+- We will use TF to create an `A` record to connect to the CloudFront instance
+  ```hcl
+  # (./route53.tf)
+  resource "aws_route53_record" "domain" {
+    name    = local.domain_name
+    zone_id = data.aws_route53_zone.base.zone_id
+    type    = "A"
+    alias {
+      name                   = aws_cloudfront_distribution.website_cdn.domain_name
+      zone_id                = aws_cloudfront_distribution.website_cdn.hosted_zone_id
+      evaluate_target_health = true
+    }
+  }
+
+  data "aws_route53_zone" "base" {
+    name         = "${var.hosted_zone_name}."
+    private_zone = false
+  }
+  ```
+## ACM for certs
+- ACM provides an elegant wayt to convert  a cumbersome multi-step process into a single step, however when combined with Terraform this process is a little more complex because some processes have to happen in senquential steps
+- Some of the TF modules include:
+  - `aws_acm_certificate`: To request a certificate for example.com
+  - `aws_route53_record`: To create a DNS record to validate the certificate request
+  - `aws_certificate_validation`: To ensure that ACM validates our DNS record before certificate use
+- In an effort to reduce the timming steps, [azavea's team](https://www.azavea.com/) assembled a reusable [Terraform module](https://github.com/azavea/terraform-aws-acm-certificate) to encapsulate the ACM and Route 53 resources used. Using the output from the validation resource ensures that Terraform will wait for ACM to validate the certificate before resolving its ARN. Now, the process of creating, validating, and waiting for a valid certificate looks like this:
+  ```hcl
+  # (./certs.tf)
+  data "aws_route53_zone" "base" {
+    name         = "${var.hosted_zone_name}."
+    private_zone = false
+  }
+
+  provider "aws" {
+    region = "us-east-1"
+    alias  = "certificates"
+  }
+
+  provider "aws" {
+    region = var.region
+    alias  = "dns"
+  }
+
+  module "cert" {
+    source = "github.com/azavea/terraform-aws-acm-certificate?ref=3.0.0"
+
+    providers = {
+      aws.acm_account     = aws.certificates
+      aws.route53_account = aws.dns
+    }
+
+    domain_name                       = local.domain_name
+    hosted_zone_id                    = data.aws_route53_zone.base.zone_id
+    validation_record_ttl             = "60"
+    allow_validation_record_overwrite = true
+  }
+
+  resource "aws_route53_record" "domain" {
+    name    = local.domain_name
+    zone_id = data.aws_route53_zone.base.zone_id
+    type    = "A"
+    alias {
+      name                   = aws_cloudfront_distribution.website_cdn.domain_name
+      zone_id                = aws_cloudfront_distribution.website_cdn.hosted_zone_id
+      evaluate_target_health = true
+    }
+  }
+  ```
+
+# CloudFront
+- CloudFront allows for global distribution of our web content with the ability to cache content at AWS edge locations
+- The CloudFront configuration is kind of a beast
+  ```hcl
+  # (./cloudfront.tf)
+  resource "aws_cloudfront_origin_access_identity" "website_origin_access_identity" {
+    comment = "site ${terraform.workspace} Access Identity"
+  }
+
+
+  resource "aws_cloudfront_distribution" "website_cdn" {
+    origin {
+      domain_name = aws_s3_bucket.site.bucket_regional_domain_name
+      origin_id   = "origin-bucket-${aws_s3_bucket.site.id}"
+
+      s3_origin_config {
+        origin_access_identity = aws_cloudfront_origin_access_identity.website_origin_access_identity.cloudfront_access_identity_path
+      }
+    }
+
+    enabled             = true
+    is_ipv6_enabled     = true
+    default_root_object = "index.html"
+
+    logging_config {
+      include_cookies = false
+      bucket          = aws_s3_bucket.log_bucket.bucket_domain_name
+      prefix          = "cloudfront_logs"
+    }
+
+    aliases = [local.domain_name]
+
+    default_cache_behavior {
+      allowed_methods  = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
+      cached_methods   = ["GET", "HEAD"]
+      target_origin_id = "origin-bucket-${aws_s3_bucket.site.id}"
+
+      forwarded_values {
+        query_string = "true"
+
+        cookies {
+          forward = "none"
+        }
+      }
+
+      viewer_protocol_policy = "redirect-to-https"
+      compress               = true
+      min_ttl                = 0
+      default_ttl            = 300
+      max_ttl                = 1200
+    }
+
+    # Cache behavior with precedence 0
+    ordered_cache_behavior {
+      path_pattern     = "/index.html"
+      allowed_methods = ["GET", "HEAD", "DELETE", "OPTIONS", "PATCH", "POST", "PUT"]
+      cached_methods   = ["GET", "HEAD", "OPTIONS"]
+      target_origin_id = "origin-bucket-${aws_s3_bucket.site.id}"
+
+      forwarded_values {
+        query_string = "true"
+
+        cookies {
+          forward = "none"
+        }
+      }
+
+      min_ttl                = 0
+      default_ttl            = 0
+      max_ttl                = 0
+      compress               = true
+      viewer_protocol_policy = "redirect-to-https"
+    }
+
+    custom_error_response {
+      error_code = "404"
+      response_code      = "200"
+      response_page_path = "/index.html"
+    }
+    
+    custom_error_response {
+      error_code = "403"
+      response_code      = "200"
+      response_page_path = "/index.html"
+    }
+
+    price_class = "PriceClass_100" # https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/PriceClass.html
+
+    restrictions {
+      geo_restriction {
+        restriction_type = "none"
+      }
+    }
+
+    viewer_certificate {
+      acm_certificate_arn      = module.cert.arn
+      ssl_support_method       = "sni-only"
+      minimum_protocol_version = "TLSv1"
+    }
+
+    lifecycle {
+      ignore_changes = [tags]
+    }
+
+    tags = {
+      Environment = var.env_tags
+      Created_with = "Terraform"
+    }
+  }
+  ```
+## Finally the `.tfvars` file
+- Creating a `.tfvar` file allows you to deploy this applications to multiple environments (dev|statging|prod)
+  ```hcl
+  # (./env_configs/prod.tfvars)
+  domain_name      = "myawesomesite.com"
+  hosted_zone_name = "myawesomesite.com"
+  env_tags          = "Production"
+  ```
+- Now running this
+  ```shell
+  # *NOTE* run these commands in the terraform folder
+
+  export AWS_PROFILE="<YOUR_AWS_PROFILE_HERE>"
+  CLIENT_BUCKET_NAME="<YOUR_AWS_S3_BUCKET_NAME>"
+  TERRAFORM_STATE_BUCKET_NAME="<YOUR_TF_REMOTE_STATE_BUCKET_NAME>"
+
+  # Environment variables
+  WORKSPACE="prod"
+  VAR_FILE="./env/prod.tfvars"
+
+  # TF version
+  tf_ver="v0.13.5"; if [[ ! $(Terraform --version) =~ "Terraform $tf_ver" ]]; then echo "Terraform $tf_ver is required"; exit 1; fi
+
+  # Cleanup .terraform
+  rm -rf .terraform/
+
+  # Deploy terraform
+  echo "[Running] terraform"
+  terraform init -backend-config bucket="${TERRAFORM_STATE_BUCKET_NAME}"
+
+  # If the workspace does not exist, create it.
+  if ! terraform workspace select ${WORKSPACE}; then terraform workspace new ${WORKSPACE}; fi
+  terraform apply -auto-approve -var-file=$VAR_FILE
+
+  cd .. # where the package.json file exist
+
+  # Build the static files
+  echo "[Build] production version of the website]"
+  yarn
+  yarn run build
+
+  # Upload the source code to AWS S3
+  echo "[Upload] website content"
+  aws s3 rm s3://$CLIENT_BUCKET_NAME/  --recursive
+  aws s3 sync dist/ s3://$CLIENT_BUCKET_NAME/ --exclude \"*.DS_Store*\"
+  aws s3 cp dist/index.html s3://$CLIENT_BUCKET_NAME/ --cache-control max-age=0
+  ```
+
+
+
+
+## CloudFront add a secondary failover origin
+- Create a bucket and a CloudFront ditribution:
+  ```hcl
+  variable "primary_bucket_name"{
+    default = "my-awesome-site"
+  }
+
+  variable "s3_origin_id" {
+    default = "myS3Origin"
+  }
+
+  # Primary Origin
+  data "aws_iam_policy_document" "primary_origin_website_s3_policy" {
+    statement {
+      sid       = "bucket_policy_for_primary"
+      actions   = ["s3:GetObject"]
+      effect    = "Allow"
+      resources = ["arn:aws:s3:::${var.primary_bucket_name}/*"]
+
+      principals {
+        type        = "AWS"
+        identifiers = [aws_cloudfront_origin_access_identity.website_origin_access_identity.iam_arn]
+      }
+    }
+  }
+  resource "aws_s3_bucket" "primary_origin" {
+    bucket = var.primary_bucket_name
+    acl    = "private"
+    policy = data.aws_iam_policy_document.primary_origin_website_s3_policy.json
+
+    website {
+      index_document = "index.html"
+      error_document = "404.html"
+    }
+
+    tags = {}
+
+    force_destroy = true
+  }
+
+
+
+  # CloudFront (With single origin)
+  resource "aws_cloudfront_origin_access_identity" "website_origin_access_identity" {
+    comment = "site ${terraform.workspace} Access Identity"
+  }
+
+  resource "aws_cloudfront_distribution" "s3_distribution" {
+    origin {
+      domain_name = aws_s3_bucket.primary_origin.bucket_regional_domain_name
+      origin_id   = var.s3_origin_id
+
+      s3_origin_config {
+        origin_access_identity = aws_cloudfront_origin_access_identity.website_origin_access_identity.cloudfront_access_identity_path
+      }
+    }
+
+    enabled             = true
+    is_ipv6_enabled     = true
+    comment             = "Some comment"
+    default_root_object = "index.html"
+
+    logging_config {
+      include_cookies = false
+      bucket          = "mylogs.s3.amazonaws.com"
+      prefix          = "myprefix"
+    }
+
+    aliases = ["mysite.example.com", "yoursite.example.com"]
+
+    default_cache_behavior {
+      allowed_methods  = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
+      cached_methods   = ["GET", "HEAD"]
+      target_origin_id = var.s3_origin_id
+
+      forwarded_values {
+        query_string = false
+
+        cookies {
+          forward = "none"
+        }
+      }
+
+      viewer_protocol_policy = "allow-all"
+      min_ttl                = 0
+      default_ttl            = 3600
+      max_ttl                = 86400
+    }
+
+    # Cache behavior with precedence 0
+    ordered_cache_behavior {
+      path_pattern = "/index.html"
+      allowed_methods  = ["GET", "HEAD", "OPTIONS"]
+      cached_methods   = ["GET", "HEAD", "OPTIONS"]
+      target_origin_id = var.s3_origin_id
+
+      forwarded_values {
+        query_string = "true"
+        cookies {
+          forward = "none"
+        }
+      }
+
+      min_ttl                = 0
+      default_ttl            = 86400
+      max_ttl                = 31536000
+      compress               = true
+      viewer_protocol_policy = "redirect-to-https"
+    }
+
+    price_class = "PriceClass_200"
+
+    restrictions {
+      geo_restriction {
+        restriction_type = "none"
+      }
+    }
+
+    tags = {
+      Environment = "production"
+    }
+
+    viewer_certificate {
+      cloudfront_default_certificate = true
+    }
+  }
+  ```
+- Now add a second bucket in another region and update your CloudFront config block to allow for secondary origin
+  ```hcl
+  # Add a bucket in another region
+  provider "aws" {
+    region = "eu-west-1"
+    alias  = "failover_region"
+  }
+
+  variable "secondary_bucket_name"{
+    default = "my-awesome-site-failover"
+  }
+
+  # Secondary Bucket
+  data "aws_iam_policy_document" "secondary_origin_website_s3_policy" {
+    provider = aws.failover_region
+
+    statement {
+      sid       = "bucket_policy_for_secondary"
+      actions   = ["s3:GetObject"]
+      effect    = "Allow"
+      resources = ["arn:aws:s3:::${var.secondary_bucket_name}/*"]
+
+      principals {
+        type        = "AWS"
+        identifiers = [aws_cloudfront_origin_access_identity.website_origin_access_identity.iam_arn]
+      }
+    }
+  }
+  resource "aws_s3_bucket" "secondary_origin" {
+    provider = aws.failover_region
+
+    bucket = var.secondary_bucket_name
+    acl    = "private"
+    policy = data.aws_iam_policy_document.secondary_origin_website_s3_policy.json
+
+    website {
+      index_document = "index.html"
+      error_document = "404.html"
+    }
+
+    tags = {}
+
+    force_destroy = true
+  }
+
+
+  # Update your cloudfront distribution
+  resource "aws_cloudfront_distribution" "s3_distribution" {
+    # Add an `origin group`
+    origin_group {
+      origin_id = "OriginWithFailover"
+
+      failover_criteria {
+        status_codes = [403, 404, 500, 502]
+      }
+
+      # *NOTE: this order matters! (first one will be the primary)
+      member {
+        origin_id = "primaryS3"
+      }
+
+      member {
+        origin_id = "failoverS3"
+      }
+    }
+
+    # Add a second origin
+    origin {
+      domain_name = aws_s3_bucket.secondary_origin.bucket_regional_domain_name
+      origin_id   = "failoverS3"
+
+      s3_origin_config {
+        origin_access_identity = aws_cloudfront_origin_access_identity.website_origin_access_identity.cloudfront_access_identity_path
+      }
+    }
+
+    default_cache_behavior {
+      target_origin_id = "OriginWithFailover"
+
+      allowed_methods = ["GET", "HEAD", "OPTIONS"]
+      cached_methods  = ["GET", "HEAD"]
+      # *...
+    }
+
+    ordered_cache_behavior {
+      target_origin_id = "OriginWithFailover"
+
+      allowed_methods = ["GET", "HEAD", "OPTIONS"] # Note 
+      cached_methods  = ["GET", "HEAD"]
+      # *...
+    }
+
+    # *...
+  }
+  ```
+- Now you can test it by uploading this below HTML to the bucket in the `eu-west-1` and leave the `us-west-2` empty for now
+  ```html
+  <!doctype html>
+  <html lang="en">
+  <head>
+    <title>eu-west-1</title>
+  </head>
+  <body>
+    <h1>eu-west-1</h1>
+    <img src="image.jpg">
+  </body>
+  </html>
+  ```
+- If you go to the CloudFront URL, you should see a site that says `eu-west-1`
+- Now Add the below html to the `us-west-2` bucket:
+  ```html
+  <!doctype html>
+  <html lang="en">
+  <head>
+    <title>us-west-2</title>
+  </head>
+  <body>
+    <h1>us-west-2</h1>
+    <img src="image.jpg">
+  </body>
+  </html>
+  ```
+- If you refresh your browser you should now see `us-west-2`
 
 
 
