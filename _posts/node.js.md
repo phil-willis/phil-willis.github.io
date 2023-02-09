@@ -616,6 +616,8 @@ $ npx create-nx-workspace@latest package-base --preset=npm
 # Short overview of CJS, AMD, UMD, and ESM in Javascript
 - In the beginging JavaScript didn't have a way to import/export modules you had to write all of our JS in a single file or load multiple files with `<script />` tag in the browser.
 - People started to add modularity to JS with CJS, AMD, UMD, and ESM
+- Wanna use ESM modules for your nodejs project?
+  - Update your `package.json` file and add the field `"type": "module"` & start using `import`
 ## CJS 
 - CJS stands for CommonJS
 - Nodejs uses this module format
@@ -712,7 +714,7 @@ $ npx create-nx-workspace@latest package-base --preset=npm
   ```
 
 
-## ESM in the browser
+<!-- ## ESM in the browser
 - So with [modern browsers](https://caniuse.com/?search=esm) all you have to do in have an attribute on your `<script>` tag called `type="module"` and you should now be able to use `import` & `export` in that script file/online without needing a bundler!
 - What a package only exports to CommonJS?? well this is where `esinstall` comes in.
 - `esinstall` is a development tool that converts any JavaScript package into a single ES6-module-friendly file that you can check into your codebase and import. 
@@ -756,7 +758,7 @@ $ npx create-nx-workspace@latest package-base --preset=npm
 
     await install(moduleList, installOptions);
     ```
-- Now all you have to do is run `$ npm install || $ yarn `
+- Now all you have to do is run `$ npm install || $ yarn ` -->
     
     
     
