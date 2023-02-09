@@ -368,7 +368,17 @@ $ docker volume prune
 
 
 
+# Docker Desktop enabling Kubernetes
 
+```shell
+$ docker run -it --rm -d -p 8080:80 --name web nginx
+
+
+$ kubectl create deployment web --image=gcr.io/google-samples/hello-app:1.0
+$ kubectl get pods
+$ kubectl delete deployment web
+$ kubectl get pods
+``
 
 
 

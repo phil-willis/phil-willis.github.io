@@ -90,7 +90,7 @@ ogImage:
     ```
 2. Linting packages
   ```shell
-  $ yarn add -D  @trivago/prettier-plugin-sort-imports @typescript-eslint/eslint-plugin @typescript-eslint/parser concurrently eslint-config-prettier eslint-plugin-prettier prettier
+  $ yarn add -D -W @trivago/prettier-plugin-sort-imports @typescript-eslint/eslint-plugin @typescript-eslint/parser concurrently eslint-config-prettier eslint-plugin-prettier prettier
   $ mkdir .vscode && touch .prettierrc .eslintrc .vscode/settings.json
   ```
   - Linting configs
