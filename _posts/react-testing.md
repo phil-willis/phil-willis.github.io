@@ -1119,12 +1119,64 @@ fireEvent.click(within(getAllByRole('row')[2]).getByText('Delete'))
   })
   ```
 
+# Mocking a component that uses a hook
+- When writing tests it's only a matter of time before you need to create a "fake" version of an internal — or external — service. 
+- This is commonly referred to as mocking. 
+```ts
+// App.test.tsx
+import App from './'
+import { render } from '@testing-library/react'
+let mockIsLoggedIn = false
+jest.mock('../hooks/use-auth', () => {
+    return jest.fn(() => ({
+       isLoggedIn: mockIsLoggedIn
+    }))
+})
+test('can show logged in message', () => {
+    mockIsLoggedIn = true
+    const { getByText } = render(<App/>)
+    expect(getByText('Welcome')).toBeTruthy()
+})
+```
 
 
 
+# Mocking a function that preforms a http fetch
+- Below is an example of testing a function that preforms a fetch. we can mock the implementation of the http call
+  ```js
+  function setupFetchStub(data) {
+    return function fetchStub(_url) {
+      return new Promise((resolve) => {
+        resolve({
+          json: () =>
+            Promise.resolve({
+              data,
+            }),
+        })
+      })
+    }
+  }
 
+  describe('./service/api.js', () => {
+    afterEach(() => {
+      jest.restoreAllMocks()
+    })
 
+    it('should return a list of items', async () => {
+      const mockResponse = {
+        items: [ 'testing.one', 'testing.two', 'testing.three' ]
+      }
+      jest.spyOn(global, 'fetch').mockImplementation(setupFetchStub(mockResponse))
 
+      const data = await api.fetchItems()
+
+      expect(global.fetch).toHaveBeenCalledTimes(1)
+      expect(data).toEqual([ 'testing.one', 'testing.two', 'testing.three' ])
+
+      global.fetch.mockClear()
+    })
+  })
+  ```
 
 
 
