@@ -18,18 +18,18 @@ ogImage:
 ## ElasticSearch stack
 - ElastsicSearch: Store, search, &  analyze data
 - Kibana: a web interface to searc, view, interact
-- Logstash
+- Logstash: ingest data
 
 
 # Basic Architecture
 ![elastic-arhitecture](/assets/blog/elasticsearch/elastic-arhitecture.jpg)
-- Node(s) is 1+ instance of and ElasticSearch, each node as an `id` and a unique `name`
-- Node belong to 1+ Clusters
+- A `Cluster` can be >=1 `nodes` (nodes are distributed across multiple machines, each node as an `id` and a unique `name`) and work together to accomplish a task
+- Data is stored a JSON objects
 - Data is stored as JSON documents
 - Similar objects are grouped together in an `index`. e.g. user's `index` will contain user documents
 - `Index` is not actually storing the data, it just keeps track of where the data is stored on each `node`
 - A `shard` is was exist on the disk
-- When you create an idex you get 1 shard by default, you can configure it so it creates an index with multiple shards that are distributed across nodes, called "sharding"
+- When you create an index you get 1 shard by default, you can configure it so it creates an index with multiple shards that are distributed across nodes, called "sharding"
 - So data is stored in a shard, and it's capacity is dependent on the size of the node
 - You can add more/less shards as the data changes, you can horizontally scale to adapt to increasing data
 - You also run search queries on shards
@@ -44,12 +44,9 @@ ogImage:
 
 
 
-
-
-
 # Installing ES
 - There's multiple options to work with ES
-  - *I would avlid this* Install it directly on your machine (make sure you have Java installed)
+  - *I would avoid this* Install it directly on your machine (make sure you have Java installed)
   - Using Docker or Docker Compose
   - Cloud service
 
@@ -57,7 +54,6 @@ ogImage:
 - He's a simple DockerCompose file `docker-compose.yml`
   ```shell
   version: '3.7'
-
   services:
 
     # Elasticsearch Docker Images: https://www.docker.elastic.co/
@@ -112,8 +108,112 @@ ogImage:
   ```
 
 
+# Ways to work with the Elasticsearch Database
+
+## Curl
 
 
+## Http
+
+
+## node.js library
+
+
+## Kibana Console
+- [localhost 5601](http://localhost:5601/app/kibana)
+- On the left-side bar click on the `Dev Tools` the wrench icon
+  ![devtools](/assets/blog/elasticsearch/devtools.jpg)
+
+
+
+### Get information of the cluster
+
+- Getting information about your ElasticSearch cluster/nodes you can use some keywords that start with `_`
+  ```http
+  GET _cluster/health
+  GET _nodes/stats
+  ```
+- Creating an index is really easy all you have to do is `PUT <INDEX-NAME>`
+  ```http
+  PUT favorite_candy
+  ```
+- If the index was create properly you should get:
+  ```json
+  {
+    "acknowledged" : true,
+    "shards_acknowledged" : true,
+    "index" : "favorite_candy"
+  }
+  ```
+- When creating a document you can use both `POST` & `PUT`
+- Use `POST` if you want ElasticSeach to autogenerate an id for your document
+  ```http
+  POST <INDEX_NAME>/_doc
+  {
+    "field": "value"
+  }
+  ```
+- Return value something like
+  ```json
+  {
+    "_index" : "favorite_candy",
+    "_type" : "_doc",
+    "_id" : "Cm1uXYYBeJQqzgDkslP7",
+    "_version" : 1,
+    "result" : "created",
+    "_shards" : {
+      "total" : 2,
+      "successful" : 1,
+      "failed" : 0
+    },
+    "_seq_no" : 0,
+    "_primary_term" : 1
+  }
+  ```
+- Use `PUT` if you want to define the id for the document
+  ```http
+  PUT <INDEX_NAME>/_doc/1
+  {
+    "field": "value"
+  }
+  ```
+
+
+
+
+
+
+
+GET quotes/_search
+{
+  "query": {
+    "match_all": {}
+  }
+}
+```
+
+
+
+
+
+
+
+
+
+
+# Working with the Elasticsearch via CRUD
+
+
+
+
+
+
+
+# DSL (Domain Specific Language)
+DSL stands for Domain Specific Language. In Elasticsearch, the DSL refers to a JSON-based query language that is used to interact with Elasticsearch. 
+- The DSL provides a way to define and execute various types of queries and aggregations against an Elasticsearch index. 
+- It is a powerful tool that allows you to filter, sort, and manipulate large amounts of data with a high degree of flexibility and precision. 
+- The DSL includes a wide range of query types, including full-text search, term-level queries, geo-spatial queries, and more. It also allows you to perform complex aggregations, such as grouping and statistical analysis, to extract meaningful insights from your data.
 
 
 
