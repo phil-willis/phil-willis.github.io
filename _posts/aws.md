@@ -84,6 +84,68 @@ ogImage:
 
 
 
+<details>
+<summary>S3</summary>
+- AWS Lambda provides various ways to access secrets or sensitive data securely. Here are a few of the most common methods:
+
+  1. `AWS Systems Manager Parameter Store`: This is a managed service that lets you store and retrieve secrets, such as database credentials and API keys. You can access the secrets in a Lambda function by using the AWS Systems Manager API, AWS CLI, or SDK.
+
+  2. `AWS Secrets Manager`: This is a fully managed service that enables you to store, rotate, and retrieve secrets securely. You can access the secrets in a Lambda function by using the AWS Secrets Manager API, AWS CLI, or SDK.
+
+  3. `Environment Variables`: You can store secrets as environment variables in a Lambda function. These secrets are encrypted and protected by the Lambda service-linked role.
+
+  4. `IAM Role`: You can assign an IAM role to a Lambda function that has permissions to access the secrets. For example, you can assign a role that has read-only access to the secrets stored in AWS Secrets Manager or the AWS Systems Manager Parameter Store.
+
+- Regardless of the method you choose, it's important to ensure that the secrets are stored securely and protected from unauthorized access. You should also consider rotating the secrets on a regular basis and limiting the permissions of the roles and services that access the secrets.
+
+
+
+</details>
+
+
+
+
+<details>
+<summary>IAM</summary>
+
+# IAM (Identity and Access Management)
+- `AWS IAM` is a web service that helps you securely control access to AWS resources. IAM enables you to manage users, groups, and permissions to AWS resources. With IAM, you can create and manage AWS users and groups, and use permissions to allow and deny access to AWS resources.
+- An `AWS policy `is a document that defines one or more permissions. AWS policies are written in JSON and specify the actions that a user, group, or role is allowed or denied to perform on AWS resources. For example, you can create a policy that allows a user to perform only read operations on Amazon S3 buckets, or a policy that allows a group to launch EC2 instances.
+- Policies can be attached to AWS users, groups, or roles. When a policy is attached to a user, it defines what that user can do in the AWS environment. When a policy is attached to a group, it defines the permissions for all users in that group. When a policy is attached to a role, it defines the permissions for applications or services that assume the role.
+- AWS provides a number of managed policies that you can use as building blocks for your policies. For example, the AmazonS3ReadOnlyAccess policy provides read-only access to Amazon S3 buckets. You can also create custom policies, either by creating a new policy from scratch or by modifying an existing policy.
+- Here's an example of a simple AWS policy to allow read access to an Amazon S3 bucket:
+  ```json
+  {
+      "Version": "2012-10-17",
+      "Statement": [
+          {
+              "Effect": "Allow",
+              "Action": [
+                  "s3:GetObject",
+                  "s3:ListBucket"
+              ],
+              "Resource": [
+                  "arn:aws:s3:::<YOUR_BUCKET_NAME>",
+                  "arn:aws:s3:::<YOUR_BUCKET_NAME>/*"
+              ]
+          }
+      ]
+  }
+  ```
+- This policy uses the "Effect" of "Allow" to specify that the policy allows read access to the S3 bucket. The "Action" section lists the specific S3 actions that are allowed (s3:GetObject and s3:ListBucket), and the "Resource" section specifies the ARN (Amazon Resource Name) of the S3 bucket and its contents (<YOUR_BUCKET_NAME> and <YOUR_BUCKET_NAME>/*).
+- Note that in the <YOUR_BUCKET_NAME> placeholder in the ARN, you would replace it with the actual name of the S3 bucket you want to grant read access to.
+- You can attach this policy to an IAM user, group, or role to grant read access to the specified S3 bucket.
+
+
+
+
+
+
+</details>
+
+
+
+
 
 
 

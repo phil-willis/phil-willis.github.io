@@ -1314,6 +1314,53 @@ fireEvent.click(within(getAllByRole('row')[2]).getByText('Delete'))
 
 
 
+# Mocking packages directly
+- 2 main ways to mock an entire package are:
+  1. You can mock a package by creating a `__mocks__/<PACKAGE_NAME>`, for example `__mocks__/@elastic/elasticsearch.js`
+    ```js
+    const indexName = 'mocked'
+
+    export const mockClient = {
+      ping: jest.fn(),
+      create: jest.fn((params) => {
+        // Simulate successful response from Elasticsearch from input data
+        return Promise.resolve({ _id: '123', ...params.body });
+      }),
+      search: jest.fn(),
+      index: jest.fn(),
+      update: jest.fn(),
+      delete: jest.fn()
+    };
+
+    export class Client {
+      constructor() {
+        return mockClient
+      }
+    }
+    ```
+
+  2. you can mock the package in the test file directly
+    ```js
+    jest.mock('@elastic/elasticsearch', () => {
+      return {
+        Client: jest.fn().mockImplementation(() => {
+          return {
+            ping: jest.fn(),
+            search: jest.fn(),
+            index: jest.fn(),
+            update: jest.fn(),
+            delete: jest.fn()
+          };
+        })
+      };
+    });
+
+    describe('service: `quotes`', () => {
+      test('getQuote', async () => {
+       // ...
+      })
+    })
+    ```
 
 
 
@@ -1324,3 +1371,29 @@ fireEvent.click(within(getAllByRole('row')[2]).getByText('Delete'))
 
 
 
+# SpyOn
+
+```js
+const useSelectorMock = jest.spyOn(reactRedux, 'useSelector')
+useSelectorMock.mockReturnValue(mockStateSlice)
+useSelectorMock.mockClear()
+```
+
+# Mock
+
+
+```js
+jest.mock('@elastic/elasticsearch', () => {
+  return {
+    Client: jest.fn().mockImplementation(() => {
+      return {
+        ping: jest.fn(),
+        search: jest.fn(),
+        index: jest.fn(),
+        update: jest.fn(),
+        delete: jest.fn()
+      };
+    })
+  };
+});
+```
