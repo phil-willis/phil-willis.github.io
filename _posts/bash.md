@@ -285,7 +285,7 @@ fi
 
 ===============
 # MacOS 
-
+- Some macos settings
 
 ## Disk Utility does not show APFS format? 
 - Try switching "View" in the top left corner of Disk Utility to "Show All Devices" and try again.
@@ -302,6 +302,27 @@ fi
     ![macos-backup-ios](/assets/blog/macos/macos-backup-ios.jpg)
   3. Your `~/Library/Application\ Support/MobileSync/` Folder should look like the image below:
     ![macos-symlink-ios-backup](/assets/blog/macos/macos-symlink-ios-backup.jpg)
+
+
+## Have your computer announce the time on an iterval
+
+
+1. Go to the system preference under the `Control Center` -> `Clock Options...`
+  ![macos-announce-time-01](/assets/blog/bash/macos-announce-time_01.jpg)
+- Make sure that you turn `Annouce the time` switch to on
+- Set the `Interval`
+- Set the voice, click the `Customize Voice...` if you don't have a voice selected it won't play
+  ![macos-announce-time-02](/assets/blog/bash/macos-announce-time_02.jpg)
+  ![macos-announce-time-03](/assets/blog/bash/macos-announce-time_03.jpg)
+
+
+
+
+
+
+
+
+
 
 
 

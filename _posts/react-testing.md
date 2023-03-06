@@ -1123,21 +1123,33 @@ fireEvent.click(within(getAllByRole('row')[2]).getByText('Delete'))
 - When writing tests it's only a matter of time before you need to create a "fake" version of an internal — or external — service. 
 - This is commonly referred to as mocking. 
 ```ts
-// App.test.tsx
-import App from './'
-import { render } from '@testing-library/react'
-let mockIsLoggedIn = false
-jest.mock('../hooks/use-auth', () => {
-    return jest.fn(() => ({
-       isLoggedIn: mockIsLoggedIn
-    }))
-})
-test('can show logged in message', () => {
-    mockIsLoggedIn = true
-    const { getByText } = render(<App/>)
-    expect(getByText('Welcome')).toBeTruthy()
-})
-```
+  // App.test.tsx
+  import { render } from '@testing-library/react'
+
+  import SomeComponentThatUsesThatCustomHook from './SomeComponentThatUsesThatCustomHook'
+  import { useFetchData } from './hook'
+
+  jest.mock('./hook', () => ({
+    useFetchData: jest.fn(),
+  }))
+
+  describe('SomeComponentThatUsesThatCustomHook', () => {
+    beforeEach(() => {
+      useFetchData.mockReset()
+    })
+
+    it('renders with default props', () => {
+      useFetchData.mockReturnValue({
+        data: ['some', 'awesome', 'data'],
+        loading: false,
+        error: null,
+      })
+      const { getByText } = render(<SomeComponentThatUsesThatCustomHook />)
+
+      expect(getByText('awesome')).toBeInTheDocument()
+    })
+  })
+  ```
 
 
 
@@ -1177,6 +1189,61 @@ test('can show logged in message', () => {
     })
   })
   ```
+
+
+
+```js
+function fetchData(accessToken){
+  const url = `http://example.com/api/get-stuff`
+  try {
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: headers(accessToken),
+    })
+    if (!response?.ok) throw new Error(response)
+    const data = await response.json()
+    return data
+  } catch (error) {
+    console.log('[API error]', error)
+    throw new Error(error)
+  }
+}
+```
+
+```js
+import { afterEach, describe, expect, it, vi } from 'vitest'
+
+import fetchData from './fetch-data'
+
+global.fetch = vi.fn(() => {
+  return Promise.resolve({ json: () => Promise.resolve({}) })
+})
+
+describe('XProduct/AdGroups/api.js', () => {
+  beforeEach(() => fetch.mockClear())
+  afterEach(() => fetch.mockClear())
+
+  it('should show data from a http call', async () => {
+    const mockResponse = { 
+      ok: true, 
+      json: vi.fn().mockResolvedValue([1,2,3]) 
+    }
+    global.fetch.mockResolvedValue(mockResponse)
+
+    const accessToken = '123.4567.89'
+    const data = await fetchData(accessToken)
+
+    expect(global.fetch).toHaveBeenCalledTimes(1)
+    expect(global.fetch.calls[0][0]).toBe(url)
+    expect(data).toEqual([1,2,3])
+    expect(data).toHaveLength(3)
+  })
+})
+```
+
+
+
+
 
 
 
