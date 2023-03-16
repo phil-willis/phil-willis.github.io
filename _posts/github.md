@@ -1027,6 +1027,31 @@ $ git commit
 ## Github Actions Examples
 
 
+
+<details>
+<summary>Parse package.json version</summary>
+
+  - Install `Act` with homebrew
+    ```shell
+    name: build
+    on: push
+    jobs:
+      job1:
+        runs-on: ubuntu-latest
+        steps:
+          - name: checkout code
+            uses: actions/checkout@v2
+
+          - name: Set version value
+            id: parse-package-json
+            run: echo "PACKAGE_VERSION=$(node -p -e "require('./package.json').version")" >> $GITHUB_OUTPUT
+          - name: Get version value
+            run: echo "The selected color is ${{ steps.parse-package-json.outputs.PACKAGE_VERSION }}"
+    ```
+</details>
+
+
+
 <details>
 <summary>Testing Github Actions on your local machine</summary>
 
