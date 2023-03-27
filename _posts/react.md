@@ -1708,8 +1708,9 @@ const abort = controller.abort()
 
 
 
-
-
+# React Strict Mode
+- React offers a "Strict Mode" during development that calls each component's function twice to help find components that break certain rules. By calling functions twice, Strict Mode helps identify impure functions, which can cause issues. Pure functions only calculate and always produce the same output for the same input, so calling them twice won't change anything. Strict Mode has no effect in production and can be activated by wrapping the root component in <React.StrictMode>. Some frameworks may have this activated by default.
+- More [here](https://react.dev/learn/keeping-components-pure#detecting-impure-calculations-with-strict-mode)
 
 
 
