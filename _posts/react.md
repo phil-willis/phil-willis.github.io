@@ -1506,68 +1506,226 @@ const abort = controller.abort()
 
 
 
-1. Wrapper your app with the ReactQuery provider
+
+
+1. Install
+  ```shell
+  $ yarn add @tanstack/react-query@^4.28.0 @tanstack/react-query-devtools@^4.28.0
+  ```
+
+2. Wrapper your app with the ReactQuery provider
   ```ts
-  import { QueryClient, QueryClientProvider } from 'react-query'
-  import { ReactQueryDevtools } from 'react-query/devtools'
+  import '@picocss/pico'
+  import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+  import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+  import React from 'react'
+  import ReactDOM from 'react-dom/client'
 
-  import './App.css'
-  import Films from './components/Films'
+  import App from './App'
+  import './index.css'
 
-  const queryClient = new QueryClient()
+  export const queryClient = new QueryClient()
 
-  export default function App() {
+  ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
+    <React.StrictMode>
+      <QueryClientProvider client={queryClient}>
+        <App />
+        <ReactQueryDevtools initialIsOpen={false} />
+      </QueryClientProvider>
+    </React.StrictMode>,
+  )
+
+  ```
+3. Create a hook file `src/hooks/use-posts.tsx`
+  ```ts
+  import { useQuery, useMutation } from '@tanstack/react-query'
+
+  import { queryClient } from '../main'
+
+  const BASE_URL = 'http://localhost:3003'
+
+  // READ
+  export function useFetchPosts() {
+    const { isLoading, error, data } = useQuery({
+      queryKey: ['posts'],
+      queryFn: () => fetch(`${BASE_URL}/posts`).then((res) => res.json()),
+    })
+
+    return { isLoading, error, data }
+  }
+
+  // CREATE
+  export function useAddPost() {
+    return useMutation({
+      mutationKey: ['posts'],
+      mutationFn: async (newPost) => {
+        const response = await fetch(`${BASE_URL}/posts`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(newPost),
+        })
+
+        if (!response.ok) throw new Error('Network response was not ok')
+
+        const responseData = await response.json()
+        return responseData
+      },
+      onSuccess: async (data: any) => {
+        console.log(data)
+        queryClient.invalidateQueries(['posts']) // This will update cached data
+      },
+      onError: (error) => {
+        console.log('[ERROR]', error)
+      },
+    })
+  }
+
+  ```
+4. Read cached data
+  ```ts
+  import CommentForm from '../components/CommentForm'
+  import { useFetchPosts } from '../hooks/use-posts'
+
+  export default function Home() {
+    const { isLoading, error, data } = useFetchPosts()
+
+    if (isLoading) return 'Loading...'
+    if (error) return 'An error has occurred: ' + error.message
+
     return (
-      <div className="App">
-        <QueryClientProvider client={queryClient}>
-          <Films />
-          <ReactQueryDevtools initialIsOpen={false} />
-        </QueryClientProvider>
-      </div>
+      <>
+        <h1>Home</h1>
+        <CommentForm />
+        <code>
+          <pre>{JSON.stringify(data, null, 1)}</pre>
+        </code>
+      </>
     )
   }
   ```
-2. Use the `useQuery` hook to fetch data
+5. Add data to the cache
   ```ts
-  import { useQuery } from 'react-query'
+  import { nanoid } from 'nanoid'
+  import { useForm } from 'react-hook-form'
 
-  import { api } from '../services/api'
-  import fetch from '../util/fetch'
+  import { useAddPost } from '../hooks/use-posts'
 
-  type Films = {
-    filmId: number
-    episode_id: string
-    title: string
-    release_date: string
+  type Dto = {
+    id: string
+    message: string
   }
 
-  export default function Films() {
-    const { data, status, error } = useQuery('films', () => fetch(api.films.get))
+  export default function CommentForm() {
+    const { mutate: createPost } = useAddPost()
 
-    if (status === 'loading') {
-      return <p>Loading...</p>
-    }
-    if (status === 'error' || error) {
-      return <p>Error :(</p>
+    const {
+      register,
+      handleSubmit,
+      // watch,
+      formState: { errors },
+    } = useForm()
+    const onSubmit = (data: any) => {
+      const dto: Dto = {
+        id: nanoid(),
+        message: data.message,
+      }
+      createPost(dto)
     }
 
+    return (
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <input defaultValue="something" {...register('message', { required: true })} />
+        {errors.message && <span>This field is required</span>}
+
+        <input type="submit" />
+      </form>
+    )
+  }
+  ```
+
+
+
+
+
+
+
+
+
+
+
+# Client-side Routing
+
+
+## React-router-dom
+1. Install
+  ```shell
+  $ yarn add react-router-dom
+  ```
+
+2. Update your `./main.tsx`
+  ```js
+  import React from 'react'
+  import ReactDOM from 'react-dom/client'
+  import { RouterProvider } from 'react-router-dom'
+
+  import './index.css'
+  import routes from './routes'
+
+  ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
+    <React.StrictMode>
+      <RouterProvider router={routes} />
+    </React.StrictMode>,
+  )
+  ```
+3. Create a `./src/routes.jsx` file
+  ```js
+  import { createBrowserRouter, Outlet } from 'react-router-dom'
+
+  import Nav from './components/Nav'
+  import Home from './pages/Home'
+  import User from './pages/User'
+
+  // This allows you to add a nav present on all pages
+  function NavbarWrapper() {
     return (
       <div>
-        <h1>Dashboard</h1>
-        {data.results.map((film: Films) => {
-          return (
-            <article key={film.episode_id}>
-              <h6>
-                {film.episode_id}. {film.title}{' '}
-                <em>({new Date(Date.parse(film.release_date)).getFullYear()})</em>
-              </h6>
-            </article>
-          )
-        })}
+        <Nav />
+        <Outlet />
       </div>
     )
   }
+
+  const routes = createBrowserRouter([
+    {
+      path: '/',
+      element: <NavbarWrapper />,
+      children: [
+        {
+          path: '/', // yes, again
+          element: <Home />,
+        }, {
+          path: '/user',
+          element: <User />,
+        },
+      ],
+    },
+  ])
+  export default routes
   ```
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
