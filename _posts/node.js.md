@@ -312,7 +312,18 @@ ogImage:
 
 ![similar-npm-vs-yarn-commands](https://user-images.githubusercontent.com/79557260/138965939-58b9a4d5-2e38-4210-a471-b7f3d8d3ff5c.jpg)
 
+- Yarn "berry"
+  - Yarn berry is the codename for the latest major version of the Yarn package manager, which introduced significant changes to its internal architecture and user-facing features. Here's a brief overview of how to use Yarn berry:
 
+  - Installation: You can install Yarn berry by running `$ npm install -g yarn@berry` or `$ yarn set version berry`. This will install the latest version of Yarn berry globally on your system.
+
+  - Project initialization: To create a new project using Yarn berry, you can run yarn init. This will create a new package.json file in your current directory and initialize a Yarn berry project.
+
+  - Package management: Yarn berry works much like the previous version of Yarn in terms of package management. You can use the yarn add command to add a new package to your project, and Yarn berry will automatically manage the dependencies and generate a new yarn.lock file.
+
+  - Plugin management: Yarn berry introduces a new plugin system, which allows you to extend Yarn's functionality with custom plugins. You can install a new plugin by running yarn plugin import <plugin-name>. Some popular plugins include @yarnpkg/plugin-typescript, which adds TypeScript support to Yarn, and @yarnpkg/plugin-pnp, which enables Yarn's Plug'n'Play feature.
+
+  - Workspace support: Yarn berry introduces a new feature called workspaces, which allows you to manage multiple packages in a single repository. To enable workspace support, you can add a workspaces field to your package.json file and list the directories containing your packages. You can then use the yarn workspace command to run commands on a specific package or on all packages in your workspace.
 
 
 

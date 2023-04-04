@@ -1929,3 +1929,28 @@ const abort = controller.abort()
   ```
 
 
+
+
+# Notifications
+- It's worth noting that the terms "toast" and "snack" may be used differently in different contexts or development frameworks, so these descriptions may not apply universally. However, the general concepts and differences between the two types of notifications should hold true in most cases.
+
+## Toast:
+- Appears at the bottom of the screen
+- Stays on screen for several seconds or until the user interacts with it
+- Usually not interactive
+- Used to show system-level messages or alerts
+
+## Snack:
+- Appears at the top or bottom of the screen
+- Disappears after a few seconds
+- May include buttons or links for the user to take a specific action
+- Used to provide feedback on user actions
+
+
+
+
+
+
+
+
+
