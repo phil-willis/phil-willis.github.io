@@ -6,9 +6,6 @@ ogImage:
   url: '/assets/covers/the-internet.jpg'
 ---
 
-
-
-
 # The Internet
 
 
