@@ -367,6 +367,11 @@ ogImage:
 - The `yarn.lock` is the main source of information about the current versions of dependencies in a project if you are using yarn in your project instead of `npm`. 
 
 
+# Version Ranges
+- In you `package.json` file you might see a range of version symbols: `~`, `^`, `>`, `<`, `||`, `file:./something`
+
+
+
 ## Controlling Nodejs version and npm or yarn version
 - You can force which version of Nodejs & npm/yarn version in the `package.json` file however you need to also use a `.npmrc` file with `engine-strict = true` set
 1. Create/update the `.npmrc` file
@@ -411,10 +416,16 @@ ogImage:
 
 
 
-## Creating a npm package
-- **Sematic versioning**
+## Sematic versioning
+- Node.js packages follow the [Sematic Versioning](https://semver.org/) pattern
+  ```shell
   <BREAKING>.<FEATURE>.<FIX>
   <MAJOR>.<MINOR>.<PATCH>
+  ```
+
+
+
+
 
 ## For Every release
 1. Run tests (if there are any)
