@@ -264,25 +264,91 @@ ogImage:
 <summary>Custom Snippets</summary>
 
 # Snippets
-- [Create your own snippets](https://code.visualstudio.com/docs/editor/userdefinedsnippets)
+- To create a new snippet run [cmd][shift][P] then type in `Snippets: Configure User Snippets`
+- Create a new one, for global snippets they will be saved `~/Library/Application Support/Code/User/snippets/<SNIPPET_NAME>`
+- [More info here](https://code.visualstudio.com/docs/editor/userdefinedsnippets)
+
+## First Snippet
   ```json
   {
-
-    "component": {
+    "Print to console": {
       "scope": "javascript,typescript",
-      "prefix": "next-page",
+      "prefix": "log",
       "body": [
-        "export default function Page({ }) {",
-        "  return (",
-        "    <div>",
-        "    </div>",
-        "  )",  
-        "}",
+        "console.log('$1');",
+        "$2"
       ],
-      "description": "React component"
+      "description": "Log output to console"
     }
   }
   ```
+- Now you can type in `log` followed by a [tab] and it will add `console.log();` with your cursor at inside the `()`
+- The pieces
+  - `prefix` => what you have to type 
+  - `body` => what the snippet will add
+  - `description` => 
+- You can also add some `Tab Stops` to have the user tab to section of the body code
+
+
+## Choices
+- You can also provide a TabStop with dropdown options
+  ```json
+  {
+    "log.me": {
+      "prefix": "cl",
+      "body": [
+        "console.${2|log,table,dir|}($1)"
+      ],
+      "description": "Allow for the second tab option to pick what kind of console funtion you want"
+    }
+  }
+  ```
+- Now the first TabStop will be for what you want to type in, then the second will allow you to pick between `log|table|dir`
+
+## Variables
+- You can also take it a step future by using some [variables](https://code.visualstudio.com/docs/editor/userdefinedsnippets#_variables) to super power your snippet
+- For example: `TM_SELECTED_TEXT`, `TM_CURRENT_LINE`, `TM_FILENAME`, `CLIPBOARD`, 
+- `${TM_SELECTED_TEXT:default}.`
+
+- Let add a new snippet called `better.log`
+  ```json
+  {
+    "better.log": {
+      "prefix": "ll",
+      "body": [
+        "console.log('🤖🤖', JSON.stringify(${TM_SELECTED_TEXT:${1}}, null, 1))"
+      ],
+      "description": "Custom console.log JSON snippet"
+    }
+  }
+  ```
+
+## Add keybinding 
+- [cmd][shift][P], then type in `Preferences: Open Keyboard Shortcuts`, then [cmd][K] & [cmd][K]
+  ```json
+  [
+    {
+      "key": "ctrl+alt+l",
+      "command": "commandId",
+      "when": "editorTextFocus"
+    }
+  ]
+  ```
+- Now let's update the keybinding so that 
+  ```json
+  [
+    {
+      "key": "ctrl+alt+l",
+      "command": "editor.action.insertSnippet",
+      "when": "editorTextFocus",
+      "args": {
+        "name": "better.log"
+      }
+    }
+  ]
+  ```
+- The above keybindings says: run this snippet `command`, with the name `better.log`, when we press [Control][Option][L]
+
 </details>
 
 
