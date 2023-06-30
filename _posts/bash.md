@@ -770,6 +770,40 @@ $ aws route53 get-hosted-zone --id $hz
 
 
 
+# Homebrew
+
+
+## YouTube-DL
+- [Docs](https://github.com/ytdl-org/youtube-dl/blob/master/README.md#readme)
+```shell
+$ brew install youtube-dl
+
+# youtube-dl [OPTIONS] URL [URL...]
+
+VIDEO_URL="https://www.youtube.com/watch?v=*********"
+OUTPUT_FILE="my_video.mp4"
+
+youtube-dl --format "bestvideo+bestaudio" \
+           --output "$OUTPUT_FILE" \
+           "$VIDEO_URL"
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
