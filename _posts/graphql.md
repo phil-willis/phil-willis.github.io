@@ -461,3 +461,21 @@ ogImage:
     )
   }
   ```
+
+# AWS Lamdba
+
+
+
+```shell
+$ npm install -g serverless
+
+$ yarn init -y
+$ yarn add -D ts-node ts-node-dev typescript  
+$ touch tsconfig.json  
+$ mkdir src  
+$ touch src/index.ts 
+$ echo "console.log('Hello typescript, graphql, apollo, & Lambda!')" > src/index.ts
+$ yarn add apollo-server-lambda graphql
+```
+
+- Set up the schema's type definitions and resolvers, and pass them to the ApolloServer constructor like normal.

@@ -62,15 +62,34 @@ ogImage:
 
 
 # Add Linting
+- Add some stuff:
+  ```shell
+  $ npm i -D @typescript-eslint/eslint-plugin @typescript-eslint/parser eslint-plugin-jest prettier eslint-config-prettier eslint-plugin-prettier
+  $ mkdir .vscode
+  $ touch .prettierrc .eslintrc .vscode/settings.json
+  $ mkdir components hooks utils
+  ```
+- if using `vitest` -> `.eslintrc`
+  ```json
+  {
+    "extends": [
+      "next/core-web-vitals",
+      "plugin:@typescript-eslint/recommended",
+      "plugin:prettier/recommended"
+    ],
+    "plugins": ["react", "@typescript-eslint"],
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+      "ecmaFeatures": {
+        "jsx": true
+      },
+      "sourceType": "module",
+      "project": "./tsconfig.json"
+    }
+  }
+  ```
 
-```shell
-$ npm i -D @typescript-eslint/eslint-plugin @typescript-eslint/parser eslint-plugin-jest prettier eslint-config-prettier eslint-plugin-prettier
-$ mkdir .vscode
-$ touch .prettierrc .eslintrc .vscode/settings.json
-$ mkdir components hooks utils
-```
-
-- `.eslintrc`
+- If you are using `Jest` -> `.eslintrc`
   ```json
   {
     "extends": [
@@ -137,17 +156,60 @@ $ mkdir components hooks utils
     },
   }
   ```
-
-```package.json
-{
-  "scripts": {
-     "lint": "prettier --write {components,hooks,pages}/**/*.tsx {components,hooks,pages}/*.tsx utils/**/*.ts"
+- Update your `package.json` file
+  ```package.json
+  {
+    "scripts": {
+      "lint": "prettier --config .prettierrc '{pages,components,hooks}/**/*.{ts,tsx}' --write"
+    }
   }
-}
-```
+  ```
 
 
-# Adding Jest & React-Testing-Library
+# Adding Unit test
+
+## Adding Vitest & React-Testing-Library
+- Adde some packages:
+  ```shell
+  $ npm i -D vitest @vitejs/plugin-react jsdom @testing-library/react 
+  $ echo "`jq '.scripts.test="vitest"' package.json`" > package.json
+  $ cat > vitest.config.ts << 'EOF'
+  /// <reference types="vitest" />
+
+  import { defineConfig } from 'vitest/config'
+  import react from '@vitejs/plugin-react'
+
+  // https://vitejs.dev/config/
+  export default defineConfig({
+    plugins: [react()],
+    test: {
+      environment: 'jsdom',
+    },
+  })
+  EOF
+  $ mkdir __tests__
+
+  $ cat >__tests__/Home.test.tsx << 'EOF'
+  import { expect, test } from 'vitest'
+  import { render, screen, within } from '@testing-library/react'
+  import Home from '../pages'
+
+  test('home', () => {
+    render(<Home />)
+    const main = within(screen.getByRole('main'))
+    expect(
+      main.getByRole('heading', { level: 1, name: /welcome to next\.js!/i })
+    ).toBeDefined()
+
+    const footer = within(screen.getByRole('contentinfo'))
+    const link = within(footer.getByRole('link'))
+    expect(link.getByRole('img', { name: /vercel logo/i })).toBeDefined()
+  })
+  EOF
+  ```
+
+
+## Adding Jest & React-Testing-Library
 - Add testing
   - Add some packages:
     ```shell
@@ -321,7 +383,12 @@ $ mkdir components hooks utils
   ```
 
 # Adding Storybook
-- Add some packages:
+- Add storybook with this simple command:
+  ```shell
+  $ npx -y sb init
+  ```
+
+- If you have some issues with webpack5 do this (shouldn't be an issue now):
   ```shell
   $ npx -y sb init --builder webpack5
   $ yarn add -D @storybook/addon-postcss
